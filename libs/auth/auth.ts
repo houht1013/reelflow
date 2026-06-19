@@ -8,7 +8,6 @@ import { nanoid } from "nanoid";
 import { db, user, account, session, verification, isSqliteDialect } from '@libs/database'
 import { sendSMS } from '@libs/sms';
 import { emailSignInSchema, emailSignUpSchema } from '@libs/validators/user'
-import { wechatPlugin } from './plugins/wechat'
 import { sendVerificationEmail, sendResetPasswordEmail } from '@libs/email'
 import { locales, defaultLocale, getTranslation, type SupportedLocale } from '@libs/i18n'
 import { config } from '@config'
@@ -195,20 +194,11 @@ export const auth = betterAuth({
       clientId: config.auth.socialProviders.google.clientId!,
       clientSecret: config.auth.socialProviders.google.clientSecret!,
     },
-    github: {
-      clientId: config.auth.socialProviders.github.clientId!,
-      clientSecret: config.auth.socialProviders.github.clientSecret!,
-      mapProfileToUser(profile) {
-        return {
-          emailVerified: true,
-        }
-      },
-    }
   },
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ["google", "github", "wechat"]
+      trustedProviders: ["google"]
     }
   },
   plugins: [
@@ -225,12 +215,6 @@ export const auth = betterAuth({
         endpoints: ["/sign-up/email", "/sign-in/email", "/request-password-reset", '/phone-number/send-otp', '/send-verification-email']
       })
     ] : []),
-
-    // 添加微信登录插件
-    wechatPlugin({
-      appId: config.auth.socialProviders.wechat.appId!,
-      appSecret: config.auth.socialProviders.wechat.appSecret!,
-    }),
 
     // https://www.better-auth.com/docs/plugins/phone-number
     phoneNumber({

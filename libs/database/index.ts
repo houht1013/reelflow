@@ -21,6 +21,26 @@ export type { User, NewUser } from './schema/pg/user'
 export type { CreditTransaction, NewCreditTransaction } from './schema/pg/credit-transaction'
 export type { BlogPost, NewBlogPost } from './schema/pg/blog-post'
 export type { BlogPostStatus } from './constants'
+export type {
+  Asset,
+  CreditAccount,
+  CreditLedger,
+  Job,
+  JobStage,
+  NewAsset,
+  NewCreditAccount,
+  NewCreditLedger,
+  NewJob,
+  NewJobStage,
+  NewTemplate,
+  NewUsageRecord,
+  NewWorkspace,
+  NewWorkspaceMember,
+  Template,
+  UsageRecord,
+  Workspace,
+  WorkspaceMember,
+} from './schema/pg/reelflow'
 
 // Schema table exports (dialect-aware via proxy modules, Turbopack compatible)
 export { user } from './schema/user'
@@ -29,6 +49,34 @@ export { order } from './schema/order'
 export { subscription } from './schema/subscription'
 export { creditTransaction } from './schema/credit-transaction'
 export { blogPost } from './schema/blog-post'
+export {
+  asset,
+  assetUsage,
+  creditAccount,
+  creditLedger,
+  inviteCode,
+  inviteRecord,
+  job,
+  jobAttempt,
+  jobEvent,
+  jobQualityIssue,
+  jobStage,
+  notification,
+  notificationDelivery,
+  pricingChangeLog,
+  pricingItem,
+  providerHealthCheck,
+  providerProfile,
+  retentionPolicy,
+  safetyCheck,
+  safetyRule,
+  template,
+  templateSample,
+  templateWorkspaceGrant,
+  usageRecord,
+  workspace,
+  workspaceMember,
+} from './schema/reelflow'
 
 // Build a schema object for drizzle() initialization from proxy exports.
 // Proxy modules return the correct dialect's tables at runtime.
@@ -38,11 +86,65 @@ import { order as _order } from './schema/order'
 import { subscription as _subscription } from './schema/subscription'
 import { creditTransaction as _creditTransaction } from './schema/credit-transaction'
 import { blogPost as _blogPost } from './schema/blog-post'
+import {
+  asset as _asset,
+  assetUsage as _assetUsage,
+  creditAccount as _creditAccount,
+  creditLedger as _creditLedger,
+  inviteCode as _inviteCode,
+  inviteRecord as _inviteRecord,
+  job as _job,
+  jobAttempt as _jobAttempt,
+  jobEvent as _jobEvent,
+  jobQualityIssue as _jobQualityIssue,
+  jobStage as _jobStage,
+  notification as _notification,
+  notificationDelivery as _notificationDelivery,
+  pricingChangeLog as _pricingChangeLog,
+  pricingItem as _pricingItem,
+  providerHealthCheck as _providerHealthCheck,
+  providerProfile as _providerProfile,
+  retentionPolicy as _retentionPolicy,
+  safetyCheck as _safetyCheck,
+  safetyRule as _safetyRule,
+  template as _template,
+  templateSample as _templateSample,
+  templateWorkspaceGrant as _templateWorkspaceGrant,
+  usageRecord as _usageRecord,
+  workspace as _workspace,
+  workspaceMember as _workspaceMember,
+} from './schema/reelflow'
 
 const _schema = {
   user: _user, account: _account, session: _session, verification: _verification,
   order: _order, subscription: _subscription, creditTransaction: _creditTransaction,
   blogPost: _blogPost,
+  workspace: _workspace,
+  workspaceMember: _workspaceMember,
+  creditAccount: _creditAccount,
+  template: _template,
+  asset: _asset,
+  templateWorkspaceGrant: _templateWorkspaceGrant,
+  templateSample: _templateSample,
+  job: _job,
+  jobStage: _jobStage,
+  jobAttempt: _jobAttempt,
+  jobEvent: _jobEvent,
+  jobQualityIssue: _jobQualityIssue,
+  usageRecord: _usageRecord,
+  creditLedger: _creditLedger,
+  assetUsage: _assetUsage,
+  pricingItem: _pricingItem,
+  pricingChangeLog: _pricingChangeLog,
+  providerProfile: _providerProfile,
+  providerHealthCheck: _providerHealthCheck,
+  notification: _notification,
+  notificationDelivery: _notificationDelivery,
+  inviteCode: _inviteCode,
+  inviteRecord: _inviteRecord,
+  safetyRule: _safetyRule,
+  safetyCheck: _safetyCheck,
+  retentionPolicy: _retentionPolicy,
 }
 
 // ---------------------------------------------------------------------------

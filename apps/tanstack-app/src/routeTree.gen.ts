@@ -28,6 +28,11 @@ import { Route as ApiVideoGenerateStatusRouteImport } from './routes/api/video-g
 import { Route as ApiUsersIdRouteImport } from './routes/api/users/$id'
 import { Route as ApiSubscriptionStatusRouteImport } from './routes/api/subscription/status'
 import { Route as ApiSubscriptionPortalRouteImport } from './routes/api/subscription/portal'
+import { Route as ApiReelflowTemplatesRouteImport } from './routes/api/reelflow/templates'
+import { Route as ApiReelflowNotificationsRouteImport } from './routes/api/reelflow/notifications'
+import { Route as ApiReelflowInvitesRouteImport } from './routes/api/reelflow/invites'
+import { Route as ApiReelflowCreditsRouteImport } from './routes/api/reelflow/credits'
+import { Route as ApiReelflowAssetsRouteImport } from './routes/api/reelflow/assets'
 import { Route as ApiPaymentQueryRouteImport } from './routes/api/payment/query'
 import { Route as ApiPaymentInitiateRouteImport } from './routes/api/payment/initiate'
 import { Route as ApiPaymentCancelRouteImport } from './routes/api/payment/cancel'
@@ -51,6 +56,7 @@ import { Route as LangauthSigninRouteImport } from './routes/$lang/(auth)/signin
 import { Route as LangauthResetPasswordRouteImport } from './routes/$lang/(auth)/reset-password'
 import { Route as LangauthForgotPasswordRouteImport } from './routes/$lang/(auth)/forgot-password'
 import { Route as LangauthCellphoneRouteImport } from './routes/$lang/(auth)/cellphone'
+import { Route as ApiReelflowJobsIndexRouteImport } from './routes/api/reelflow/jobs/index'
 import { Route as ApiAdminUsersIndexRouteImport } from './routes/api/admin/users/index'
 import { Route as ApiAdminSubscriptionsIndexRouteImport } from './routes/api/admin/subscriptions/index'
 import { Route as ApiAdminStatsIndexRouteImport } from './routes/api/admin/stats/index'
@@ -58,10 +64,18 @@ import { Route as ApiAdminOrdersIndexRouteImport } from './routes/api/admin/orde
 import { Route as ApiAdminBlogIndexRouteImport } from './routes/api/admin/blog/index'
 import { Route as LangAdminUsersIndexRouteImport } from './routes/$lang/admin/users/index'
 import { Route as LangAdminSubscriptionsIndexRouteImport } from './routes/$lang/admin/subscriptions/index'
+import { Route as LangAdminReelflowIndexRouteImport } from './routes/$lang/admin/reelflow/index'
 import { Route as LangAdminOrdersIndexRouteImport } from './routes/$lang/admin/orders/index'
 import { Route as LangAdminCreditsIndexRouteImport } from './routes/$lang/admin/credits/index'
 import { Route as LangAdminBlogIndexRouteImport } from './routes/$lang/admin/blog/index'
+import { Route as LangrootReelflowIndexRouteImport } from './routes/$lang/(root)/reelflow/index'
 import { Route as LangrootBlogIndexRouteImport } from './routes/$lang/(root)/blog/index'
+import { Route as ApiReelflowToolsVoiceRouteImport } from './routes/api/reelflow/tools/voice'
+import { Route as ApiReelflowToolsImageRouteImport } from './routes/api/reelflow/tools/image'
+import { Route as ApiReelflowJobsIdRouteImport } from './routes/api/reelflow/jobs/$id'
+import { Route as ApiReelflowCreditsDevCompleteSubscriptionGrantRouteImport } from './routes/api/reelflow/credits/dev-complete-subscription-grant'
+import { Route as ApiReelflowCreditsDevCompletePurchaseRouteImport } from './routes/api/reelflow/credits/dev-complete-purchase'
+import { Route as ApiReelflowAssetsIdRouteImport } from './routes/api/reelflow/assets/$id'
 import { Route as ApiPaymentWebhookWechatRouteImport } from './routes/api/payment/webhook/wechat'
 import { Route as ApiPaymentWebhookStripeRouteImport } from './routes/api/payment/webhook/stripe'
 import { Route as ApiPaymentWebhookPaypalRouteImport } from './routes/api/payment/webhook/paypal'
@@ -72,13 +86,30 @@ import { Route as ApiPaymentVerifyStripeRouteImport } from './routes/api/payment
 import { Route as ApiPaymentVerifyCreemRouteImport } from './routes/api/payment/verify/creem'
 import { Route as ApiPaymentReturnPaypalRouteImport } from './routes/api/payment/return/paypal'
 import { Route as ApiAdminStatsMonthlyRouteImport } from './routes/api/admin/stats/monthly'
+import { Route as ApiAdminReelflowOverviewRouteImport } from './routes/api/admin/reelflow/overview'
 import { Route as ApiAdminBlogIdRouteImport } from './routes/api/admin/blog/$id'
+import { Route as LangrootReelflowVoiceRouteImport } from './routes/$lang/(root)/reelflow/voice'
+import { Route as LangrootReelflowNotificationsRouteImport } from './routes/$lang/(root)/reelflow/notifications'
+import { Route as LangrootReelflowInvitesRouteImport } from './routes/$lang/(root)/reelflow/invites'
+import { Route as LangrootReelflowImageRouteImport } from './routes/$lang/(root)/reelflow/image'
+import { Route as LangrootReelflowCreditsRouteImport } from './routes/$lang/(root)/reelflow/credits'
+import { Route as LangrootReelflowAssetsRouteImport } from './routes/$lang/(root)/reelflow/assets'
 import { Route as LangrootBlogSlugRouteImport } from './routes/$lang/(root)/blog/$slug'
 import { Route as ApiAdminUsersUpdateIndexRouteImport } from './routes/api/admin/users/update/index'
 import { Route as ApiAdminUsersDeleteIndexRouteImport } from './routes/api/admin/users/delete/index'
 import { Route as ApiAdminCreditsTransactionsIndexRouteImport } from './routes/api/admin/credits/transactions/index'
 import { Route as LangAdminUsersIdIndexRouteImport } from './routes/$lang/admin/users/$id/index'
 import { Route as LangAdminBlogIdIndexRouteImport } from './routes/$lang/admin/blog/$id/index'
+import { Route as LangrootReelflowJobsIndexRouteImport } from './routes/$lang/(root)/reelflow/jobs/index'
+import { Route as ApiReelflowJobsIdRetryRouteImport } from './routes/api/reelflow/jobs/$id/retry'
+import { Route as ApiReelflowJobsIdRerunRouteImport } from './routes/api/reelflow/jobs/$id/rerun'
+import { Route as ApiReelflowJobsIdDownloadDraftRouteImport } from './routes/api/reelflow/jobs/$id/download-draft'
+import { Route as ApiAdminReelflowTemplatesIdRouteImport } from './routes/api/admin/reelflow/templates/$id'
+import { Route as ApiAdminReelflowProvidersIdRouteImport } from './routes/api/admin/reelflow/providers/$id'
+import { Route as ApiAdminReelflowJobsIdRouteImport } from './routes/api/admin/reelflow/jobs/$id'
+import { Route as LangAdminReelflowJobsIdRouteImport } from './routes/$lang/admin/reelflow/jobs/$id'
+import { Route as LangrootReelflowJobsIdRouteImport } from './routes/$lang/(root)/reelflow/jobs/$id'
+import { Route as ApiAdminReelflowProvidersIdHealthRouteImport } from './routes/api/admin/reelflow/providers/$id/health'
 
 const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
   id: '/payment-success',
@@ -171,6 +202,32 @@ const ApiSubscriptionStatusRoute = ApiSubscriptionStatusRouteImport.update({
 const ApiSubscriptionPortalRoute = ApiSubscriptionPortalRouteImport.update({
   id: '/api/subscription/portal',
   path: '/api/subscription/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowTemplatesRoute = ApiReelflowTemplatesRouteImport.update({
+  id: '/api/reelflow/templates',
+  path: '/api/reelflow/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowNotificationsRoute =
+  ApiReelflowNotificationsRouteImport.update({
+    id: '/api/reelflow/notifications',
+    path: '/api/reelflow/notifications',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiReelflowInvitesRoute = ApiReelflowInvitesRouteImport.update({
+  id: '/api/reelflow/invites',
+  path: '/api/reelflow/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowCreditsRoute = ApiReelflowCreditsRouteImport.update({
+  id: '/api/reelflow/credits',
+  path: '/api/reelflow/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowAssetsRoute = ApiReelflowAssetsRouteImport.update({
+  id: '/api/reelflow/assets',
+  path: '/api/reelflow/assets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPaymentQueryRoute = ApiPaymentQueryRouteImport.update({
@@ -288,6 +345,11 @@ const LangauthCellphoneRoute = LangauthCellphoneRouteImport.update({
   path: '/cellphone',
   getParentRoute: () => LangauthRouteRoute,
 } as any)
+const ApiReelflowJobsIndexRoute = ApiReelflowJobsIndexRouteImport.update({
+  id: '/api/reelflow/jobs/',
+  path: '/api/reelflow/jobs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminUsersIndexRoute = ApiAdminUsersIndexRouteImport.update({
   id: '/api/admin/users/',
   path: '/api/admin/users/',
@@ -325,6 +387,11 @@ const LangAdminSubscriptionsIndexRoute =
     path: '/subscriptions/',
     getParentRoute: () => LangAdminRoute,
   } as any)
+const LangAdminReelflowIndexRoute = LangAdminReelflowIndexRouteImport.update({
+  id: '/reelflow/',
+  path: '/reelflow/',
+  getParentRoute: () => LangAdminRoute,
+} as any)
 const LangAdminOrdersIndexRoute = LangAdminOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -340,10 +407,47 @@ const LangAdminBlogIndexRoute = LangAdminBlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => LangAdminRoute,
 } as any)
+const LangrootReelflowIndexRoute = LangrootReelflowIndexRouteImport.update({
+  id: '/reelflow/',
+  path: '/reelflow/',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
 const LangrootBlogIndexRoute = LangrootBlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
   getParentRoute: () => LangrootRouteRoute,
+} as any)
+const ApiReelflowToolsVoiceRoute = ApiReelflowToolsVoiceRouteImport.update({
+  id: '/api/reelflow/tools/voice',
+  path: '/api/reelflow/tools/voice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowToolsImageRoute = ApiReelflowToolsImageRouteImport.update({
+  id: '/api/reelflow/tools/image',
+  path: '/api/reelflow/tools/image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowJobsIdRoute = ApiReelflowJobsIdRouteImport.update({
+  id: '/api/reelflow/jobs/$id',
+  path: '/api/reelflow/jobs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiReelflowCreditsDevCompleteSubscriptionGrantRoute =
+  ApiReelflowCreditsDevCompleteSubscriptionGrantRouteImport.update({
+    id: '/dev-complete-subscription-grant',
+    path: '/dev-complete-subscription-grant',
+    getParentRoute: () => ApiReelflowCreditsRoute,
+  } as any)
+const ApiReelflowCreditsDevCompletePurchaseRoute =
+  ApiReelflowCreditsDevCompletePurchaseRouteImport.update({
+    id: '/dev-complete-purchase',
+    path: '/dev-complete-purchase',
+    getParentRoute: () => ApiReelflowCreditsRoute,
+  } as any)
+const ApiReelflowAssetsIdRoute = ApiReelflowAssetsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiReelflowAssetsRoute,
 } as any)
 const ApiPaymentWebhookWechatRoute = ApiPaymentWebhookWechatRouteImport.update({
   id: '/api/payment/webhook/wechat',
@@ -395,10 +499,47 @@ const ApiAdminStatsMonthlyRoute = ApiAdminStatsMonthlyRouteImport.update({
   path: '/api/admin/stats/monthly',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminReelflowOverviewRoute =
+  ApiAdminReelflowOverviewRouteImport.update({
+    id: '/api/admin/reelflow/overview',
+    path: '/api/admin/reelflow/overview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminBlogIdRoute = ApiAdminBlogIdRouteImport.update({
   id: '/api/admin/blog/$id',
   path: '/api/admin/blog/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LangrootReelflowVoiceRoute = LangrootReelflowVoiceRouteImport.update({
+  id: '/reelflow/voice',
+  path: '/reelflow/voice',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
+const LangrootReelflowNotificationsRoute =
+  LangrootReelflowNotificationsRouteImport.update({
+    id: '/reelflow/notifications',
+    path: '/reelflow/notifications',
+    getParentRoute: () => LangrootRouteRoute,
+  } as any)
+const LangrootReelflowInvitesRoute = LangrootReelflowInvitesRouteImport.update({
+  id: '/reelflow/invites',
+  path: '/reelflow/invites',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
+const LangrootReelflowImageRoute = LangrootReelflowImageRouteImport.update({
+  id: '/reelflow/image',
+  path: '/reelflow/image',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
+const LangrootReelflowCreditsRoute = LangrootReelflowCreditsRouteImport.update({
+  id: '/reelflow/credits',
+  path: '/reelflow/credits',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
+const LangrootReelflowAssetsRoute = LangrootReelflowAssetsRouteImport.update({
+  id: '/reelflow/assets',
+  path: '/reelflow/assets',
+  getParentRoute: () => LangrootRouteRoute,
 } as any)
 const LangrootBlogSlugRoute = LangrootBlogSlugRouteImport.update({
   id: '/blog/$slug',
@@ -433,6 +574,61 @@ const LangAdminBlogIdIndexRoute = LangAdminBlogIdIndexRouteImport.update({
   path: '/blog/$id/',
   getParentRoute: () => LangAdminRoute,
 } as any)
+const LangrootReelflowJobsIndexRoute =
+  LangrootReelflowJobsIndexRouteImport.update({
+    id: '/reelflow/jobs/',
+    path: '/reelflow/jobs/',
+    getParentRoute: () => LangrootRouteRoute,
+  } as any)
+const ApiReelflowJobsIdRetryRoute = ApiReelflowJobsIdRetryRouteImport.update({
+  id: '/retry',
+  path: '/retry',
+  getParentRoute: () => ApiReelflowJobsIdRoute,
+} as any)
+const ApiReelflowJobsIdRerunRoute = ApiReelflowJobsIdRerunRouteImport.update({
+  id: '/rerun',
+  path: '/rerun',
+  getParentRoute: () => ApiReelflowJobsIdRoute,
+} as any)
+const ApiReelflowJobsIdDownloadDraftRoute =
+  ApiReelflowJobsIdDownloadDraftRouteImport.update({
+    id: '/download-draft',
+    path: '/download-draft',
+    getParentRoute: () => ApiReelflowJobsIdRoute,
+  } as any)
+const ApiAdminReelflowTemplatesIdRoute =
+  ApiAdminReelflowTemplatesIdRouteImport.update({
+    id: '/api/admin/reelflow/templates/$id',
+    path: '/api/admin/reelflow/templates/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminReelflowProvidersIdRoute =
+  ApiAdminReelflowProvidersIdRouteImport.update({
+    id: '/api/admin/reelflow/providers/$id',
+    path: '/api/admin/reelflow/providers/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminReelflowJobsIdRoute = ApiAdminReelflowJobsIdRouteImport.update({
+  id: '/api/admin/reelflow/jobs/$id',
+  path: '/api/admin/reelflow/jobs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LangAdminReelflowJobsIdRoute = LangAdminReelflowJobsIdRouteImport.update({
+  id: '/reelflow/jobs/$id',
+  path: '/reelflow/jobs/$id',
+  getParentRoute: () => LangAdminRoute,
+} as any)
+const LangrootReelflowJobsIdRoute = LangrootReelflowJobsIdRouteImport.update({
+  id: '/reelflow/jobs/$id',
+  path: '/reelflow/jobs/$id',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
+const ApiAdminReelflowProvidersIdHealthRoute =
+  ApiAdminReelflowProvidersIdHealthRouteImport.update({
+    id: '/health',
+    path: '/health',
+    getParentRoute: () => ApiAdminReelflowProvidersIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -467,6 +663,11 @@ export interface FileRoutesByFullPath {
   '/api/payment/cancel': typeof ApiPaymentCancelRoute
   '/api/payment/initiate': typeof ApiPaymentInitiateRoute
   '/api/payment/query': typeof ApiPaymentQueryRoute
+  '/api/reelflow/assets': typeof ApiReelflowAssetsRouteWithChildren
+  '/api/reelflow/credits': typeof ApiReelflowCreditsRouteWithChildren
+  '/api/reelflow/invites': typeof ApiReelflowInvitesRoute
+  '/api/reelflow/notifications': typeof ApiReelflowNotificationsRoute
+  '/api/reelflow/templates': typeof ApiReelflowTemplatesRoute
   '/api/subscription/portal': typeof ApiSubscriptionPortalRoute
   '/api/subscription/status': typeof ApiSubscriptionStatusRoute
   '/api/users/$id': typeof ApiUsersIdRoute
@@ -476,7 +677,14 @@ export interface FileRoutesByFullPath {
   '/api/blog/': typeof ApiBlogIndexRoute
   '/api/video-generate/': typeof ApiVideoGenerateIndexRoute
   '/$lang/blog/$slug': typeof LangrootBlogSlugRoute
+  '/$lang/reelflow/assets': typeof LangrootReelflowAssetsRoute
+  '/$lang/reelflow/credits': typeof LangrootReelflowCreditsRoute
+  '/$lang/reelflow/image': typeof LangrootReelflowImageRoute
+  '/$lang/reelflow/invites': typeof LangrootReelflowInvitesRoute
+  '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
+  '/$lang/reelflow/voice': typeof LangrootReelflowVoiceRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
+  '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
   '/api/admin/stats/monthly': typeof ApiAdminStatsMonthlyRoute
   '/api/payment/return/paypal': typeof ApiPaymentReturnPaypalRoute
   '/api/payment/verify/creem': typeof ApiPaymentVerifyCreemRoute
@@ -487,10 +695,18 @@ export interface FileRoutesByFullPath {
   '/api/payment/webhook/paypal': typeof ApiPaymentWebhookPaypalRoute
   '/api/payment/webhook/stripe': typeof ApiPaymentWebhookStripeRoute
   '/api/payment/webhook/wechat': typeof ApiPaymentWebhookWechatRoute
+  '/api/reelflow/assets/$id': typeof ApiReelflowAssetsIdRoute
+  '/api/reelflow/credits/dev-complete-purchase': typeof ApiReelflowCreditsDevCompletePurchaseRoute
+  '/api/reelflow/credits/dev-complete-subscription-grant': typeof ApiReelflowCreditsDevCompleteSubscriptionGrantRoute
+  '/api/reelflow/jobs/$id': typeof ApiReelflowJobsIdRouteWithChildren
+  '/api/reelflow/tools/image': typeof ApiReelflowToolsImageRoute
+  '/api/reelflow/tools/voice': typeof ApiReelflowToolsVoiceRoute
   '/$lang/blog/': typeof LangrootBlogIndexRoute
+  '/$lang/reelflow/': typeof LangrootReelflowIndexRoute
   '/$lang/admin/blog/': typeof LangAdminBlogIndexRoute
   '/$lang/admin/credits/': typeof LangAdminCreditsIndexRoute
   '/$lang/admin/orders/': typeof LangAdminOrdersIndexRoute
+  '/$lang/admin/reelflow/': typeof LangAdminReelflowIndexRoute
   '/$lang/admin/subscriptions/': typeof LangAdminSubscriptionsIndexRoute
   '/$lang/admin/users/': typeof LangAdminUsersIndexRoute
   '/api/admin/blog/': typeof ApiAdminBlogIndexRoute
@@ -498,11 +714,22 @@ export interface FileRoutesByFullPath {
   '/api/admin/stats/': typeof ApiAdminStatsIndexRoute
   '/api/admin/subscriptions/': typeof ApiAdminSubscriptionsIndexRoute
   '/api/admin/users/': typeof ApiAdminUsersIndexRoute
+  '/api/reelflow/jobs/': typeof ApiReelflowJobsIndexRoute
+  '/$lang/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
+  '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
+  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRoute
+  '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
+  '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
+  '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
+  '/$lang/reelflow/jobs/': typeof LangrootReelflowJobsIndexRoute
   '/$lang/admin/blog/$id/': typeof LangAdminBlogIdIndexRoute
   '/$lang/admin/users/$id/': typeof LangAdminUsersIdIndexRoute
   '/api/admin/credits/transactions/': typeof ApiAdminCreditsTransactionsIndexRoute
   '/api/admin/users/delete/': typeof ApiAdminUsersDeleteIndexRoute
   '/api/admin/users/update/': typeof ApiAdminUsersUpdateIndexRoute
+  '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -536,6 +763,11 @@ export interface FileRoutesByTo {
   '/api/payment/cancel': typeof ApiPaymentCancelRoute
   '/api/payment/initiate': typeof ApiPaymentInitiateRoute
   '/api/payment/query': typeof ApiPaymentQueryRoute
+  '/api/reelflow/assets': typeof ApiReelflowAssetsRouteWithChildren
+  '/api/reelflow/credits': typeof ApiReelflowCreditsRouteWithChildren
+  '/api/reelflow/invites': typeof ApiReelflowInvitesRoute
+  '/api/reelflow/notifications': typeof ApiReelflowNotificationsRoute
+  '/api/reelflow/templates': typeof ApiReelflowTemplatesRoute
   '/api/subscription/portal': typeof ApiSubscriptionPortalRoute
   '/api/subscription/status': typeof ApiSubscriptionStatusRoute
   '/api/users/$id': typeof ApiUsersIdRoute
@@ -544,7 +776,14 @@ export interface FileRoutesByTo {
   '/api/blog': typeof ApiBlogIndexRoute
   '/api/video-generate': typeof ApiVideoGenerateIndexRoute
   '/$lang/blog/$slug': typeof LangrootBlogSlugRoute
+  '/$lang/reelflow/assets': typeof LangrootReelflowAssetsRoute
+  '/$lang/reelflow/credits': typeof LangrootReelflowCreditsRoute
+  '/$lang/reelflow/image': typeof LangrootReelflowImageRoute
+  '/$lang/reelflow/invites': typeof LangrootReelflowInvitesRoute
+  '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
+  '/$lang/reelflow/voice': typeof LangrootReelflowVoiceRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
+  '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
   '/api/admin/stats/monthly': typeof ApiAdminStatsMonthlyRoute
   '/api/payment/return/paypal': typeof ApiPaymentReturnPaypalRoute
   '/api/payment/verify/creem': typeof ApiPaymentVerifyCreemRoute
@@ -555,10 +794,18 @@ export interface FileRoutesByTo {
   '/api/payment/webhook/paypal': typeof ApiPaymentWebhookPaypalRoute
   '/api/payment/webhook/stripe': typeof ApiPaymentWebhookStripeRoute
   '/api/payment/webhook/wechat': typeof ApiPaymentWebhookWechatRoute
+  '/api/reelflow/assets/$id': typeof ApiReelflowAssetsIdRoute
+  '/api/reelflow/credits/dev-complete-purchase': typeof ApiReelflowCreditsDevCompletePurchaseRoute
+  '/api/reelflow/credits/dev-complete-subscription-grant': typeof ApiReelflowCreditsDevCompleteSubscriptionGrantRoute
+  '/api/reelflow/jobs/$id': typeof ApiReelflowJobsIdRouteWithChildren
+  '/api/reelflow/tools/image': typeof ApiReelflowToolsImageRoute
+  '/api/reelflow/tools/voice': typeof ApiReelflowToolsVoiceRoute
   '/$lang/blog': typeof LangrootBlogIndexRoute
+  '/$lang/reelflow': typeof LangrootReelflowIndexRoute
   '/$lang/admin/blog': typeof LangAdminBlogIndexRoute
   '/$lang/admin/credits': typeof LangAdminCreditsIndexRoute
   '/$lang/admin/orders': typeof LangAdminOrdersIndexRoute
+  '/$lang/admin/reelflow': typeof LangAdminReelflowIndexRoute
   '/$lang/admin/subscriptions': typeof LangAdminSubscriptionsIndexRoute
   '/$lang/admin/users': typeof LangAdminUsersIndexRoute
   '/api/admin/blog': typeof ApiAdminBlogIndexRoute
@@ -566,11 +813,22 @@ export interface FileRoutesByTo {
   '/api/admin/stats': typeof ApiAdminStatsIndexRoute
   '/api/admin/subscriptions': typeof ApiAdminSubscriptionsIndexRoute
   '/api/admin/users': typeof ApiAdminUsersIndexRoute
+  '/api/reelflow/jobs': typeof ApiReelflowJobsIndexRoute
+  '/$lang/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
+  '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
+  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRoute
+  '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
+  '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
+  '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
+  '/$lang/reelflow/jobs': typeof LangrootReelflowJobsIndexRoute
   '/$lang/admin/blog/$id': typeof LangAdminBlogIdIndexRoute
   '/$lang/admin/users/$id': typeof LangAdminUsersIdIndexRoute
   '/api/admin/credits/transactions': typeof ApiAdminCreditsTransactionsIndexRoute
   '/api/admin/users/delete': typeof ApiAdminUsersDeleteIndexRoute
   '/api/admin/users/update': typeof ApiAdminUsersUpdateIndexRoute
+  '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -608,6 +866,11 @@ export interface FileRoutesById {
   '/api/payment/cancel': typeof ApiPaymentCancelRoute
   '/api/payment/initiate': typeof ApiPaymentInitiateRoute
   '/api/payment/query': typeof ApiPaymentQueryRoute
+  '/api/reelflow/assets': typeof ApiReelflowAssetsRouteWithChildren
+  '/api/reelflow/credits': typeof ApiReelflowCreditsRouteWithChildren
+  '/api/reelflow/invites': typeof ApiReelflowInvitesRoute
+  '/api/reelflow/notifications': typeof ApiReelflowNotificationsRoute
+  '/api/reelflow/templates': typeof ApiReelflowTemplatesRoute
   '/api/subscription/portal': typeof ApiSubscriptionPortalRoute
   '/api/subscription/status': typeof ApiSubscriptionStatusRoute
   '/api/users/$id': typeof ApiUsersIdRoute
@@ -617,7 +880,14 @@ export interface FileRoutesById {
   '/api/blog/': typeof ApiBlogIndexRoute
   '/api/video-generate/': typeof ApiVideoGenerateIndexRoute
   '/$lang/(root)/blog/$slug': typeof LangrootBlogSlugRoute
+  '/$lang/(root)/reelflow/assets': typeof LangrootReelflowAssetsRoute
+  '/$lang/(root)/reelflow/credits': typeof LangrootReelflowCreditsRoute
+  '/$lang/(root)/reelflow/image': typeof LangrootReelflowImageRoute
+  '/$lang/(root)/reelflow/invites': typeof LangrootReelflowInvitesRoute
+  '/$lang/(root)/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
+  '/$lang/(root)/reelflow/voice': typeof LangrootReelflowVoiceRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
+  '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
   '/api/admin/stats/monthly': typeof ApiAdminStatsMonthlyRoute
   '/api/payment/return/paypal': typeof ApiPaymentReturnPaypalRoute
   '/api/payment/verify/creem': typeof ApiPaymentVerifyCreemRoute
@@ -628,10 +898,18 @@ export interface FileRoutesById {
   '/api/payment/webhook/paypal': typeof ApiPaymentWebhookPaypalRoute
   '/api/payment/webhook/stripe': typeof ApiPaymentWebhookStripeRoute
   '/api/payment/webhook/wechat': typeof ApiPaymentWebhookWechatRoute
+  '/api/reelflow/assets/$id': typeof ApiReelflowAssetsIdRoute
+  '/api/reelflow/credits/dev-complete-purchase': typeof ApiReelflowCreditsDevCompletePurchaseRoute
+  '/api/reelflow/credits/dev-complete-subscription-grant': typeof ApiReelflowCreditsDevCompleteSubscriptionGrantRoute
+  '/api/reelflow/jobs/$id': typeof ApiReelflowJobsIdRouteWithChildren
+  '/api/reelflow/tools/image': typeof ApiReelflowToolsImageRoute
+  '/api/reelflow/tools/voice': typeof ApiReelflowToolsVoiceRoute
   '/$lang/(root)/blog/': typeof LangrootBlogIndexRoute
+  '/$lang/(root)/reelflow/': typeof LangrootReelflowIndexRoute
   '/$lang/admin/blog/': typeof LangAdminBlogIndexRoute
   '/$lang/admin/credits/': typeof LangAdminCreditsIndexRoute
   '/$lang/admin/orders/': typeof LangAdminOrdersIndexRoute
+  '/$lang/admin/reelflow/': typeof LangAdminReelflowIndexRoute
   '/$lang/admin/subscriptions/': typeof LangAdminSubscriptionsIndexRoute
   '/$lang/admin/users/': typeof LangAdminUsersIndexRoute
   '/api/admin/blog/': typeof ApiAdminBlogIndexRoute
@@ -639,11 +917,22 @@ export interface FileRoutesById {
   '/api/admin/stats/': typeof ApiAdminStatsIndexRoute
   '/api/admin/subscriptions/': typeof ApiAdminSubscriptionsIndexRoute
   '/api/admin/users/': typeof ApiAdminUsersIndexRoute
+  '/api/reelflow/jobs/': typeof ApiReelflowJobsIndexRoute
+  '/$lang/(root)/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
+  '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
+  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRoute
+  '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
+  '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
+  '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
+  '/$lang/(root)/reelflow/jobs/': typeof LangrootReelflowJobsIndexRoute
   '/$lang/admin/blog/$id/': typeof LangAdminBlogIdIndexRoute
   '/$lang/admin/users/$id/': typeof LangAdminUsersIdIndexRoute
   '/api/admin/credits/transactions/': typeof ApiAdminCreditsTransactionsIndexRoute
   '/api/admin/users/delete/': typeof ApiAdminUsersDeleteIndexRoute
   '/api/admin/users/update/': typeof ApiAdminUsersUpdateIndexRoute
+  '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -680,6 +969,11 @@ export interface FileRouteTypes {
     | '/api/payment/cancel'
     | '/api/payment/initiate'
     | '/api/payment/query'
+    | '/api/reelflow/assets'
+    | '/api/reelflow/credits'
+    | '/api/reelflow/invites'
+    | '/api/reelflow/notifications'
+    | '/api/reelflow/templates'
     | '/api/subscription/portal'
     | '/api/subscription/status'
     | '/api/users/$id'
@@ -689,7 +983,14 @@ export interface FileRouteTypes {
     | '/api/blog/'
     | '/api/video-generate/'
     | '/$lang/blog/$slug'
+    | '/$lang/reelflow/assets'
+    | '/$lang/reelflow/credits'
+    | '/$lang/reelflow/image'
+    | '/$lang/reelflow/invites'
+    | '/$lang/reelflow/notifications'
+    | '/$lang/reelflow/voice'
     | '/api/admin/blog/$id'
+    | '/api/admin/reelflow/overview'
     | '/api/admin/stats/monthly'
     | '/api/payment/return/paypal'
     | '/api/payment/verify/creem'
@@ -700,10 +1001,18 @@ export interface FileRouteTypes {
     | '/api/payment/webhook/paypal'
     | '/api/payment/webhook/stripe'
     | '/api/payment/webhook/wechat'
+    | '/api/reelflow/assets/$id'
+    | '/api/reelflow/credits/dev-complete-purchase'
+    | '/api/reelflow/credits/dev-complete-subscription-grant'
+    | '/api/reelflow/jobs/$id'
+    | '/api/reelflow/tools/image'
+    | '/api/reelflow/tools/voice'
     | '/$lang/blog/'
+    | '/$lang/reelflow/'
     | '/$lang/admin/blog/'
     | '/$lang/admin/credits/'
     | '/$lang/admin/orders/'
+    | '/$lang/admin/reelflow/'
     | '/$lang/admin/subscriptions/'
     | '/$lang/admin/users/'
     | '/api/admin/blog/'
@@ -711,11 +1020,22 @@ export interface FileRouteTypes {
     | '/api/admin/stats/'
     | '/api/admin/subscriptions/'
     | '/api/admin/users/'
+    | '/api/reelflow/jobs/'
+    | '/$lang/reelflow/jobs/$id'
+    | '/$lang/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/providers/$id'
+    | '/api/admin/reelflow/templates/$id'
+    | '/api/reelflow/jobs/$id/download-draft'
+    | '/api/reelflow/jobs/$id/rerun'
+    | '/api/reelflow/jobs/$id/retry'
+    | '/$lang/reelflow/jobs/'
     | '/$lang/admin/blog/$id/'
     | '/$lang/admin/users/$id/'
     | '/api/admin/credits/transactions/'
     | '/api/admin/users/delete/'
     | '/api/admin/users/update/'
+    | '/api/admin/reelflow/providers/$id/health'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -749,6 +1069,11 @@ export interface FileRouteTypes {
     | '/api/payment/cancel'
     | '/api/payment/initiate'
     | '/api/payment/query'
+    | '/api/reelflow/assets'
+    | '/api/reelflow/credits'
+    | '/api/reelflow/invites'
+    | '/api/reelflow/notifications'
+    | '/api/reelflow/templates'
     | '/api/subscription/portal'
     | '/api/subscription/status'
     | '/api/users/$id'
@@ -757,7 +1082,14 @@ export interface FileRouteTypes {
     | '/api/blog'
     | '/api/video-generate'
     | '/$lang/blog/$slug'
+    | '/$lang/reelflow/assets'
+    | '/$lang/reelflow/credits'
+    | '/$lang/reelflow/image'
+    | '/$lang/reelflow/invites'
+    | '/$lang/reelflow/notifications'
+    | '/$lang/reelflow/voice'
     | '/api/admin/blog/$id'
+    | '/api/admin/reelflow/overview'
     | '/api/admin/stats/monthly'
     | '/api/payment/return/paypal'
     | '/api/payment/verify/creem'
@@ -768,10 +1100,18 @@ export interface FileRouteTypes {
     | '/api/payment/webhook/paypal'
     | '/api/payment/webhook/stripe'
     | '/api/payment/webhook/wechat'
+    | '/api/reelflow/assets/$id'
+    | '/api/reelflow/credits/dev-complete-purchase'
+    | '/api/reelflow/credits/dev-complete-subscription-grant'
+    | '/api/reelflow/jobs/$id'
+    | '/api/reelflow/tools/image'
+    | '/api/reelflow/tools/voice'
     | '/$lang/blog'
+    | '/$lang/reelflow'
     | '/$lang/admin/blog'
     | '/$lang/admin/credits'
     | '/$lang/admin/orders'
+    | '/$lang/admin/reelflow'
     | '/$lang/admin/subscriptions'
     | '/$lang/admin/users'
     | '/api/admin/blog'
@@ -779,11 +1119,22 @@ export interface FileRouteTypes {
     | '/api/admin/stats'
     | '/api/admin/subscriptions'
     | '/api/admin/users'
+    | '/api/reelflow/jobs'
+    | '/$lang/reelflow/jobs/$id'
+    | '/$lang/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/providers/$id'
+    | '/api/admin/reelflow/templates/$id'
+    | '/api/reelflow/jobs/$id/download-draft'
+    | '/api/reelflow/jobs/$id/rerun'
+    | '/api/reelflow/jobs/$id/retry'
+    | '/$lang/reelflow/jobs'
     | '/$lang/admin/blog/$id'
     | '/$lang/admin/users/$id'
     | '/api/admin/credits/transactions'
     | '/api/admin/users/delete'
     | '/api/admin/users/update'
+    | '/api/admin/reelflow/providers/$id/health'
   id:
     | '__root__'
     | '/'
@@ -820,6 +1171,11 @@ export interface FileRouteTypes {
     | '/api/payment/cancel'
     | '/api/payment/initiate'
     | '/api/payment/query'
+    | '/api/reelflow/assets'
+    | '/api/reelflow/credits'
+    | '/api/reelflow/invites'
+    | '/api/reelflow/notifications'
+    | '/api/reelflow/templates'
     | '/api/subscription/portal'
     | '/api/subscription/status'
     | '/api/users/$id'
@@ -829,7 +1185,14 @@ export interface FileRouteTypes {
     | '/api/blog/'
     | '/api/video-generate/'
     | '/$lang/(root)/blog/$slug'
+    | '/$lang/(root)/reelflow/assets'
+    | '/$lang/(root)/reelflow/credits'
+    | '/$lang/(root)/reelflow/image'
+    | '/$lang/(root)/reelflow/invites'
+    | '/$lang/(root)/reelflow/notifications'
+    | '/$lang/(root)/reelflow/voice'
     | '/api/admin/blog/$id'
+    | '/api/admin/reelflow/overview'
     | '/api/admin/stats/monthly'
     | '/api/payment/return/paypal'
     | '/api/payment/verify/creem'
@@ -840,10 +1203,18 @@ export interface FileRouteTypes {
     | '/api/payment/webhook/paypal'
     | '/api/payment/webhook/stripe'
     | '/api/payment/webhook/wechat'
+    | '/api/reelflow/assets/$id'
+    | '/api/reelflow/credits/dev-complete-purchase'
+    | '/api/reelflow/credits/dev-complete-subscription-grant'
+    | '/api/reelflow/jobs/$id'
+    | '/api/reelflow/tools/image'
+    | '/api/reelflow/tools/voice'
     | '/$lang/(root)/blog/'
+    | '/$lang/(root)/reelflow/'
     | '/$lang/admin/blog/'
     | '/$lang/admin/credits/'
     | '/$lang/admin/orders/'
+    | '/$lang/admin/reelflow/'
     | '/$lang/admin/subscriptions/'
     | '/$lang/admin/users/'
     | '/api/admin/blog/'
@@ -851,11 +1222,22 @@ export interface FileRouteTypes {
     | '/api/admin/stats/'
     | '/api/admin/subscriptions/'
     | '/api/admin/users/'
+    | '/api/reelflow/jobs/'
+    | '/$lang/(root)/reelflow/jobs/$id'
+    | '/$lang/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/providers/$id'
+    | '/api/admin/reelflow/templates/$id'
+    | '/api/reelflow/jobs/$id/download-draft'
+    | '/api/reelflow/jobs/$id/rerun'
+    | '/api/reelflow/jobs/$id/retry'
+    | '/$lang/(root)/reelflow/jobs/'
     | '/$lang/admin/blog/$id/'
     | '/$lang/admin/users/$id/'
     | '/api/admin/credits/transactions/'
     | '/api/admin/users/delete/'
     | '/api/admin/users/update/'
+    | '/api/admin/reelflow/providers/$id/health'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -875,6 +1257,11 @@ export interface RootRouteChildren {
   ApiPaymentCancelRoute: typeof ApiPaymentCancelRoute
   ApiPaymentInitiateRoute: typeof ApiPaymentInitiateRoute
   ApiPaymentQueryRoute: typeof ApiPaymentQueryRoute
+  ApiReelflowAssetsRoute: typeof ApiReelflowAssetsRouteWithChildren
+  ApiReelflowCreditsRoute: typeof ApiReelflowCreditsRouteWithChildren
+  ApiReelflowInvitesRoute: typeof ApiReelflowInvitesRoute
+  ApiReelflowNotificationsRoute: typeof ApiReelflowNotificationsRoute
+  ApiReelflowTemplatesRoute: typeof ApiReelflowTemplatesRoute
   ApiSubscriptionPortalRoute: typeof ApiSubscriptionPortalRoute
   ApiSubscriptionStatusRoute: typeof ApiSubscriptionStatusRoute
   ApiUsersIdRoute: typeof ApiUsersIdRoute
@@ -882,6 +1269,7 @@ export interface RootRouteChildren {
   ApiBlogIndexRoute: typeof ApiBlogIndexRoute
   ApiVideoGenerateIndexRoute: typeof ApiVideoGenerateIndexRoute
   ApiAdminBlogIdRoute: typeof ApiAdminBlogIdRoute
+  ApiAdminReelflowOverviewRoute: typeof ApiAdminReelflowOverviewRoute
   ApiAdminStatsMonthlyRoute: typeof ApiAdminStatsMonthlyRoute
   ApiPaymentReturnPaypalRoute: typeof ApiPaymentReturnPaypalRoute
   ApiPaymentVerifyCreemRoute: typeof ApiPaymentVerifyCreemRoute
@@ -892,11 +1280,18 @@ export interface RootRouteChildren {
   ApiPaymentWebhookPaypalRoute: typeof ApiPaymentWebhookPaypalRoute
   ApiPaymentWebhookStripeRoute: typeof ApiPaymentWebhookStripeRoute
   ApiPaymentWebhookWechatRoute: typeof ApiPaymentWebhookWechatRoute
+  ApiReelflowJobsIdRoute: typeof ApiReelflowJobsIdRouteWithChildren
+  ApiReelflowToolsImageRoute: typeof ApiReelflowToolsImageRoute
+  ApiReelflowToolsVoiceRoute: typeof ApiReelflowToolsVoiceRoute
   ApiAdminBlogIndexRoute: typeof ApiAdminBlogIndexRoute
   ApiAdminOrdersIndexRoute: typeof ApiAdminOrdersIndexRoute
   ApiAdminStatsIndexRoute: typeof ApiAdminStatsIndexRoute
   ApiAdminSubscriptionsIndexRoute: typeof ApiAdminSubscriptionsIndexRoute
   ApiAdminUsersIndexRoute: typeof ApiAdminUsersIndexRoute
+  ApiReelflowJobsIndexRoute: typeof ApiReelflowJobsIndexRoute
+  ApiAdminReelflowJobsIdRoute: typeof ApiAdminReelflowJobsIdRoute
+  ApiAdminReelflowProvidersIdRoute: typeof ApiAdminReelflowProvidersIdRouteWithChildren
+  ApiAdminReelflowTemplatesIdRoute: typeof ApiAdminReelflowTemplatesIdRoute
   ApiAdminCreditsTransactionsIndexRoute: typeof ApiAdminCreditsTransactionsIndexRoute
   ApiAdminUsersDeleteIndexRoute: typeof ApiAdminUsersDeleteIndexRoute
   ApiAdminUsersUpdateIndexRoute: typeof ApiAdminUsersUpdateIndexRoute
@@ -1035,6 +1430,41 @@ declare module '@tanstack/react-router' {
       path: '/api/subscription/portal'
       fullPath: '/api/subscription/portal'
       preLoaderRoute: typeof ApiSubscriptionPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/templates': {
+      id: '/api/reelflow/templates'
+      path: '/api/reelflow/templates'
+      fullPath: '/api/reelflow/templates'
+      preLoaderRoute: typeof ApiReelflowTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/notifications': {
+      id: '/api/reelflow/notifications'
+      path: '/api/reelflow/notifications'
+      fullPath: '/api/reelflow/notifications'
+      preLoaderRoute: typeof ApiReelflowNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/invites': {
+      id: '/api/reelflow/invites'
+      path: '/api/reelflow/invites'
+      fullPath: '/api/reelflow/invites'
+      preLoaderRoute: typeof ApiReelflowInvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/credits': {
+      id: '/api/reelflow/credits'
+      path: '/api/reelflow/credits'
+      fullPath: '/api/reelflow/credits'
+      preLoaderRoute: typeof ApiReelflowCreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/assets': {
+      id: '/api/reelflow/assets'
+      path: '/api/reelflow/assets'
+      fullPath: '/api/reelflow/assets'
+      preLoaderRoute: typeof ApiReelflowAssetsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/payment/query': {
@@ -1198,6 +1628,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangauthCellphoneRouteImport
       parentRoute: typeof LangauthRouteRoute
     }
+    '/api/reelflow/jobs/': {
+      id: '/api/reelflow/jobs/'
+      path: '/api/reelflow/jobs'
+      fullPath: '/api/reelflow/jobs/'
+      preLoaderRoute: typeof ApiReelflowJobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/users/': {
       id: '/api/admin/users/'
       path: '/api/admin/users'
@@ -1247,6 +1684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangAdminSubscriptionsIndexRouteImport
       parentRoute: typeof LangAdminRoute
     }
+    '/$lang/admin/reelflow/': {
+      id: '/$lang/admin/reelflow/'
+      path: '/reelflow'
+      fullPath: '/$lang/admin/reelflow/'
+      preLoaderRoute: typeof LangAdminReelflowIndexRouteImport
+      parentRoute: typeof LangAdminRoute
+    }
     '/$lang/admin/orders/': {
       id: '/$lang/admin/orders/'
       path: '/orders'
@@ -1268,12 +1712,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangAdminBlogIndexRouteImport
       parentRoute: typeof LangAdminRoute
     }
+    '/$lang/(root)/reelflow/': {
+      id: '/$lang/(root)/reelflow/'
+      path: '/reelflow'
+      fullPath: '/$lang/reelflow/'
+      preLoaderRoute: typeof LangrootReelflowIndexRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
     '/$lang/(root)/blog/': {
       id: '/$lang/(root)/blog/'
       path: '/blog'
       fullPath: '/$lang/blog/'
       preLoaderRoute: typeof LangrootBlogIndexRouteImport
       parentRoute: typeof LangrootRouteRoute
+    }
+    '/api/reelflow/tools/voice': {
+      id: '/api/reelflow/tools/voice'
+      path: '/api/reelflow/tools/voice'
+      fullPath: '/api/reelflow/tools/voice'
+      preLoaderRoute: typeof ApiReelflowToolsVoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/tools/image': {
+      id: '/api/reelflow/tools/image'
+      path: '/api/reelflow/tools/image'
+      fullPath: '/api/reelflow/tools/image'
+      preLoaderRoute: typeof ApiReelflowToolsImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/jobs/$id': {
+      id: '/api/reelflow/jobs/$id'
+      path: '/api/reelflow/jobs/$id'
+      fullPath: '/api/reelflow/jobs/$id'
+      preLoaderRoute: typeof ApiReelflowJobsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/reelflow/credits/dev-complete-subscription-grant': {
+      id: '/api/reelflow/credits/dev-complete-subscription-grant'
+      path: '/dev-complete-subscription-grant'
+      fullPath: '/api/reelflow/credits/dev-complete-subscription-grant'
+      preLoaderRoute: typeof ApiReelflowCreditsDevCompleteSubscriptionGrantRouteImport
+      parentRoute: typeof ApiReelflowCreditsRoute
+    }
+    '/api/reelflow/credits/dev-complete-purchase': {
+      id: '/api/reelflow/credits/dev-complete-purchase'
+      path: '/dev-complete-purchase'
+      fullPath: '/api/reelflow/credits/dev-complete-purchase'
+      preLoaderRoute: typeof ApiReelflowCreditsDevCompletePurchaseRouteImport
+      parentRoute: typeof ApiReelflowCreditsRoute
+    }
+    '/api/reelflow/assets/$id': {
+      id: '/api/reelflow/assets/$id'
+      path: '/$id'
+      fullPath: '/api/reelflow/assets/$id'
+      preLoaderRoute: typeof ApiReelflowAssetsIdRouteImport
+      parentRoute: typeof ApiReelflowAssetsRoute
     }
     '/api/payment/webhook/wechat': {
       id: '/api/payment/webhook/wechat'
@@ -1345,12 +1838,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminStatsMonthlyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/reelflow/overview': {
+      id: '/api/admin/reelflow/overview'
+      path: '/api/admin/reelflow/overview'
+      fullPath: '/api/admin/reelflow/overview'
+      preLoaderRoute: typeof ApiAdminReelflowOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/blog/$id': {
       id: '/api/admin/blog/$id'
       path: '/api/admin/blog/$id'
       fullPath: '/api/admin/blog/$id'
       preLoaderRoute: typeof ApiAdminBlogIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$lang/(root)/reelflow/voice': {
+      id: '/$lang/(root)/reelflow/voice'
+      path: '/reelflow/voice'
+      fullPath: '/$lang/reelflow/voice'
+      preLoaderRoute: typeof LangrootReelflowVoiceRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/notifications': {
+      id: '/$lang/(root)/reelflow/notifications'
+      path: '/reelflow/notifications'
+      fullPath: '/$lang/reelflow/notifications'
+      preLoaderRoute: typeof LangrootReelflowNotificationsRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/invites': {
+      id: '/$lang/(root)/reelflow/invites'
+      path: '/reelflow/invites'
+      fullPath: '/$lang/reelflow/invites'
+      preLoaderRoute: typeof LangrootReelflowInvitesRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/image': {
+      id: '/$lang/(root)/reelflow/image'
+      path: '/reelflow/image'
+      fullPath: '/$lang/reelflow/image'
+      preLoaderRoute: typeof LangrootReelflowImageRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/credits': {
+      id: '/$lang/(root)/reelflow/credits'
+      path: '/reelflow/credits'
+      fullPath: '/$lang/reelflow/credits'
+      preLoaderRoute: typeof LangrootReelflowCreditsRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/assets': {
+      id: '/$lang/(root)/reelflow/assets'
+      path: '/reelflow/assets'
+      fullPath: '/$lang/reelflow/assets'
+      preLoaderRoute: typeof LangrootReelflowAssetsRouteImport
+      parentRoute: typeof LangrootRouteRoute
     }
     '/$lang/(root)/blog/$slug': {
       id: '/$lang/(root)/blog/$slug'
@@ -1394,6 +1936,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangAdminBlogIdIndexRouteImport
       parentRoute: typeof LangAdminRoute
     }
+    '/$lang/(root)/reelflow/jobs/': {
+      id: '/$lang/(root)/reelflow/jobs/'
+      path: '/reelflow/jobs'
+      fullPath: '/$lang/reelflow/jobs/'
+      preLoaderRoute: typeof LangrootReelflowJobsIndexRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/api/reelflow/jobs/$id/retry': {
+      id: '/api/reelflow/jobs/$id/retry'
+      path: '/retry'
+      fullPath: '/api/reelflow/jobs/$id/retry'
+      preLoaderRoute: typeof ApiReelflowJobsIdRetryRouteImport
+      parentRoute: typeof ApiReelflowJobsIdRoute
+    }
+    '/api/reelflow/jobs/$id/rerun': {
+      id: '/api/reelflow/jobs/$id/rerun'
+      path: '/rerun'
+      fullPath: '/api/reelflow/jobs/$id/rerun'
+      preLoaderRoute: typeof ApiReelflowJobsIdRerunRouteImport
+      parentRoute: typeof ApiReelflowJobsIdRoute
+    }
+    '/api/reelflow/jobs/$id/download-draft': {
+      id: '/api/reelflow/jobs/$id/download-draft'
+      path: '/download-draft'
+      fullPath: '/api/reelflow/jobs/$id/download-draft'
+      preLoaderRoute: typeof ApiReelflowJobsIdDownloadDraftRouteImport
+      parentRoute: typeof ApiReelflowJobsIdRoute
+    }
+    '/api/admin/reelflow/templates/$id': {
+      id: '/api/admin/reelflow/templates/$id'
+      path: '/api/admin/reelflow/templates/$id'
+      fullPath: '/api/admin/reelflow/templates/$id'
+      preLoaderRoute: typeof ApiAdminReelflowTemplatesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/reelflow/providers/$id': {
+      id: '/api/admin/reelflow/providers/$id'
+      path: '/api/admin/reelflow/providers/$id'
+      fullPath: '/api/admin/reelflow/providers/$id'
+      preLoaderRoute: typeof ApiAdminReelflowProvidersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/reelflow/jobs/$id': {
+      id: '/api/admin/reelflow/jobs/$id'
+      path: '/api/admin/reelflow/jobs/$id'
+      fullPath: '/api/admin/reelflow/jobs/$id'
+      preLoaderRoute: typeof ApiAdminReelflowJobsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$lang/admin/reelflow/jobs/$id': {
+      id: '/$lang/admin/reelflow/jobs/$id'
+      path: '/reelflow/jobs/$id'
+      fullPath: '/$lang/admin/reelflow/jobs/$id'
+      preLoaderRoute: typeof LangAdminReelflowJobsIdRouteImport
+      parentRoute: typeof LangAdminRoute
+    }
+    '/$lang/(root)/reelflow/jobs/$id': {
+      id: '/$lang/(root)/reelflow/jobs/$id'
+      path: '/reelflow/jobs/$id'
+      fullPath: '/$lang/reelflow/jobs/$id'
+      preLoaderRoute: typeof LangrootReelflowJobsIdRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/api/admin/reelflow/providers/$id/health': {
+      id: '/api/admin/reelflow/providers/$id/health'
+      path: '/health'
+      fullPath: '/api/admin/reelflow/providers/$id/health'
+      preLoaderRoute: typeof ApiAdminReelflowProvidersIdHealthRouteImport
+      parentRoute: typeof ApiAdminReelflowProvidersIdRoute
+    }
   }
 }
 
@@ -1431,7 +2043,16 @@ interface LangrootRouteRouteChildren {
   LangrootVideoGenerateRoute: typeof LangrootVideoGenerateRoute
   LangrootIndexRoute: typeof LangrootIndexRoute
   LangrootBlogSlugRoute: typeof LangrootBlogSlugRoute
+  LangrootReelflowAssetsRoute: typeof LangrootReelflowAssetsRoute
+  LangrootReelflowCreditsRoute: typeof LangrootReelflowCreditsRoute
+  LangrootReelflowImageRoute: typeof LangrootReelflowImageRoute
+  LangrootReelflowInvitesRoute: typeof LangrootReelflowInvitesRoute
+  LangrootReelflowNotificationsRoute: typeof LangrootReelflowNotificationsRoute
+  LangrootReelflowVoiceRoute: typeof LangrootReelflowVoiceRoute
   LangrootBlogIndexRoute: typeof LangrootBlogIndexRoute
+  LangrootReelflowIndexRoute: typeof LangrootReelflowIndexRoute
+  LangrootReelflowJobsIdRoute: typeof LangrootReelflowJobsIdRoute
+  LangrootReelflowJobsIndexRoute: typeof LangrootReelflowJobsIndexRoute
 }
 
 const LangrootRouteRouteChildren: LangrootRouteRouteChildren = {
@@ -1446,7 +2067,16 @@ const LangrootRouteRouteChildren: LangrootRouteRouteChildren = {
   LangrootVideoGenerateRoute: LangrootVideoGenerateRoute,
   LangrootIndexRoute: LangrootIndexRoute,
   LangrootBlogSlugRoute: LangrootBlogSlugRoute,
+  LangrootReelflowAssetsRoute: LangrootReelflowAssetsRoute,
+  LangrootReelflowCreditsRoute: LangrootReelflowCreditsRoute,
+  LangrootReelflowImageRoute: LangrootReelflowImageRoute,
+  LangrootReelflowInvitesRoute: LangrootReelflowInvitesRoute,
+  LangrootReelflowNotificationsRoute: LangrootReelflowNotificationsRoute,
+  LangrootReelflowVoiceRoute: LangrootReelflowVoiceRoute,
   LangrootBlogIndexRoute: LangrootBlogIndexRoute,
+  LangrootReelflowIndexRoute: LangrootReelflowIndexRoute,
+  LangrootReelflowJobsIdRoute: LangrootReelflowJobsIdRoute,
+  LangrootReelflowJobsIndexRoute: LangrootReelflowJobsIndexRoute,
 }
 
 const LangrootRouteRouteWithChildren = LangrootRouteRoute._addFileChildren(
@@ -1458,8 +2088,10 @@ interface LangAdminRouteChildren {
   LangAdminBlogIndexRoute: typeof LangAdminBlogIndexRoute
   LangAdminCreditsIndexRoute: typeof LangAdminCreditsIndexRoute
   LangAdminOrdersIndexRoute: typeof LangAdminOrdersIndexRoute
+  LangAdminReelflowIndexRoute: typeof LangAdminReelflowIndexRoute
   LangAdminSubscriptionsIndexRoute: typeof LangAdminSubscriptionsIndexRoute
   LangAdminUsersIndexRoute: typeof LangAdminUsersIndexRoute
+  LangAdminReelflowJobsIdRoute: typeof LangAdminReelflowJobsIdRoute
   LangAdminBlogIdIndexRoute: typeof LangAdminBlogIdIndexRoute
   LangAdminUsersIdIndexRoute: typeof LangAdminUsersIdIndexRoute
 }
@@ -1469,8 +2101,10 @@ const LangAdminRouteChildren: LangAdminRouteChildren = {
   LangAdminBlogIndexRoute: LangAdminBlogIndexRoute,
   LangAdminCreditsIndexRoute: LangAdminCreditsIndexRoute,
   LangAdminOrdersIndexRoute: LangAdminOrdersIndexRoute,
+  LangAdminReelflowIndexRoute: LangAdminReelflowIndexRoute,
   LangAdminSubscriptionsIndexRoute: LangAdminSubscriptionsIndexRoute,
   LangAdminUsersIndexRoute: LangAdminUsersIndexRoute,
+  LangAdminReelflowJobsIdRoute: LangAdminReelflowJobsIdRoute,
   LangAdminBlogIdIndexRoute: LangAdminBlogIdIndexRoute,
   LangAdminUsersIdIndexRoute: LangAdminUsersIdIndexRoute,
 }
@@ -1493,6 +2127,62 @@ const LangRouteChildren: LangRouteChildren = {
 
 const LangRouteWithChildren = LangRoute._addFileChildren(LangRouteChildren)
 
+interface ApiReelflowAssetsRouteChildren {
+  ApiReelflowAssetsIdRoute: typeof ApiReelflowAssetsIdRoute
+}
+
+const ApiReelflowAssetsRouteChildren: ApiReelflowAssetsRouteChildren = {
+  ApiReelflowAssetsIdRoute: ApiReelflowAssetsIdRoute,
+}
+
+const ApiReelflowAssetsRouteWithChildren =
+  ApiReelflowAssetsRoute._addFileChildren(ApiReelflowAssetsRouteChildren)
+
+interface ApiReelflowCreditsRouteChildren {
+  ApiReelflowCreditsDevCompletePurchaseRoute: typeof ApiReelflowCreditsDevCompletePurchaseRoute
+  ApiReelflowCreditsDevCompleteSubscriptionGrantRoute: typeof ApiReelflowCreditsDevCompleteSubscriptionGrantRoute
+}
+
+const ApiReelflowCreditsRouteChildren: ApiReelflowCreditsRouteChildren = {
+  ApiReelflowCreditsDevCompletePurchaseRoute:
+    ApiReelflowCreditsDevCompletePurchaseRoute,
+  ApiReelflowCreditsDevCompleteSubscriptionGrantRoute:
+    ApiReelflowCreditsDevCompleteSubscriptionGrantRoute,
+}
+
+const ApiReelflowCreditsRouteWithChildren =
+  ApiReelflowCreditsRoute._addFileChildren(ApiReelflowCreditsRouteChildren)
+
+interface ApiReelflowJobsIdRouteChildren {
+  ApiReelflowJobsIdDownloadDraftRoute: typeof ApiReelflowJobsIdDownloadDraftRoute
+  ApiReelflowJobsIdRerunRoute: typeof ApiReelflowJobsIdRerunRoute
+  ApiReelflowJobsIdRetryRoute: typeof ApiReelflowJobsIdRetryRoute
+}
+
+const ApiReelflowJobsIdRouteChildren: ApiReelflowJobsIdRouteChildren = {
+  ApiReelflowJobsIdDownloadDraftRoute: ApiReelflowJobsIdDownloadDraftRoute,
+  ApiReelflowJobsIdRerunRoute: ApiReelflowJobsIdRerunRoute,
+  ApiReelflowJobsIdRetryRoute: ApiReelflowJobsIdRetryRoute,
+}
+
+const ApiReelflowJobsIdRouteWithChildren =
+  ApiReelflowJobsIdRoute._addFileChildren(ApiReelflowJobsIdRouteChildren)
+
+interface ApiAdminReelflowProvidersIdRouteChildren {
+  ApiAdminReelflowProvidersIdHealthRoute: typeof ApiAdminReelflowProvidersIdHealthRoute
+}
+
+const ApiAdminReelflowProvidersIdRouteChildren: ApiAdminReelflowProvidersIdRouteChildren =
+  {
+    ApiAdminReelflowProvidersIdHealthRoute:
+      ApiAdminReelflowProvidersIdHealthRoute,
+  }
+
+const ApiAdminReelflowProvidersIdRouteWithChildren =
+  ApiAdminReelflowProvidersIdRoute._addFileChildren(
+    ApiAdminReelflowProvidersIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LangRoute: LangRouteWithChildren,
@@ -1510,6 +2200,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPaymentCancelRoute: ApiPaymentCancelRoute,
   ApiPaymentInitiateRoute: ApiPaymentInitiateRoute,
   ApiPaymentQueryRoute: ApiPaymentQueryRoute,
+  ApiReelflowAssetsRoute: ApiReelflowAssetsRouteWithChildren,
+  ApiReelflowCreditsRoute: ApiReelflowCreditsRouteWithChildren,
+  ApiReelflowInvitesRoute: ApiReelflowInvitesRoute,
+  ApiReelflowNotificationsRoute: ApiReelflowNotificationsRoute,
+  ApiReelflowTemplatesRoute: ApiReelflowTemplatesRoute,
   ApiSubscriptionPortalRoute: ApiSubscriptionPortalRoute,
   ApiSubscriptionStatusRoute: ApiSubscriptionStatusRoute,
   ApiUsersIdRoute: ApiUsersIdRoute,
@@ -1517,6 +2212,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiBlogIndexRoute: ApiBlogIndexRoute,
   ApiVideoGenerateIndexRoute: ApiVideoGenerateIndexRoute,
   ApiAdminBlogIdRoute: ApiAdminBlogIdRoute,
+  ApiAdminReelflowOverviewRoute: ApiAdminReelflowOverviewRoute,
   ApiAdminStatsMonthlyRoute: ApiAdminStatsMonthlyRoute,
   ApiPaymentReturnPaypalRoute: ApiPaymentReturnPaypalRoute,
   ApiPaymentVerifyCreemRoute: ApiPaymentVerifyCreemRoute,
@@ -1527,11 +2223,19 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPaymentWebhookPaypalRoute: ApiPaymentWebhookPaypalRoute,
   ApiPaymentWebhookStripeRoute: ApiPaymentWebhookStripeRoute,
   ApiPaymentWebhookWechatRoute: ApiPaymentWebhookWechatRoute,
+  ApiReelflowJobsIdRoute: ApiReelflowJobsIdRouteWithChildren,
+  ApiReelflowToolsImageRoute: ApiReelflowToolsImageRoute,
+  ApiReelflowToolsVoiceRoute: ApiReelflowToolsVoiceRoute,
   ApiAdminBlogIndexRoute: ApiAdminBlogIndexRoute,
   ApiAdminOrdersIndexRoute: ApiAdminOrdersIndexRoute,
   ApiAdminStatsIndexRoute: ApiAdminStatsIndexRoute,
   ApiAdminSubscriptionsIndexRoute: ApiAdminSubscriptionsIndexRoute,
   ApiAdminUsersIndexRoute: ApiAdminUsersIndexRoute,
+  ApiReelflowJobsIndexRoute: ApiReelflowJobsIndexRoute,
+  ApiAdminReelflowJobsIdRoute: ApiAdminReelflowJobsIdRoute,
+  ApiAdminReelflowProvidersIdRoute:
+    ApiAdminReelflowProvidersIdRouteWithChildren,
+  ApiAdminReelflowTemplatesIdRoute: ApiAdminReelflowTemplatesIdRoute,
   ApiAdminCreditsTransactionsIndexRoute: ApiAdminCreditsTransactionsIndexRoute,
   ApiAdminUsersDeleteIndexRoute: ApiAdminUsersDeleteIndexRoute,
   ApiAdminUsersUpdateIndexRoute: ApiAdminUsersUpdateIndexRoute,

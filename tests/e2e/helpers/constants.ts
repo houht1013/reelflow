@@ -8,6 +8,9 @@
 /** Default locale prefix used in URLs */
 export const LOCALE = 'en';
 
+/** Base URL used by Playwright and API setup helpers */
+export const E2E_BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:7001';
+
 /** Base URL path with locale prefix */
 export const BASE = `/${LOCALE}`;
 
@@ -53,6 +56,14 @@ export const PAGES = {
   adminCredits: `${BASE}/admin/credits`,
   adminBlog: `${BASE}/admin/blog`,
   adminBlogNew: `${BASE}/admin/blog/new`,
+  reelflow: `${BASE}/reelflow`,
+  reelflowJobs: `${BASE}/reelflow/jobs`,
+  reelflowCredits: `${BASE}/reelflow/credits`,
+  reelflowAssets: `${BASE}/reelflow/assets`,
+  reelflowNotifications: `${BASE}/reelflow/notifications`,
+  reelflowInvites: `${BASE}/reelflow/invites`,
+  reelflowImage: `${BASE}/reelflow/image`,
+  reelflowVoice: `${BASE}/reelflow/voice`,
   blog: `${BASE}/blog`,
 } as const;
 

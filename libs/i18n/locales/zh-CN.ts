@@ -44,6 +44,7 @@ export const zhCN: Locale = {
       subscriptions: "订阅管理",
       orders: "订单管理",
       credits: "积分管理",
+      reelflow: "Reelflow",
       application: "应用程序",
       blog: "博客管理"
     }
@@ -427,6 +428,132 @@ export const zhCN: Locale = {
         status: "状态",
         time: "时间",
         total: "总计"
+      }
+    },
+    reelflow: {
+      title: "Reelflow 运营管理",
+      description: "管理视频工作流产品的模板、任务、供应商和价格清单。",
+      loading: "正在加载 Reelflow 运营数据...",
+      loadError: "Reelflow 运营数据加载失败",
+      refresh: "刷新",
+      metrics: {
+        templates: "模板",
+        publishedTemplates: "已发布",
+        totalJobs: "总任务",
+        runningJobs: "运行中",
+        failedJobs: "失败",
+        workspaces: "工作区",
+        creditBalance: "可用积分",
+        frozenCredits: "冻结积分",
+        debtCredits: "欠费积分"
+      },
+      sections: {
+        templates: "模板管理",
+        recentJobs: "最近任务",
+        providers: "供应商运行时",
+        pricing: "价格清单"
+      },
+      table: {
+        name: "名称",
+        code: "编码",
+        category: "分类",
+        status: "状态",
+        visibility: "可见性",
+        recommended: "推荐",
+        priority: "优先级",
+        provider: "供应商",
+        type: "类型",
+        resource: "资源",
+        model: "模型",
+        unit: "单位",
+        providerCost: "供应商成本",
+        creditPrice: "积分价格",
+        workspace: "工作区",
+        quality: "质量",
+        artifact: "产物",
+        estimated: "预估",
+        actual: "实际",
+        health: "健康",
+        updatedAt: "更新",
+        actions: "操作"
+      },
+      actions: {
+        publish: "发布",
+        unpublish: "下架",
+        recommend: "设为推荐",
+        unrecommend: "取消推荐",
+        enable: "启用",
+        disable: "停用",
+        checkHealth: "检查",
+        openTask: "打开",
+        viewUserPage: "用户页"
+      },
+      messages: {
+        templateUpdated: "模板已更新",
+        providerUpdated: "供应商已更新",
+        providerHealthChecked: "供应商健康检查已完成",
+        operationFailed: "操作失败"
+      },
+      status: {
+        published: "已发布",
+        draft: "草稿",
+        archived: "已归档",
+        public: "公开",
+        private: "私有",
+        enabled: "已启用",
+        disabled: "已停用",
+        notChecked: "未检查"
+      },
+      healthStatus: {
+        available: "可用",
+        degraded: "降级",
+        unavailable: "不可用"
+      },
+      empty: {
+        templates: "暂无模板",
+        jobs: "暂无任务",
+        providers: "暂无供应商",
+        pricing: "暂无价格项"
+      },
+      jobs: {
+        loadError: "任务详情加载失败",
+        back: "返回运营总览",
+        userView: "用户视图",
+        jobId: "任务 ID",
+        progress: "进度",
+        error: "任务错误",
+        priority: "优先级",
+        priorityHint: "优先级越高越早被 worker 领取。用于客服恢复、重要付费工作区或运营提权。",
+        priorityInvalid: "优先级必须是 0 到 1000 的整数。",
+        prioritySaved: "优先级已更新",
+        prioritySaveFailed: "优先级更新失败",
+        attempts: "执行次数",
+        credits: "积分消耗",
+        cost: "供应商成本",
+        worker: "Worker 锁",
+        sections: {
+          stages: "阶段追溯",
+          events: "运行日志",
+          quality: "质量问题",
+          assets: "生成资产",
+          usage: "用量与成本"
+        },
+        table: {
+          stage: "阶段",
+          attempts: "尝试",
+          started: "开始",
+          completed: "完成",
+          error: "错误",
+          asset: "资产",
+          storage: "存储",
+          usage: "用量"
+        },
+        empty: {
+          events: "暂无运行日志",
+          quality: "暂无质量问题",
+          assets: "暂无生成资产",
+          usage: "暂无用量记录"
+        }
       }
     },
     users: {
@@ -1256,8 +1383,8 @@ export const zhCN: Locale = {
       lifetime: "终身会员"
     },
     demoNotice: {
-      title: "🎯 SaaS 模板演示页面",
-      description: "这是一个用于测试路由保护的演示页面。只有付费用户才能访问此页面，展示了如何在您的 SaaS 应用中实现订阅级别的访问控制。"
+      title: "会员专区",
+      description: "订阅用户可在这里查看专属功能和账户权益。"
     },
     features: {
       userManagement: {
@@ -1289,7 +1416,7 @@ export const zhCN: Locale = {
     },
     chat: {
       title: "AI 助手",
-      description: "一个大模型对话简单实现，可扩展设计，使用了最新的技术 ai-sdk / ai-elements / streamdown 实现非常丝滑的聊天效果，可以按需求扩展为更复杂的功能",
+      description: "用自然语言快速整理思路、生成文案和获得创作辅助。",
       placeholder: "需要我帮什么忙？",
       sending: "发送中...",
       thinking: "AI 正在思考...",
@@ -1524,7 +1651,7 @@ export const zhCN: Locale = {
       subtitle: "现代化全栈 SaaS 开发平台，支持国内外双市场。一次购买，终身使用，快速构建你的商业项目。",
       buttons: {
         purchase: "立即购买",
-        demo: "查看演示"
+        demo: "了解更多"
       },
       features: {
         lifetime: "一次购买终身使用",
@@ -1596,7 +1723,7 @@ export const zhCN: Locale = {
         {
           title: "国内外双体系支持",
           subtitle: "一套代码，双市场覆盖",
-          description: "完美适配国内外不同市场需求。国内支持微信登录、手机号登录、微信支付、支付宝等本土化功能；国外支持主流 OAuth 登录（Google、GitHub、Apple）、Stripe、Creem 和 PayPal 支付体系。一套代码，双市场覆盖。",
+          description: "覆盖国内外常见商业化场景。国内可接入手机号登录、微信支付、支付宝等本土化能力；海外可接入 Google、Apple 等登录方式，以及 Stripe、Creem 和 PayPal 支付体系。",
           highlights: [
             "微信登录、手机号登录",
             "OAuth 登录（Google、GitHub、Apple）",
@@ -1632,11 +1759,11 @@ export const zhCN: Locale = {
         {
           title: "AI Ready 集成",
           subtitle: "对话、图像、视频 — 开箱即用的全栈 AI 能力",
-          description: "基于 Vercel AI SDK 构建的完整 AI 解决方案。不只是简单的聊天 Demo —— 内置 AI 对话、AI 图像生成、AI 视频生成，均采用多 Provider 可扩展架构。支持流式响应、积分计费、多模型切换（OpenAI、Claude、Gemini 等），让你的应用从第一天起就具备完整的 AI 能力。",
+          description: "内置 AI 对话、图像生成和视频生成能力，支持流式响应、积分计费和多模型切换，方便快速搭建面向用户的 AI 功能。",
           highlights: [
             "AI 对话（多模型流式响应）",
-            "AI 图像生成（多 Provider）",
-            "AI 视频生成（多 Provider）",
+            "AI 图像生成",
+            "AI 视频生成",
             "积分计费系统"
           ],
           imageTitle: "AI 集成"
@@ -1693,7 +1820,7 @@ export const zhCN: Locale = {
       subtitle: "加入数千名用户的行列，用 TinyShip 快速构建你的下一个商业项目。虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！",
       buttons: {
         purchase: "立即抢购 ¥299",
-        demo: "查看演示"
+        demo: "查看详情"
       }
     },
     footer: {
@@ -1701,7 +1828,7 @@ export const zhCN: Locale = {
       description: "TinyShip"
     },
     common: {
-      demoInterface: "功能演示界面",
+      demoInterface: "功能入口",
       techArchitecture: "企业级技术架构，生产环境验证",
       learnMore: "了解更多"
     }
@@ -1784,34 +1911,42 @@ export const zhCN: Locale = {
   },
   header: {
     navigation: {
-      ai: "AI 功能演示",
+      ai: "AI 工具",
+      reelflow: "创作",
+      reelflowJobs: "任务",
+      reelflowImage: "AI 生图",
+      reelflowVoice: "AI 语音",
+      reelflowAssets: "资产",
+      reelflowCredits: "积分",
+      reelflowInvites: "邀请",
+      reelflowNotifications: "通知",
       premiumFeatures: "高级会员功能",
       pricing: "定价",
       upload: "文件上传",
-      demos: "功能演示",
-      demosDescription: "探索示例功能",
+      demos: "工具",
+      demosDescription: "查看可用工具",
       blog: "博客"
     },
     demos: {
       ai: {
         title: "AI 对话",
-        description: "大模型对话实现，可扩展设计，支持多个 Provider，需要购买积分使用"
+        description: "整理想法、生成文案，辅助短视频创作。"
       },
       aiImage: {
         title: "AI 图像生成",
-        description: "AI 图像生成实现，可扩展设计，支持多个 Provider，需要购买积分使用"
+        description: "生成可用于视频画面的图片素材。"
       },
       aiVideo: {
         title: "AI 视频生成",
-        description: "AI 视频生成实现，可扩展设计，支持多个 Provider，需要购买积分使用"
+        description: "尝试生成短视频画面素材。"
       },
       premium: {
         title: "高级会员功能",
-        description: "路由保护演示页面，只有订阅付费用户才能访问此页面"
+        description: "查看订阅用户可使用的专属权益。"
       },
       upload: {
         title: "文件上传",
-        description: "文件上传实现，可扩展设计，支持多个 Provider，需要登录访问"
+        description: "上传并管理可复用的个人素材。"
       }
     },
     auth: {
@@ -1890,6 +2025,751 @@ export const zhCN: Locale = {
       maxFiles: "只能上传 1 个文件",
       imageOnly: "只允许上传图片文件",
       fileTooLarge: "文件大小必须小于 1MB"
+    }
+  },
+  reelflow: {
+    metadata: {
+      generate: {
+        title: "Reelflow - 创建短视频草稿",
+        description: "基于可复用模板创建短视频工作流任务。",
+        keywords: "短视频, 工作流, 模板, 剪映草稿, AI视频"
+      },
+      jobs: {
+        title: "Reelflow - 任务",
+        description: "查看 Reelflow 视频工作流任务和生成进度。",
+        keywords: "视频任务, 生成记录, 工作流进度"
+      },
+      credits: {
+        title: "Reelflow - 积分",
+        description: "管理工作区积分、充值和积分流水。",
+        keywords: "视频工作流积分, 积分充值, 工作区账务"
+      },
+      assets: {
+        title: "Reelflow - 资产库",
+        description: "浏览任务产物和个人素材，用于视频工作流生成。",
+        keywords: "视频资产, 任务产物, 个人素材, 资产库"
+      },
+      imageTool: {
+        title: "Reelflow - AI 生图",
+        description: "生成补图和参考图，并自动保存到 Reelflow 资产库。",
+        keywords: "AI 生图, 图片生成, 视频资产, 补图"
+      },
+      voiceTool: {
+        title: "Reelflow - AI 语音",
+        description: "生成补配音和旁白音频，并自动保存到 Reelflow 资产库。",
+        keywords: "AI 语音, 文本转语音, 视频资产, 旁白"
+      },
+      notifications: {
+        title: "Reelflow - 通知",
+        description: "查看当前工作区的任务、积分和投递通知。",
+        keywords: "视频工作流通知, 任务通知, 积分通知"
+      },
+      invites: {
+        title: "Reelflow - 邀请",
+        description: "分享邀请链接，好友加入后获得工作区积分奖励。",
+        keywords: "视频工作流邀请, 推荐积分, 邀请奖励"
+      },
+      jobDetail: {
+        title: "Reelflow - 任务详情",
+        description: "查看任务进度、阶段和生成产物。",
+        keywords: "视频任务详情, 工作流阶段, 生成产物"
+      }
+    },
+    shell: {
+      workspace: "创作工作台",
+      workspaceName: "默认工作区",
+      workspaceHint: "短视频草稿、资产和积分归属于当前工作区",
+      loadingCredits: "积分加载中",
+      openMenu: "打开菜单",
+      userMenu: "打开用户菜单",
+      signOut: "退出登录",
+      comingSoon: "待开放",
+      groups: {
+        main: "工作台",
+        create: "创作",
+        account: "账户"
+      },
+      nav: {
+        home: "首页",
+        create: "创作",
+        draft: "短视频草稿",
+        image: "图像生成",
+        video: "视频生成",
+        voice: "语音生成",
+        tasks: "任务",
+        templates: "模板",
+        assets: "资产",
+        credits: "积分",
+        subscription: "订阅",
+        invites: "邀请",
+        notifications: "通知",
+        mine: "我的",
+        settings: "个人设置",
+        admin: "管理端"
+      }
+    },
+    home: {
+      title: "今天从哪个创作开始？",
+      description: "选择模板生成短视频草稿，或用独立创作能力补齐图片素材。任务进度、积分和产物都归属于当前工作区。",
+      primaryCta: "创建短视频草稿",
+      secondaryCta: "生成图片",
+      quickTitle: "快捷入口",
+      statusTitle: "工作区状态",
+      galleryTitle: "官方精选案例",
+      galleryDescription: "这些案例用于说明官方模板的视觉节奏和交付效果。",
+      recommendationTitle: "推荐关注",
+      createCenterTitle: "创作中心",
+      createCenterDescription: "短视频草稿和独立创作能力都从这里进入。当前优先开放短视频草稿和图像生成。",
+      draftAnchorTitle: "短视频草稿",
+      draftAnchorDescription: "选择官方模板，填写主题和少量参数，一键生成可编辑草稿。",
+      actions: {
+        draft: "创建草稿",
+        image: "图像生成",
+        tasks: "查看任务",
+        credits: "购买积分"
+      },
+      stats: {
+        availableCredits: "可用积分",
+        frozenCredits: "冻结积分",
+        activeTasks: "进行中任务",
+        issues: "待处理"
+      },
+      abilities: {
+        draft: {
+          title: "短视频草稿",
+          description: "用官方模板生成剪映草稿和可选 MP4。"
+        },
+        image: {
+          title: "图像生成",
+          description: "为短视频补齐参考图、封面和分镜素材。"
+        },
+        video: {
+          title: "视频生成",
+          description: "独立视频生成能力后续开放。"
+        },
+        voice: {
+          title: "语音生成",
+          description: "旁白和补配音能力后续开放。"
+        }
+      },
+      gallery: [
+        {
+          title: "心理学火柴人",
+          category: "情绪价值",
+          description: "用极简线条解释睡前焦虑和关系困惑。"
+        },
+        {
+          title: "认知观点口播",
+          category: "观点表达",
+          description: "把一个核心观点拆成适合发布的口播结构。"
+        },
+        {
+          title: "知识清单卡片",
+          category: "知识分享",
+          description: "适合技巧、教程和轻知识清单。"
+        }
+      ],
+      recommendations: [
+        {
+          title: "本周推荐赛道",
+          description: "心理学解释、个人成长和认知观点仍适合用模板快速验证。"
+        },
+        {
+          title: "邀请好友送积分",
+          description: "通过你的邀请链接注册后，双方工作区都会获得积分奖励。"
+        },
+        {
+          title: "定制私有模板",
+          description: "官方可承接模板定制，并指定给你的工作区使用。"
+        }
+      ]
+    },
+    landing: {
+      metadata: {
+        title: "Reelflow - 短视频草稿工作流",
+        description: "基于爆款短视频模板生成可编辑剪映草稿包，并可选输出 1080P MP4。",
+        keywords: "短视频工作流, 剪映草稿, CapCut 草稿, AI 生图, AI 语音, 视频模板"
+      },
+      hero: {
+        eyebrow: "模板化短视频生产",
+        title: "不用学剪辑，也能生成可编辑短视频草稿",
+        subtitle: "选择官方模板，填写少量人能理解的参数，Reelflow 一次性完成脚本、画面、配音、字幕、草稿打包，并可选云端 MP4 渲染。",
+        primaryCta: "开始创作",
+        secondaryCta: "查看套餐",
+        trust: [
+          "可编辑剪映草稿",
+          "工作区积分",
+          "长任务可追溯"
+        ]
+      },
+      preview: {
+        title: "心理学火柴人",
+        subtitle: "官方模板",
+        status: "生成中",
+        template: "模板工作流",
+        credits: "已冻结 35 积分",
+        caption: "为什么人一到晚上就容易想太多？",
+        progress: "生成进度",
+        stages: [
+          "脚本已确认",
+          "分镜已生成",
+          "配音已生成",
+          "草稿打包"
+        ],
+        costLabel: "结算",
+        costValue: "按实际用量扣减",
+        auditLabel: "追溯",
+        auditValue: "阶段和产物留痕"
+      },
+      metrics: [
+        { value: "3", label: "首发官方模板" },
+        { value: "90%", label: "自动化生产目标" },
+        { value: "1080P", label: "可选云端 MP4" },
+        { value: "1", label: "一键生成流程" }
+      ],
+      workflow: {
+        title: "为非技术创作者设计",
+        description: "用户不需要配置工作流。选择模板，填写能理解的参数，任务完成后查看和下载产物。",
+        steps: [
+          {
+            title: "选择模板",
+            description: "使用知识分享、观点口播、清单卡片等官方爆款结构模板。"
+          },
+          {
+            title: "填写简单参数",
+            description: "输入主题、语气、人群，也可以从工作区资产库选择可复用参考素材。"
+          },
+          {
+            title: "追踪生成过程",
+            description: "生成过程中可以查看进度、阶段、产物、用量、质量问题和重试操作。"
+          },
+          {
+            title: "下载交付物",
+            description: "获得可编辑草稿包，并可选生成固定规格的 1080P MP4。"
+          }
+        ]
+      },
+      templates: {
+        title: "先从适合平台传播的结构开始",
+        description: "从可复用的短视频结构开始，快速生成适合发布的草稿。",
+        tags: [
+          "知识分享",
+          "观点表达",
+          "情绪价值",
+          "心理学解释"
+        ],
+        items: [
+          {
+            name: "心理学火柴人",
+            description: "用简单火柴人节奏讲心理学、关系和情绪类内容。",
+            output: "草稿包 + 字幕"
+          },
+          {
+            name: "认知观点口播",
+            description: "适合观点表达、认知分享和个人洞察类口播内容。",
+            output: "配音 + 画面草稿"
+          },
+          {
+            name: "知识清单卡片",
+            description: "适合技巧、教程、轻知识和列表型解释视频。",
+            output: "卡片 + 可选 MP4"
+          }
+        ]
+      },
+      tools: {
+        title: "最后 10% 也在同一个工作区补齐",
+        description: "当生成素材缺失或不合格时，独立 AI 工具可以补图、补语音，同时保留用量和资产记录。",
+        items: [
+          {
+            title: "AI 补图",
+            description: "生成参考图或替换图，并自动保存到资产库。"
+          },
+          {
+            title: "AI 补语音",
+            description: "生成可复用旁白音频，并自动保存到资产库。"
+          },
+          {
+            title: "草稿和 MP4 交付",
+            description: "剪映草稿包是核心交付物，云端 MP4 作为可选输出。"
+          }
+        ]
+      },
+      finalCta: {
+        title: "从第一个可编辑草稿开始",
+        description: "选择模板，填写主题，生成可继续调整和发布的短视频草稿。",
+        primaryCta: "创建任务",
+        secondaryCta: "购买积分"
+      }
+    },
+    common: {
+      productName: "Reelflow",
+      credits: "积分",
+      viewTasks: "查看任务",
+      createNew: "新建任务",
+      refresh: "刷新",
+      unavailable: "暂不可用",
+      noData: "暂无数据",
+      unknown: "未知"
+    },
+    credits: {
+      title: "工作区积分",
+      description: "工作流开始前冻结积分，生成完成后结算。余额不足或任务产生欠费时，可在这里充值补足。",
+      loadError: "积分账户加载失败",
+      balance: "可用积分",
+      frozen: "冻结积分",
+      debt: "欠费积分",
+      totalGranted: "累计发放",
+      totalConsumed: "累计消耗",
+      buyTitle: "积分充值",
+      buyDescription: "选择积分包并通过已配置的支付服务完成付款。支付成功后积分发放到当前工作区。",
+      noExpiry: "长期有效",
+      recommended: "推荐",
+      buyNow: "立即购买",
+      purchaseSuccess: "积分已到账",
+      purchaseFailed: "积分购买失败",
+      ledgerTitle: "积分流水",
+      ledgerDescription: "记录工作区维度的购买、冻结、结算、欠费和退回。",
+      emptyLedger: "暂无积分流水",
+      wechatQrTitle: "扫码支付",
+      wechatQrHint: "支付确认后余额会自动刷新，请保持当前窗口打开。",
+      wechatQrAlt: "微信支付二维码",
+      providers: {
+        stripe: "Stripe",
+        wechat: "微信支付",
+        alipay: "支付宝",
+        paypal: "PayPal",
+        creem: "Creem",
+        dodo: "Dodo Payments"
+      },
+      ledgerTypes: {
+        purchase: "购买",
+        bonus: "赠送",
+        trial_grant: "试用",
+        invite_bonus: "邀请奖励",
+        adjustment: "调整",
+        freeze: "冻结",
+        estimate_freeze: "冻结",
+        ai_image_generation: "AI 生图",
+        ai_voice_generation: "AI 语音",
+        settlement: "结算",
+        debt: "欠费",
+        refund: "退回"
+      },
+      table: {
+        time: "时间",
+        type: "类型",
+        description: "说明",
+        amount: "变动",
+        balanceAfter: "变动后余额"
+      }
+    },
+    assetLibrary: {
+      title: "资产库",
+      description: "查看生成任务产物，并保存可复用的个人素材到当前工作区。",
+      loadError: "资产加载失败",
+      filters: {
+        all: "全部资产",
+        task: "任务产物",
+        personal: "个人素材"
+      },
+      allTypes: "全部类型",
+      searchPlaceholder: "搜索资产、模板或文件名",
+      empty: "暂无资产",
+      emptyHint: "运行一个工作流，或上传个人素材后即可在这里查看。",
+      uploadTitle: "上传素材",
+      uploadDescription: "上传可复用的图片、Logo、头像或参考图，供后续工作流使用。",
+      assetType: "资产类型",
+      storageProvider: "存储服务",
+      chooseFile: "选择图片",
+      fileHint: "支持 JPG、PNG、WebP、GIF、SVG、BMP，最大 10MB。",
+      uploadAction: "上传并保存",
+      uploading: "上传中...",
+      uploadSuccess: "素材已保存",
+      uploadFailed: "上传失败",
+      registerFailed: "素材保存失败",
+      scopeTitle: "归属当前工作区",
+      scopeDescription: "资产归属于当前工作区。任务产物只读展示；上传素材可在后续工作流输入中复用。",
+      createdAt: "创建时间",
+      fileSize: "大小",
+      duration: "时长",
+      template: "模板",
+      jobStatus: "任务状态",
+      storageKey: "存储键",
+      preview: "预览",
+      previewDescription: "先预览资产，再决定是否在工作流中复用或打开原文件。",
+      openAsset: "打开",
+      openJob: "任务",
+      removeTitle: "移除素材？",
+      removeDescription: "移除后，该上传素材会从资产库隐藏。任务产物仍保持只读，方便后续追溯。",
+      removeSuccess: "素材已移除",
+      removeFailed: "素材移除失败",
+      sources: {
+        task: "任务产物",
+        personal: "个人",
+        aiGenerated: "AI 生成"
+      },
+      providers: {
+        r2: "Cloudflare R2",
+        oss: "阿里云 OSS",
+        s3: "Amazon S3",
+        cos: "腾讯云 COS",
+        mock: "Mock",
+        "reelflow-local": "本地草稿"
+      },
+      errors: {
+        imageOnly: "仅支持图片文件",
+        fileTooLarge: "文件大小不能超过 10MB",
+        noFile: "请先选择文件"
+      }
+    },
+    imageTool: {
+      badge: "资产工具",
+      title: "生成补图素材",
+      description: "当任务里缺图、图片不合适，或需要一张参考图时，可以在这里直接生成。结果会自动保存到资产库。",
+      openAssets: "打开资产库",
+      prompt: "图片描述",
+      promptPlaceholder: "描述你需要的画面，例如：一个表现睡前焦虑的简笔火柴人，白色背景，线条干净",
+      promptHint: "用普通语言描述画面和风格即可。不要填写账号密码、隐私信息或敏感内容。",
+      provider: "生成服务",
+      size: "画面比例",
+      model: "模型",
+      advanced: "高级设置",
+      negativePrompt: "不想出现",
+      negativePromptPlaceholder: "写下你不希望图片里出现的内容",
+      seed: "随机种子",
+      randomSeed: "随机生成种子",
+      generate: "生成图片",
+      generating: "生成中...",
+      generatingHint: "正在生成图片，并保存到你的资产库。",
+      result: "生成结果",
+      resultHint: "生成后的图片会作为个人资产保存。",
+      emptyResult: "先描述你需要的图片。生成结果会显示在这里，并保存到资产库。",
+      saved: "已保存",
+      success: "图片已保存到资产库",
+      viewInAssets: "在资产库查看",
+      newImage: "继续生成",
+      creditConsumed: "消耗积分",
+      balanceAfter: "剩余积分",
+      providers: {
+        qwen: "通义千问",
+        fal: "fal.ai",
+        openai: "OpenAI",
+        gemini: "Gemini"
+      },
+      errors: {
+        noPrompt: "请先填写图片描述",
+        insufficientCredits: "工作区积分不足",
+        failed: "图片生成失败"
+      }
+    },
+    voiceTool: {
+      badge: "资产工具",
+      title: "生成配音素材",
+      description: "把短文案生成可复用的旁白音频，用于补配音、替换不满意的声音，或后续工作流输入。",
+      openAssets: "打开资产库",
+      text: "旁白文案",
+      textPlaceholder: "粘贴一段简短旁白。尽量口语化、清晰、自然。",
+      textHint: "只填写需要朗读的正文。不要填写账号密码、隐私信息或敏感内容。",
+      voice: "音色",
+      speed: "语速",
+      costTitle: "工作区积分预估",
+      estimatedCost: "预估消耗",
+      generate: "生成语音",
+      generating: "生成中...",
+      generatingHint: "正在生成音频，并保存到你的资产库。",
+      result: "生成结果",
+      resultHint: "生成后的音频会作为个人资产保存。",
+      emptyResult: "先粘贴旁白文案，再生成语音素材。结果会在这里试听。",
+      previewTitle: "音频试听",
+      saved: "已保存",
+      savedHint: "这条语音已经保存到资产库，后续可以继续复用。",
+      success: "语音已保存到资产库",
+      viewInAssets: "在资产库查看",
+      newVoice: "继续生成",
+      creditConsumed: "消耗积分",
+      balanceAfter: "剩余积分",
+      voices: {
+        alloy: "均衡",
+        verse: "叙事",
+        aria: "温暖",
+        sage: "稳重",
+        nova: "明亮"
+      },
+      errors: {
+        noText: "请先填写旁白文案",
+        tooLong: "旁白文案不能超过 2000 字",
+        insufficientCredits: "工作区积分不足",
+        failed: "语音生成失败"
+      }
+    },
+    notifications: {
+      title: "通知中心",
+      description: "集中查看工作流结果、积分变动和邮件投递状态。",
+      loadError: "通知加载失败",
+      updateError: "通知更新失败",
+      markedRead: "通知已标记为已读",
+      markAllRead: "全部已读",
+      empty: "暂无通知",
+      emptyHint: "任务和积分更新会出现在这里。",
+      unread: "未读",
+      read: "已读",
+      openTarget: "打开",
+      noEmailDelivery: "无邮件投递",
+      filters: {
+        all: "全部",
+        unread: "未读"
+      },
+      types: {
+        job_completed: "任务完成",
+        job_failed: "任务失败",
+        credits_granted: "积分到账",
+        credits_debt: "积分欠费",
+        asset_ready: "资产可用",
+        invite_bonus: "邀请奖励"
+      },
+      deliveryStatus: {
+        pending: "邮件待发送",
+        sent: "邮件已发送",
+        failed: "邮件失败"
+      }
+    },
+    invites: {
+      title: "邀请好友",
+      description: "把 Reelflow 分享给想尝试短视频工作流的人。对方通过你的链接注册后，双方工作区都会自动获得积分。",
+      loadError: "邀请奖励加载失败",
+      shareTitle: "你的邀请链接",
+      shareDescription: "直接把链接发给好友即可。新用户不需要先理解积分规则，注册后系统会自动发放奖励。",
+      inviteLink: "邀请链接",
+      inviteCode: "邀请码",
+      copyLink: "复制链接",
+      copied: "邀请链接已复制",
+      copiedShort: "已复制",
+      autoCredit: "奖励自动到账",
+      referrerReward: "你可获得",
+      referredReward: "好友可获得",
+      successfulInvites: "成功邀请",
+      totalEarned: "已获得",
+      recordsTitle: "邀请记录",
+      recordsDescription: "记录好友注册时间、奖励状态和双方积分，方便后续查看。",
+      emptyRecords: "暂无邀请记录",
+      unnamedUser: "新用户",
+      claimed: "邀请奖励已到账",
+      claimedDescription: "欢迎积分已发放到你的 Reelflow 工作区。",
+      signupRewardTitle: "检测到邀请奖励",
+      signupRewardHint: "通过该链接注册后，欢迎积分会自动发放到你的工作区。",
+      status: {
+        registered: "已注册",
+        rewarded: "已奖励",
+        invalid: "无效"
+      },
+      table: {
+        user: "用户",
+        status: "状态",
+        reward: "奖励",
+        time: "时间"
+      }
+    },
+    generate: {
+      title: "创建短视频草稿",
+      description: "选择验证过的模板，填写主题，一键运行完整工作流。",
+      templateSection: "模板",
+      inputSection: "输入参数",
+      outputSection: "输出",
+      runSection: "执行",
+      chooseTemplate: "选择模板",
+      recommended: "推荐",
+      privateTemplate: "私有",
+      fieldsHint: "只填写当前模板需要的内容。脚本、画面、配音、字幕和草稿打包由工作流自动处理。",
+      renderMp4: "同时生成 MP4",
+      renderMp4Hint: "勾选后会额外生成默认 1080P MP4。",
+      draftOnlyHint: "默认输出剪映草稿包。",
+      estimate: "预估消耗",
+      estimateHint: "任务开始前会冻结积分。后续按实际生成和媒体处理用量进行结算。",
+      submit: "开始生成",
+      submitting: "正在创建任务...",
+      submitSuccess: "任务已创建",
+      submitError: "创建任务失败",
+      runBlockedTitle: "任务暂时不能开始",
+      preflightTitle: "预检发现问题",
+      preflightBody: "先处理下面的问题，然后再开始生成。",
+      checkCredits: "查看积分",
+      checkTasks: "查看任务",
+      loadError: "模板加载失败",
+      emptyTemplates: "暂无可用模板",
+      emptyTemplatesHint: "请先发布官方模板，或将私有模板分配到当前工作区。",
+      requiredMark: "必填",
+      numberRange: "允许范围：{min}-{max}",
+      selectPlaceholder: "请选择",
+      textPlaceholder: "请输入内容",
+      booleanOn: "已开启",
+      booleanOff: "已关闭",
+      assetHint: "从资产库选择可复用素材。不选择也可以，工作流会自动生成所需内容。",
+      assetLoadError: "可复用素材加载失败",
+      selectedAsset: "已选择",
+      clearAsset: "清除",
+      openAssets: "打开资产库",
+      noAssets: "暂无可复用图片",
+      noAssetsHint: "可以先上传参考图，或用 AI 生图生成素材后再回来选择。",
+      loginHint: "登录后即可创建工作流任务。",
+      goToTask: "打开任务",
+      preflightErrors: {
+        workspace_inactive: "你的工作区暂时不能创建新任务。如持续出现，请联系支持。",
+        queue_limit_exceeded: "当前正在排队或运行的任务较多，请等一个任务完成后再开始新的生成。",
+        provider_unavailable: "必要的生成服务暂时不可用，请稍后再试。",
+        provider_disabled: "必要的生成服务已被运营侧停用，暂时无法创建该任务。",
+        content_blocked: "部分输入内容不能用于当前工作流，请调整后再提交。"
+      },
+      fields: {
+        topic: "主题",
+        audience: "目标人群",
+        tone: "表达语气",
+        claim: "核心观点",
+        examples: "案例素材",
+        voiceStyle: "配音风格",
+        itemCount: "条目数量",
+        style: "视觉风格",
+        referenceAssetId: "参考素材"
+      }
+    },
+    jobs: {
+      title: "任务",
+      description: "查看已生成草稿、运行中的任务，以及需要人工补齐的内容。",
+      loading: "正在加载任务...",
+      loadError: "任务加载失败",
+      empty: "暂无任务",
+      emptyHint: "从官方模板创建第一个视频工作流任务。",
+      open: "打开",
+      createdAt: "创建时间",
+      completedAt: "完成时间",
+      template: "模板",
+      estimatedCredits: "预估",
+      actualCredits: "实际",
+      artifact: "产物",
+      status: "状态",
+      quality: "质量",
+      settlement: "结算",
+      mp4Requested: "已请求 MP4",
+      draftRequested: "草稿包",
+      activeTasks: "进行中任务",
+      completedTasks: "已完成任务",
+      attentionTasks: "需要关注",
+      autoRefreshOn: "自动刷新已开启",
+      autoRefreshOff: "自动刷新已关闭",
+      liveHintTitle: "任务列表正在实时追踪",
+      liveHintBody: "只要有任务处于排队或运行中，列表会每隔几秒自动刷新。",
+      lastRefreshed: "最近刷新"
+    },
+    detail: {
+      title: "任务详情",
+      backToTasks: "返回任务",
+      taskId: "任务 ID",
+      liveTracking: "实时追踪",
+      autoRefreshOn: "自动刷新已开启",
+      autoRefreshOff: "自动刷新已关闭",
+      lastRefreshed: "最近刷新",
+      liveHintTitle: "任务正在生成",
+      liveHintBody: "任务排队或运行时，页面会每隔几秒自动刷新一次，你可以直接观察阶段进度，不需要反复手动刷新。",
+      progress: "进度",
+      stages: "阶段",
+      assets: "产物",
+      usage: "用量",
+      events: "日志",
+      qualityIssues: "质量问题",
+      outputNoticeTitle: "产物下载受任务状态控制",
+      outputNoticeBody: "草稿和视频会在结算与质量检查后开放下载。草稿包会包含剪辑工程、素材清单和本地转换说明。",
+      actionsTitle: "任务操作",
+      actionsDescription: "系统步骤失败时优先从失败点重试；如果想基于同一输入重新生成一份结果，可以重新生成。",
+      actionsUnavailable: "任务完成或失败后才可以执行后续操作。",
+      retryFailed: "从失败点重试",
+      retryQueued: "已重新排队",
+      rerun: "重新生成",
+      rerunCreated: "已创建新任务",
+      actionFailed: "任务操作失败",
+      downloadDraft: "下载草稿包",
+      downloadHint: "压缩包包含剪辑草稿、素材清单和本地转换说明。",
+      downloadUnavailable: "草稿包暂不可下载。",
+      previewAsset: "预览",
+      assetPreviewDescription: "在这里预览任务生成的产物。草稿包会在结算后开放下载，媒体文件准备好后可直接打开。",
+      assetUnavailable: "这是产物追踪记录，真实媒体文件准备好后会显示在这里。",
+      assetNote: "说明",
+      usageItem: "本次生成用量",
+      issue: "待处理",
+      openAsset: "打开文件",
+      openInAssets: "资产库",
+      audioPreview: "音频试听",
+      videoPreview: "视频预览",
+      fileSize: "大小",
+      duration: "时长",
+      dimensions: "尺寸",
+      noAssets: "暂无产物记录",
+      noUsage: "暂无用量记录",
+      noEvents: "暂无日志",
+      noIssues: "暂无质量问题记录",
+      source: "来源",
+      storage: "存储",
+      storageKey: "存储键",
+      startedAt: "开始时间",
+      updatedAt: "更新时间",
+      error: "错误",
+      loadError: "任务详情加载失败"
+    },
+    status: {
+      queued: "排队中",
+      running: "运行中",
+      completed: "已完成",
+      failed: "失败",
+      canceled: "已取消",
+      pending: "待处理",
+      skipped: "已跳过",
+      needs_fix: "待补齐",
+      unchecked: "未检查",
+      accepted: "已通过",
+      generating: "生成中",
+      locked: "锁定",
+      available: "可用",
+      downloadable: "可下载",
+      expired: "已过期",
+      estimated: "已预估",
+      frozen: "已冻结",
+      settled: "已结算",
+      debt: "欠费",
+      refunded: "已退回"
+    },
+    stages: {
+      precheck: "预检",
+      script: "脚本",
+      storyboard: "分镜",
+      image: "图片",
+      voice: "配音",
+      caption: "字幕",
+      compose_project: "合成工程",
+      draft_package: "草稿包",
+      render_mp4: "MP4 渲染",
+      settlement: "结算",
+      notify: "通知"
+    },
+    assets: {
+      script: "脚本",
+      storyboard: "分镜",
+      image: "图片方案",
+      audio: "配音方案",
+      caption: "字幕",
+      video: "视频",
+      draft_package: "草稿包",
+      manifest: "清单",
+      workflow_project: "工作流工程",
+      rendered_mp4: "渲染 MP4",
+      logo: "Logo",
+      avatar: "头像",
+      reference_image: "参考图"
+    },
+    resources: {
+      llm: "内容生成",
+      image: "图片生成",
+      tts: "语音生成",
+      draft: "草稿处理",
+      render: "视频渲染",
+      plugin: "素材处理"
     }
   },
   blog: {

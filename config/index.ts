@@ -26,3 +26,4 @@ export { storageConfig } from './storage';
 export { aiConfig } from './ai';
 export { aiImageConfig } from './aiImage';
 export { aiVideoConfig } from './aiVideo';
+export { reelflowConfig } from './reelflow';

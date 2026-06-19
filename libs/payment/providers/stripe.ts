@@ -20,6 +20,7 @@ import { user } from '@libs/database/schema/user';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import { creditService, TransactionTypeCode } from '@libs/credits';
+import { grantWorkspaceCredits, grantWorkspaceSubscriptionCredits } from '@libs/reelflow/billing';
 
 export class StripeProvider implements PaymentProvider {
   public stripe: Stripe;
@@ -139,6 +140,7 @@ export class StripeProvider implements PaymentProvider {
   private async handleSubscriptionCreated(session: Stripe.Checkout.Session): Promise<WebhookVerification> {
     if (!session.subscription || !session.metadata?.orderId) return { success: false };
 
+    const plan = config.payment.plans[session.metadata.planId as keyof typeof config.payment.plans] as PaymentPlan;
     const subscription = await this.stripe.subscriptions.retrieve(session.subscription as string, {
       expand: ['latest_invoice']
     });    
@@ -171,6 +173,24 @@ export class StripeProvider implements PaymentProvider {
       })
     });
 
+    if (plan.reelflowCredits && plan.reelflowCredits > 0) {
+      await grantWorkspaceSubscriptionCredits({
+        userId: session.metadata.userId,
+        amount: plan.reelflowCredits,
+        provider: 'stripe',
+        planId: session.metadata.planId,
+        subscriptionId: subscription.id,
+        orderId: session.metadata.orderId,
+        periodStart,
+        periodEnd,
+        metadata: {
+          sessionId: session.id,
+          stripeCustomerId: session.customer,
+          trigger: 'checkout.session.completed',
+        },
+      });
+    }
+
     return { success: true, orderId: session.metadata.orderId };
   }
 
@@ -200,6 +220,20 @@ export class StripeProvider implements PaymentProvider {
           planId: session.metadata.planId,
           provider: 'stripe'
         }
+      });
+
+      await grantWorkspaceCredits({
+        userId: session.metadata.userId,
+        amount: plan.credits,
+        type: 'purchase',
+        orderId: session.metadata.orderId,
+        description: 'Purchase Reelflow workspace credits',
+        metadata: {
+          sessionId: session.id,
+          planId: session.metadata.planId,
+          provider: 'stripe',
+          userCreditSynced: true,
+        },
       });
 
       return { success: true, orderId: session.metadata.orderId };
@@ -288,6 +322,24 @@ export class StripeProvider implements PaymentProvider {
         updatedAt: new Date()
       })
       .where(eq(userSubscription.stripeCustomerId, stripeCustomerId));
+
+    const plan = config.payment.plans[newPlanId as keyof typeof config.payment.plans] as PaymentPlan | undefined;
+    if (stripeSubscription.status === 'active' && plan?.reelflowCredits && plan.reelflowCredits > 0) {
+      await grantWorkspaceSubscriptionCredits({
+        userId: existingSubscription.userId,
+        amount: plan.reelflowCredits,
+        provider: 'stripe',
+        planId: newPlanId,
+        subscriptionId: stripeSubscription.id,
+        periodStart,
+        periodEnd,
+        metadata: {
+          stripeCustomerId,
+          trigger: 'customer.subscription.updated',
+          stripeStatus: stripeSubscription.status,
+        },
+      });
+    }
 
     return { success: true };
   }

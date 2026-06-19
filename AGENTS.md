@@ -1,5 +1,33 @@
 # AGENTS.md
 
+## Reelflow Project Direction
+
+This repository is now the Reelflow SaaS product built on top of the TinyShip
+template. Reelflow MVP development has project-specific constraints that take
+priority over the generic TinyShip parity checklist below:
+
+- The MVP primary app is `apps/tanstack-app`.
+- Do not implement Reelflow MVP features in `apps/next-app` or `apps/nuxt-app`
+  unless explicitly requested.
+- PostgreSQL is the Reelflow database target. Do not add new Reelflow schema or
+  runtime code for SQLite/D1 unless explicitly requested.
+- Shared Reelflow domain logic belongs in `libs/reelflow` and database schema
+  changes belong in `libs/database`.
+- Long-running video workflow jobs must be executed by an independent runtime,
+  planned as `apps/execution-worker`, not inside user-facing web requests.
+- The frontend must optimize for excellent interaction quality after functional
+  requirements are met. Reelflow targets non-technical users, so interfaces
+  should be clear, guided, low-friction, responsive on PC/mobile, and avoid
+  exposing workflow internals as editable complexity.
+- Never expose requirement notes, implementation descriptions, or planning
+  language as user-facing UI copy. Consumer-facing pages must not show terms
+  such as MVP, demo, implementation, extensible design, provider/runtime/worker,
+  route protection, or internal acceptance criteria. Use plain product language
+  that describes user value, current state, or the next action. Admin-only
+  technical screens may use operational terms when they are necessary.
+- For Reelflow, do not treat the "three apps feature parity" rule below as an
+  MVP requirement. It remains useful only for generic TinyShip template work.
+
 ## Purpose
 
 Universal feature-delivery checklist for this monorepo.

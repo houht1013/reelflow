@@ -1,5 +1,5 @@
 import { type Page, expect } from '@playwright/test';
-import { API, TIMEOUTS } from './constants';
+import { API, E2E_BASE_URL, TIMEOUTS } from './constants';
 
 /**
  * Auth helper utilities for E2E tests.
@@ -50,7 +50,7 @@ export async function signUpViaAPI(page: Page, options: SignUpOptions) {
         email: options.email,
         password: options.password,
       },
-      headers: { Origin: 'http://localhost:7001' },
+      headers: { Origin: E2E_BASE_URL },
       timeout: TIMEOUTS.auth,
     });
 
@@ -82,7 +82,7 @@ export async function signInViaAPI(page: Page, options: SignInOptions) {
         password: options.password,
         rememberMe: true,
       },
-      headers: { Origin: 'http://localhost:7001' },
+      headers: { Origin: E2E_BASE_URL },
       timeout: TIMEOUTS.auth,
     });
 
@@ -107,7 +107,7 @@ export async function signInViaAPI(page: Page, options: SignInOptions) {
  */
 export async function signOutViaAPI(page: Page) {
   const response = await page.request.post(API.signOut, {
-    headers: { Origin: 'http://localhost:7001' },
+    headers: { Origin: E2E_BASE_URL },
     timeout: TIMEOUTS.auth,
   });
 

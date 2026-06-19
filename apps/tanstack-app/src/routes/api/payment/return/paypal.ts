@@ -17,6 +17,7 @@ export const Route = createFileRoute('/api/payment/return/paypal')({
         const { subscription, subscriptionStatus, paymentTypes } = await import('@libs/database/schema/subscription')
         const { eq, and, desc } = await import('drizzle-orm')
         const { creditService, TransactionTypeCode } = await import('@libs/credits')
+        const { grantWorkspaceCredits, grantWorkspaceSubscriptionCredits } = await import('@libs/reelflow/billing')
         const { randomUUID } = await import('crypto')
         const { utcNow } = await import('@libs/database/utils/utc')
 
@@ -36,6 +37,11 @@ export const Route = createFileRoute('/api/payment/return/paypal')({
 
             if (subscriptionDetails?.status === 'ACTIVE') {
               const now = utcNow()
+              const periodStart = subscriptionDetails.start_time
+                ? new Date(subscriptionDetails.start_time)
+                : subscriptionDetails.status_update_time
+                  ? new Date(subscriptionDetails.status_update_time)
+                  : now
               const updatedOrders = await db
                 .update(order)
                 .set({ status: orderStatus.PAID, updatedAt: now })
@@ -43,12 +49,12 @@ export const Route = createFileRoute('/api/payment/return/paypal')({
                 .returning({ id: order.id })
 
               if (updatedOrders.length > 0) {
-                let periodEnd = new Date(now)
+                const plan = config.payment.plans[orderRecord.planId as keyof typeof config.payment.plans] as PaymentPlan | undefined
+                let periodEnd = new Date(periodStart)
                 if (subscriptionDetails.billing_info?.next_billing_time) {
                   periodEnd = new Date(subscriptionDetails.billing_info.next_billing_time)
                 } else {
-                  const plan = config.payment.plans[orderRecord.planId as keyof typeof config.payment.plans] as PaymentPlan
-                  const months = plan.duration.months ?? 1
+                  const months = plan?.duration.months ?? 1
                   periodEnd.setMonth(periodEnd.getMonth() + months)
                 }
 
@@ -61,7 +67,7 @@ export const Route = createFileRoute('/api/payment/return/paypal')({
                     .update(subscription)
                     .set({
                       status: subscriptionStatus.ACTIVE,
-                      periodStart: now,
+                      periodStart,
                       periodEnd,
                       updatedAt: now,
                       metadata: JSON.stringify({ ...JSON.parse(existingSub.metadata || '{}'), paypalPlanId: subscriptionDetails.plan_id, processedBy: 'return' }),
@@ -75,10 +81,28 @@ export const Route = createFileRoute('/api/payment/return/paypal')({
                     status: subscriptionStatus.ACTIVE,
                     paymentType: paymentTypes.RECURRING,
                     paypalSubscriptionId: orderRecord.providerOrderId,
-                    periodStart: now,
+                    periodStart,
                     periodEnd,
                     cancelAtPeriodEnd: false,
                     metadata: JSON.stringify({ paypalPlanId: subscriptionDetails.plan_id, processedBy: 'return' }),
+                  })
+                }
+
+                if (plan?.reelflowCredits) {
+                  await grantWorkspaceSubscriptionCredits({
+                    userId: orderRecord.userId,
+                    amount: plan.reelflowCredits,
+                    provider: 'paypal',
+                    planId: orderRecord.planId,
+                    subscriptionId: orderRecord.providerOrderId,
+                    orderId,
+                    periodStart,
+                    periodEnd,
+                    metadata: {
+                      paypalPlanId: subscriptionDetails.plan_id,
+                      processedBy: 'return',
+                      trigger: 'paypal.return',
+                    },
                   })
                 }
               }
@@ -124,6 +148,20 @@ export const Route = createFileRoute('/api/payment/return/paypal')({
                 orderId,
                 description: TransactionTypeCode.PURCHASE,
                 metadata: { paypalCaptureId: captureId, planId: orderRecord.planId, provider: 'paypal' },
+              })
+
+              await grantWorkspaceCredits({
+                userId: orderRecord.userId,
+                amount: plan.credits,
+                type: 'purchase',
+                orderId,
+                description: 'Purchase Reelflow workspace credits',
+                metadata: {
+                  paypalCaptureId: captureId,
+                  planId: orderRecord.planId,
+                  provider: 'paypal',
+                  userCreditSynced: true,
+                },
               })
             } else if (plan?.duration.type === 'one_time') {
               const now = utcNow()

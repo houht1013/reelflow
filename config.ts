@@ -18,6 +18,7 @@ import { storageConfig } from './config/storage';
 import { aiConfig } from './config/ai';
 import { aiImageConfig } from './config/aiImage';
 import { aiVideoConfig } from './config/aiVideo';
+import { reelflowConfig } from './config/reelflow';
 
 // Re-export types for backwards compatibility
 export type { RecurringPlan, OneTimePlan, CreditPlan, Plan } from './config/types';
@@ -154,4 +155,7 @@ export const config = {
   ai: aiConfig,
   aiImage: aiImageConfig,
   aiVideo: aiVideoConfig,
+  reelflow: reelflowConfig,
 } as const;
+
+export { reelflowConfig };

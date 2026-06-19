@@ -268,6 +268,7 @@ export const paymentConfig = {
         months: 1,
         type: 'recurring'
       },
+      reelflowCredits: 300,
       // When using Stripe, subscription duration and price are determined by stripePriceId
       // Duration and amount here are for display and calculation only
       stripePriceId: 'price_1RL2GgDjHLfDWeHDBHjoZaap',
@@ -278,6 +279,7 @@ export const paymentConfig = {
           duration: 'month',
           features: [
             'All premium features',
+            '300 Reelflow workspace credits / month',
             'Priority support'
           ]
         },
@@ -287,6 +289,7 @@ export const paymentConfig = {
           duration: '月',
           features: [
             '所有高级功能',
+            '每月 300 Reelflow 工作区积分',
             '优先支持'
           ]
         }
@@ -336,6 +339,7 @@ export const paymentConfig = {
         months: 1,
         type: 'recurring'
       },
+      reelflowCredits: 300,
       // PayPal Plan ID created in PayPal Dashboard
       // Create at: https://www.sandbox.paypal.com/billing/plans (sandbox)
       // Or: https://www.paypal.com/billing/plans (production)
@@ -347,6 +351,7 @@ export const paymentConfig = {
           duration: 'month',
           features: [
             'All premium features',
+            '300 Reelflow workspace credits / month',
             'Priority support',
             'Cancel anytime'
           ]
@@ -357,6 +362,7 @@ export const paymentConfig = {
           duration: '月',
           features: [
             '所有高级功能',
+            '每月 300 Reelflow 工作区积分',
             '优先支持',
             '随时取消'
           ]
@@ -402,6 +408,7 @@ export const paymentConfig = {
         months: 1,
         type: 'recurring'
       },
+      reelflowCredits: 300,
       creemProductId: 'prod_1M1c4ktVmvLgrNtpVB9oQf',
       i18n: {
         'en': {
@@ -410,6 +417,7 @@ export const paymentConfig = {
           duration: 'month',
           features: [
             'All premium features',
+            '300 Reelflow workspace credits / month',
             'Priority support'
           ]
         },
@@ -419,6 +427,7 @@ export const paymentConfig = {
           duration: '月',
           features: [
             '所有高级功能',
+            '每月 300 Reelflow 工作区积分',
             '优先支持'
           ]
         }
@@ -561,6 +570,7 @@ export const paymentConfig = {
         months: 1,
         type: 'recurring'
       },
+      reelflowCredits: 300,
       dodoProductId: 'pdt_0Nfs0wseuWrL3JU1oDb7q',
       i18n: {
         'en': {
@@ -569,6 +579,7 @@ export const paymentConfig = {
           duration: 'month',
           features: [
             'All premium features',
+            '300 Reelflow workspace credits / month',
             'Priority support'
           ]
         },
@@ -578,6 +589,7 @@ export const paymentConfig = {
           duration: '月',
           features: [
             '所有高级功能',
+            '每月 300 Reelflow 工作区积分',
             '优先支持'
           ]
         }

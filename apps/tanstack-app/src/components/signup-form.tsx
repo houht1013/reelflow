@@ -17,6 +17,7 @@ import { Inbox } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { config } from "@config";
 import { Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 export function SignupForm({
   className,
@@ -32,6 +33,10 @@ export function SignupForm({
   const [showResendDialog, setShowResendDialog] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileKey, setTurnstileKey] = useState(0);
+  const [inviteCode] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return new URLSearchParams(window.location.search).get("ref")?.trim() || "";
+  });
 
   const { signupFormSchema } = createValidators(tWithParams);
 
@@ -43,7 +48,7 @@ export function SignupForm({
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(signupFormSchema),
-    defaultValues: { email: "", password: "", name: "", image: "" },
+    defaultValues: { email: "", password: "", name: "" },
     mode: "onBlur",
   });
 
@@ -57,12 +62,15 @@ export function SignupForm({
     setErrorMessage("");
     setErrorCode("");
 
-    const { error, data } = await authClientReact.signUp.email(
+    if (inviteCode && typeof window !== "undefined") {
+      window.localStorage.setItem("reelflow.pendingInviteCode", inviteCode);
+    }
+
+    const { error } = await authClientReact.signUp.email(
       {
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        image: formData.image || undefined,
       },
       config.captcha.enabled && turnstileToken
         ? { headers: { "x-captcha-response": turnstileToken } }
@@ -92,12 +100,34 @@ export function SignupForm({
       setVerificationEmail(formData.email);
       setIsVerificationEmailSent(true);
     } else {
+      if (inviteCode) {
+        await claimInviteCode(inviteCode);
+      }
       const params = new URLSearchParams(window.location.search);
       const returnTo = params.get("returnTo");
       navigate({ to: returnTo || `/$lang`, params: { lang: locale } });
     }
 
     setLoading(false);
+  };
+
+  const claimInviteCode = async (code: string) => {
+    try {
+      const response = await fetch("/api/reelflow/invites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const payload = await response.json();
+      if (payload.status === "rewarded") {
+        window.localStorage.removeItem("reelflow.pendingInviteCode");
+        toast.success(t.reelflow.invites.claimed, {
+          description: t.reelflow.invites.claimedDescription,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to claim Reelflow invite after signup:", error);
+    }
   };
 
   if (isVerificationEmailSent && config.auth.requireEmailVerification) {
@@ -136,6 +166,13 @@ export function SignupForm({
   return (
     <div className={cn("flex flex-col gap-4", className)} {...props}>
       <FormError message={errorMessage} code={errorCode} />
+      {inviteCode && (
+        <Alert data-testid="reelflow-signup-invite-reward">
+          <Inbox className="h-4 w-4" />
+          <AlertTitle>{t.reelflow.invites.signupRewardTitle}</AlertTitle>
+          <AlertDescription>{t.reelflow.invites.signupRewardHint}</AlertDescription>
+        </Alert>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="grid gap-6">
           <div className="grid gap-2">
@@ -195,27 +232,6 @@ export function SignupForm({
               )}
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="image">
-              {t.auth.signup.imageUrl} ({t.auth.signup.optional})
-            </Label>
-            <div className="relative">
-              <Input
-                id="image"
-                type="url"
-                {...register("image")}
-                placeholder={t.auth.signup.imageUrlPlaceholder}
-                className={cn(errors.image && "border-destructive")}
-                aria-invalid={errors.image ? "true" : "false"}
-              />
-              {errors.image && (
-                <span className="text-destructive absolute -bottom-5 left-0 text-xs">
-                  {errors.image.message}
-                </span>
-              )}
-            </div>
-          </div>
-
           <Turnstile
             key={turnstileKey}
             onSuccess={(token: string) => setTurnstileToken(token)}

@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import { X509Certificate } from '@peculiar/x509';
 import { ofetch } from 'ofetch';
 import { creditService, TransactionTypeCode } from '@libs/credits';
+import { grantWorkspaceCredits } from '@libs/reelflow/billing';
 
 // 微信支付分为两大部分 ：https://pay.weixin.qq.com/doc/v3/merchant/4012365342 特别注意这个文档中的图
 // 1 发送请求 生成签名
@@ -568,6 +569,20 @@ export class WechatPayProvider implements PaymentProvider {
                 planId: orderRecord.planId,
                 provider: 'wechat'
               }
+            });
+
+            await grantWorkspaceCredits({
+              userId: orderRecord.userId,
+              amount: plan.credits,
+              type: 'purchase',
+              orderId,
+              description: 'Purchase Reelflow workspace credits',
+              metadata: {
+                transactionId: decryptedData.transaction_id,
+                planId: orderRecord.planId,
+                provider: 'wechat',
+                userCreditSynced: true,
+              },
             });
             
             return { success: true, orderId };

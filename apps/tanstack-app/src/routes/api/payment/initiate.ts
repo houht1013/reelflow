@@ -2,8 +2,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { withCfDb } from '@/lib/with-request-db'
 import { config } from '@config'
 import { nanoid } from 'nanoid'
+import type { PaymentProviderType } from '@libs/payment'
 
 const ORDER_EXPIRATION_TIME = 2 * 60 * 60 * 1000
+const SUPPORTED_PAYMENT_PROVIDERS = new Set<PaymentProviderType>(['stripe', 'wechat', 'creem', 'alipay', 'paypal', 'dodo'])
 
 export const Route = createFileRoute('/api/payment/initiate')({
   server: {
@@ -21,6 +23,10 @@ export const Route = createFileRoute('/api/payment/initiate')({
 
           const { planId, provider = paymentProviders.STRIPE } = await request.json()
           if (!planId) return Response.json({ error: 'Plan ID is required' }, { status: 400 })
+          const selectedProvider = typeof provider === 'string' ? provider : paymentProviders.STRIPE
+          if (!SUPPORTED_PAYMENT_PROVIDERS.has(selectedProvider as PaymentProviderType)) {
+            return Response.json({ error: 'Invalid payment provider' }, { status: 400 })
+          }
 
           const orderId = nanoid()
           const plan = config.payment.plans[planId as keyof typeof config.payment.plans]
@@ -33,18 +39,47 @@ export const Route = createFileRoute('/api/payment/initiate')({
             amount: plan.amount.toString(),
             currency: plan.currency,
             status: orderStatus.PENDING,
-            provider,
+            provider: selectedProvider,
             metadata: {},
             createdAt: new Date(),
             updatedAt: new Date(),
           })
+
+          if (process.env.NODE_ENV !== 'production' && process.env.REELFLOW_PAYMENT_MOCK === '1') {
+            const providerOrderId = `reelflow_mock_${orderId}`
+            const paymentUrl = `/en/payment-success?orderId=${orderId}`
+
+            await db
+              .update(order)
+              .set({
+                providerOrderId,
+                metadata: {
+                  mock: true,
+                  provider: selectedProvider,
+                  planId,
+                  createdBy: 'reelflow_payment_mock',
+                },
+                updatedAt: new Date(),
+              })
+              .where(eq(order.id, orderId))
+
+            return Response.json({
+              orderId,
+              providerOrderId,
+              paymentUrl,
+              metadata: {
+                mock: true,
+                provider: selectedProvider,
+              },
+            })
+          }
 
           setTimeout(async () => {
             try {
               const currentOrder = await db.query.order.findFirst({ where: eq(order.id, orderId) })
               if (currentOrder?.status === orderStatus.PENDING) {
                 await db.update(order).set({ status: orderStatus.CANCELED, updatedAt: new Date() }).where(eq(order.id, orderId))
-                if (provider === paymentProviders.WECHAT) {
+                if (selectedProvider === paymentProviders.WECHAT) {
                   const paymentProvider = createPaymentProvider('wechat')
                   await paymentProvider.closeOrder(orderId)
                 }
@@ -54,7 +89,7 @@ export const Route = createFileRoute('/api/payment/initiate')({
             }
           }, ORDER_EXPIRATION_TIME)
 
-          const paymentProvider = createPaymentProvider(provider as 'stripe' | 'wechat' | 'paypal')
+          const paymentProvider = createPaymentProvider(selectedProvider as PaymentProviderType)
           const forwardedFor = request.headers.get('x-forwarded-for')
           const realIp = request.headers.get('x-real-ip')
           const clientIp = forwardedFor ? forwardedFor.split(',')[0].trim() : realIp || '127.0.0.1'

@@ -50,7 +50,6 @@ export function SignupForm({
       email: '',
       password: '',
       name: '',
-      image: ''
     },
     mode: 'onBlur', // Enable validation on blur
   });
@@ -71,7 +70,6 @@ export function SignupForm({
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        image: formData.image || undefined,
       },
       config.captcha.enabled && turnstileToken ? {
         headers: {
@@ -209,27 +207,6 @@ export function SignupForm({
               )}
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="image">
-              {t.auth.signup.imageUrl} ({t.auth.signup.optional})
-            </Label>
-            <div className="relative">
-              <Input
-                id="image"
-                type="url"
-                {...register('image')}
-                placeholder={t.auth.signup.imageUrlPlaceholder}
-                className={cn(errors.image && "border-destructive")}
-                aria-invalid={errors.image ? "true" : "false"}
-              />
-              {errors.image && (
-                <span className="text-destructive text-xs absolute -bottom-5 left-0">
-                  {errors.image.message}
-                </span>
-              )}
-            </div>
-          </div>
-
           {/* Cloudflare Turnstile 验证码 */}
           <Turnstile
             key={turnstileKey}

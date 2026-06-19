@@ -27,7 +27,7 @@ export default defineConfig({
   globalTeardown: './global-teardown.ts',
 
   use: {
-    baseURL: 'http://localhost:7001',
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost:7001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

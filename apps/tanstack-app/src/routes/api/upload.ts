@@ -48,6 +48,21 @@ export const Route = createFileRoute('/api/upload')({
           const userId = session.user.id
           const folder = `uploads/${userId}`
 
+          if (process.env.REELFLOW_UPLOAD_MOCK === '1') {
+            const key = `mock/${folder}/${uniqueFileName}`
+            return Response.json({
+              success: true,
+              data: {
+                key,
+                url: `data:${file.type};base64,${buffer.toString('base64')}`,
+                size: file.size,
+                contentType: file.type,
+                originalName: file.name,
+                provider,
+              },
+            })
+          }
+
           const storage = createStorageProvider(provider)
           const uploadResult = await storage.uploadFile({
             file: buffer,

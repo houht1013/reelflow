@@ -44,6 +44,7 @@ export const en: Locale = {
       subscriptions: "Subscriptions",
       orders: "Orders",
       credits: "Credits",
+      reelflow: "Reelflow",
       application: "Application",
       blog: "Blog"
     }
@@ -427,6 +428,132 @@ export const en: Locale = {
         status: "Status",
         time: "Time",
         total: "Total"
+      }
+    },
+    reelflow: {
+      title: "Reelflow Operations",
+      description: "Manage templates, workflow tasks, providers, and the pricing catalog for the video workflow product.",
+      loading: "Loading Reelflow operations...",
+      loadError: "Failed to load Reelflow operations",
+      refresh: "Refresh",
+      metrics: {
+        templates: "Templates",
+        publishedTemplates: "Published",
+        totalJobs: "Total tasks",
+        runningJobs: "Running",
+        failedJobs: "Failed",
+        workspaces: "Workspaces",
+        creditBalance: "Credit balance",
+        frozenCredits: "Frozen",
+        debtCredits: "Debt"
+      },
+      sections: {
+        templates: "Template management",
+        recentJobs: "Recent tasks",
+        providers: "Provider runtime",
+        pricing: "Pricing catalog"
+      },
+      table: {
+        name: "Name",
+        code: "Code",
+        category: "Category",
+        status: "Status",
+        visibility: "Visibility",
+        recommended: "Recommended",
+        priority: "Priority",
+        provider: "Provider",
+        type: "Type",
+        resource: "Resource",
+        model: "Model",
+        unit: "Unit",
+        providerCost: "Provider cost",
+        creditPrice: "Credit price",
+        workspace: "Workspace",
+        quality: "Quality",
+        artifact: "Artifact",
+        estimated: "Estimated",
+        actual: "Actual",
+        health: "Health",
+        updatedAt: "Updated",
+        actions: "Actions"
+      },
+      actions: {
+        publish: "Publish",
+        unpublish: "Unpublish",
+        recommend: "Recommend",
+        unrecommend: "Remove recommendation",
+        enable: "Enable",
+        disable: "Disable",
+        checkHealth: "Check",
+        openTask: "Open",
+        viewUserPage: "User page"
+      },
+      messages: {
+        templateUpdated: "Template updated",
+        providerUpdated: "Provider updated",
+        providerHealthChecked: "Provider health checked",
+        operationFailed: "Operation failed"
+      },
+      status: {
+        published: "Published",
+        draft: "Draft",
+        archived: "Archived",
+        public: "Public",
+        private: "Private",
+        enabled: "Enabled",
+        disabled: "Disabled",
+        notChecked: "Not checked"
+      },
+      healthStatus: {
+        available: "Available",
+        degraded: "Degraded",
+        unavailable: "Unavailable"
+      },
+      empty: {
+        templates: "No templates yet",
+        jobs: "No tasks yet",
+        providers: "No providers yet",
+        pricing: "No pricing items yet"
+      },
+      jobs: {
+        loadError: "Failed to load task detail",
+        back: "Back to operations",
+        userView: "User view",
+        jobId: "Task ID",
+        progress: "Progress",
+        error: "Task error",
+        priority: "Priority",
+        priorityHint: "Higher priority tasks are claimed earlier by workers. Use this for support recovery or important paid workspaces.",
+        priorityInvalid: "Priority must be an integer from 0 to 1000.",
+        prioritySaved: "Priority updated",
+        prioritySaveFailed: "Failed to update priority",
+        attempts: "Attempts",
+        credits: "Credits used",
+        cost: "Provider cost",
+        worker: "Worker lock",
+        sections: {
+          stages: "Stage trace",
+          events: "Runtime events",
+          quality: "Quality issues",
+          assets: "Generated assets",
+          usage: "Usage and cost"
+        },
+        table: {
+          stage: "Stage",
+          attempts: "Attempts",
+          started: "Started",
+          completed: "Completed",
+          error: "Error",
+          asset: "Asset",
+          storage: "Storage",
+          usage: "Usage"
+        },
+        empty: {
+          events: "No runtime events yet",
+          quality: "No quality issues recorded",
+          assets: "No generated assets yet",
+          usage: "No usage records yet"
+        }
       }
     },
     users: {
@@ -1239,7 +1366,7 @@ export const en: Locale = {
       subtitle: "Modern full-stack SaaS development platform with dual-market support for both domestic and international markets. One purchase, lifetime use, quickly build your business project.",
       buttons: {
         purchase: "Buy Now",
-        demo: "View Demo"
+        demo: "Learn More"
       },
       features: {
         lifetime: "One purchase, lifetime use",
@@ -1347,11 +1474,11 @@ export const en: Locale = {
         {
           title: "AI Ready Integration",
           subtitle: "Chat, image, video — full AI capability out of the box",
-          description: "Complete AI solution built on Vercel AI SDK. Not just a simple chat demo — includes AI conversation, AI image generation, and AI video generation, all with multi-provider extensible architecture. Supports streaming responses, credits-based billing, and multiple model switching (OpenAI, Claude, Gemini, etc.), letting your application be AI-ready from day one.",
+          description: "Built-in AI chat, image generation, and video generation capabilities with streaming responses, credits billing, and model switching for user-facing AI features.",
           highlights: [
             "AI Chat (multi-model streaming)",
-            "AI Image Generation (multi-provider)",
-            "AI Video Generation (multi-provider)",
+            "AI Image Generation",
+            "AI Video Generation",
             "Credits billing system"
           ],
           imageTitle: "AI Integration"
@@ -1408,7 +1535,7 @@ export const en: Locale = {
       subtitle: "Join thousands of users and use TinyShip to quickly build your next business project. Though it's a small boat, it's enough to take you to the shore of success. Early bird pricing only for first 100 users!",
       buttons: {
         purchase: "Buy Now ¥299",
-        demo: "View Demo"
+        demo: "View Details"
       }
     },
     footer: {
@@ -1416,7 +1543,7 @@ export const en: Locale = {
       description: "TinyShip"
     },
     common: {
-      demoInterface: "Feature Demo Interface",
+      demoInterface: "Feature Entry",
       techArchitecture: "Enterprise-grade technical architecture, production-verified",
       learnMore: "Learn More"
     }
@@ -1429,7 +1556,7 @@ export const en: Locale = {
     },
     chat: {
       title: "AI Assistant",
-      description: "A simple implementation of large model conversation with extensible design, using the latest technologies ai-sdk / ai-elements / streamdown to achieve very smooth chat effects, can be extended to more complex functions as needed",
+      description: "Use natural language to shape ideas, write draft copy, and get creative assistance.",
       placeholder: "What can I help you with?",
       sending: "Sending...",
       thinking: "AI is thinking...",
@@ -1674,8 +1801,8 @@ export const en: Locale = {
       lifetime: "Lifetime Member"
     },
     demoNotice: {
-      title: "🎯 SaaS Template Demo Page",
-      description: "This is a demo page for testing route protection. Only paying users can access this page, demonstrating how to implement subscription-level access control in your SaaS application."
+      title: "Member Area",
+      description: "Subscribed users can view exclusive features and account benefits here."
     },
     features: {
       userManagement: {
@@ -1777,34 +1904,42 @@ export const en: Locale = {
   },
   header: {
     navigation: {
-      ai: "AI Demo",
+      ai: "AI tools",
+      reelflow: "Create",
+      reelflowJobs: "Tasks",
+      reelflowImage: "AI image",
+      reelflowVoice: "AI voice",
+      reelflowAssets: "Assets",
+      reelflowCredits: "Credits",
+      reelflowInvites: "Invites",
+      reelflowNotifications: "Notifications",
       premiumFeatures: "Premium Features",
       pricing: "Pricing",
       upload: "Upload",
-      demos: "Demos",
-      demosDescription: "Explore example features",
+      demos: "Tools",
+      demosDescription: "View available tools",
       blog: "Blog"
     },
     demos: {
       ai: {
         title: "AI Chat",
-        description: "LLM chat with extensible design, multi-provider support. Login required."
+        description: "Draft ideas, scripts, and creative notes."
       },
       aiImage: {
         title: "AI Image Generation",
-        description: "AI image generation with extensible design, multi-provider support. Login required."
+        description: "Create visual assets for short-video scenes."
       },
       aiVideo: {
         title: "AI Video Generation",
-        description: "AI video generation with extensible design, multi-provider support. Login required."
+        description: "Experiment with short-video visual material."
       },
       premium: {
         title: "Premium Features",
-        description: "Route protection demo. Only paid users can access this page."
+        description: "View benefits available to subscribed users."
       },
       upload: {
         title: "File Upload",
-        description: "File upload with extensible design, multi-provider support. Login required."
+        description: "Upload and manage reusable personal assets."
       }
     },
     auth: {
@@ -1883,6 +2018,751 @@ export const en: Locale = {
       maxFiles: "You can only upload 1 file",
       imageOnly: "Only image files are allowed",
       fileTooLarge: "File size must be less than 1MB"
+    }
+  },
+  reelflow: {
+    metadata: {
+      generate: {
+        title: "Reelflow - Create Video Draft",
+        description: "Create short-video workflow tasks from reusable templates.",
+        keywords: "short video, workflow, template, CapCut draft, AI video"
+      },
+      jobs: {
+        title: "Reelflow - Tasks",
+        description: "Track Reelflow video workflow tasks and generation progress.",
+        keywords: "video tasks, generation history, workflow progress"
+      },
+      credits: {
+        title: "Reelflow - Credits",
+        description: "Manage workspace credits, purchases, and credit ledger records.",
+        keywords: "video workflow credits, credit purchase, workspace billing"
+      },
+      assets: {
+        title: "Reelflow - Assets",
+        description: "Browse task outputs and personal materials for video workflow generation.",
+        keywords: "video assets, task outputs, personal materials, asset library"
+      },
+      imageTool: {
+        title: "Reelflow - AI Image",
+        description: "Generate replacement and reference images, then save them to the Reelflow asset library.",
+        keywords: "AI image, image generation, video assets, replacement image"
+      },
+      voiceTool: {
+        title: "Reelflow - AI Voice",
+        description: "Generate replacement voiceover audio and save it to the Reelflow asset library.",
+        keywords: "AI voice, text to speech, video assets, voiceover"
+      },
+      notifications: {
+        title: "Reelflow - Notifications",
+        description: "Review task, credit, and delivery notifications for your workspace.",
+        keywords: "video workflow notifications, task notifications, credit notifications"
+      },
+      invites: {
+        title: "Reelflow - Invites",
+        description: "Share your invite link and earn workspace credits when friends join.",
+        keywords: "video workflow invite, referral credits, invite reward"
+      },
+      jobDetail: {
+        title: "Reelflow - Task Detail",
+        description: "View task progress, stages, and generated assets.",
+        keywords: "video task detail, workflow stage, generated assets"
+      }
+    },
+    shell: {
+      workspace: "Creator workspace",
+      workspaceName: "Default workspace",
+      workspaceHint: "Drafts, assets, and credits belong to this workspace",
+      loadingCredits: "Loading credits",
+      openMenu: "Open menu",
+      userMenu: "Open user menu",
+      signOut: "Sign out",
+      comingSoon: "Soon",
+      groups: {
+        main: "Workspace",
+        create: "Create",
+        account: "Account"
+      },
+      nav: {
+        home: "Home",
+        create: "Create",
+        draft: "Short-video draft",
+        image: "Image generation",
+        video: "Video generation",
+        voice: "Voice generation",
+        tasks: "Tasks",
+        templates: "Templates",
+        assets: "Assets",
+        credits: "Credits",
+        subscription: "Subscription",
+        invites: "Invites",
+        notifications: "Notifications",
+        mine: "Me",
+        settings: "Personal settings",
+        admin: "Admin"
+      }
+    },
+    home: {
+      title: "What do you want to create today?",
+      description: "Generate short-video drafts from templates, or create image assets as an independent capability. Tasks, credits, and outputs stay in the current workspace.",
+      primaryCta: "Create a short-video draft",
+      secondaryCta: "Generate image",
+      quickTitle: "Quick actions",
+      statusTitle: "Workspace status",
+      galleryTitle: "Official selected works",
+      galleryDescription: "These examples show the rhythm and output quality of official templates.",
+      recommendationTitle: "Recommended",
+      createCenterTitle: "Creation center",
+      createCenterDescription: "Short-video drafts and independent creative capabilities start here. Short-video drafts and image generation are available first.",
+      draftAnchorTitle: "Short-video draft",
+      draftAnchorDescription: "Choose an official template, fill in a topic and a few inputs, then generate an editable draft in one run.",
+      actions: {
+        draft: "Create draft",
+        image: "Image generation",
+        tasks: "View tasks",
+        credits: "Buy credits"
+      },
+      stats: {
+        availableCredits: "Available credits",
+        frozenCredits: "Frozen credits",
+        activeTasks: "Active tasks",
+        issues: "Need attention"
+      },
+      abilities: {
+        draft: {
+          title: "Short-video draft",
+          description: "Generate editable drafts and optional MP4 output from official templates."
+        },
+        image: {
+          title: "Image generation",
+          description: "Create reference images, covers, and storyboard materials for videos."
+        },
+        video: {
+          title: "Video generation",
+          description: "Independent video generation will open later."
+        },
+        voice: {
+          title: "Voice generation",
+          description: "Narration and replacement voice generation will open later."
+        }
+      },
+      gallery: [
+        {
+          title: "Psychology Stickman",
+          category: "Emotional value",
+          description: "Minimal line visuals for bedtime anxiety and relationship explainers."
+        },
+        {
+          title: "Cognitive Opinion Voiceover",
+          category: "Opinion expression",
+          description: "Turn one core claim into a publishable voiceover structure."
+        },
+        {
+          title: "Knowledge List Cards",
+          category: "Knowledge sharing",
+          description: "For tips, tutorials, and lightweight educational lists."
+        }
+      ],
+      recommendations: [
+        {
+          title: "Recommended track this week",
+          description: "Psychology explainers, personal growth, and cognitive opinions are good template-first experiments."
+        },
+        {
+          title: "Invite friends for credits",
+          description: "When a friend signs up with your link, both workspaces receive credits."
+        },
+        {
+          title: "Custom private templates",
+          description: "The official team can build a private template and assign it to your workspace."
+        }
+      ]
+    },
+    landing: {
+      metadata: {
+        title: "Reelflow - Short video draft workflow",
+        description: "Generate editable Jianying and CapCut draft packages from proven short-video templates, with optional 1080P MP4 rendering.",
+        keywords: "short video workflow, Jianying draft, CapCut draft, AI image, AI voice, video template"
+      },
+      hero: {
+        eyebrow: "Template-driven short-video production",
+        title: "Create editable short-video drafts without learning editing tools",
+        subtitle: "Choose an official template, fill in a few plain-language inputs, and Reelflow runs script, visuals, voice, captions, draft packaging, and optional MP4 rendering as one long-running task.",
+        primaryCta: "Start creating",
+        secondaryCta: "View plans",
+        trust: [
+          "Editable Jianying draft",
+          "Workspace credits",
+          "Traceable long tasks"
+        ]
+      },
+      preview: {
+        title: "Psychology Stickman",
+        subtitle: "Official template",
+        status: "Running",
+        template: "Template workflow",
+        credits: "35 credits frozen",
+        caption: "Why do people overthink at night?",
+        progress: "Generation progress",
+        stages: [
+          "Script accepted",
+          "Storyboard ready",
+          "Voice generated",
+          "Draft package"
+        ],
+        costLabel: "Settlement",
+        costValue: "Pay by actual usage",
+        auditLabel: "Trace",
+        auditValue: "Stages and assets logged"
+      },
+      metrics: [
+        { value: "3", label: "Official launch templates" },
+        { value: "90%", label: "Automated production target" },
+        { value: "1080P", label: "Optional cloud MP4 output" },
+        { value: "1", label: "One-click generation flow" }
+      ],
+      workflow: {
+        title: "Built for non-technical creators",
+        description: "Choose a template, fill in simple inputs, and review the output when the task finishes.",
+        steps: [
+          {
+            title: "Choose a template",
+            description: "Use official viral-format templates for knowledge sharing, opinion voiceover, and list-card videos."
+          },
+          {
+            title: "Fill simple inputs",
+            description: "Enter topic, tone, audience, and optional reusable assets from the workspace asset library."
+          },
+          {
+            title: "Track progress",
+            description: "Review progress, logs, outputs, usage, quality issues, and retry actions while generation runs."
+          },
+          {
+            title: "Download outputs",
+            description: "Receive an editable draft package, plus optional fixed-spec 1080P MP4 rendering."
+          }
+        ]
+      },
+      templates: {
+        title: "Start with formats that already fit the platform",
+        description: "Start from reusable short-video structures and generate drafts that are ready to refine.",
+        tags: [
+          "Knowledge sharing",
+          "Opinion expression",
+          "Emotional value",
+          "Psychology explainers"
+        ],
+        items: [
+          {
+            name: "Psychology Stickman",
+            description: "Stickman-style psychology and relationship explainers with a simple visual rhythm.",
+            output: "Draft package + captions"
+          },
+          {
+            name: "Cognitive Opinion Voiceover",
+            description: "Voiceover-first content for point-of-view, cognition, and personal insight videos.",
+            output: "Voice + visual draft"
+          },
+          {
+            name: "Knowledge List Cards",
+            description: "Structured list-card videos for tips, how-to content, and lightweight education.",
+            output: "Cards + optional MP4"
+          }
+        ]
+      },
+      tools: {
+        title: "Recover the last 10% inside the same workspace",
+        description: "When generated material is missing or not good enough, independent AI tools create replacement assets without breaking task traceability.",
+        items: [
+          {
+            title: "AI image replacement",
+            description: "Generate reference or replacement images and save them directly to the asset library."
+          },
+          {
+            title: "AI voice replacement",
+            description: "Create reusable narration audio and save it to the asset library."
+          },
+          {
+            title: "Draft and MP4 delivery",
+            description: "Editable draft packages remain the core deliverable; cloud MP4 is available as an optional output."
+          }
+        ]
+      },
+      finalCta: {
+        title: "Start with your first editable draft",
+        description: "Choose a template, enter a topic, and generate a short-video draft you can keep refining.",
+        primaryCta: "Create a task",
+        secondaryCta: "Buy credits"
+      }
+    },
+    common: {
+      productName: "Reelflow",
+      credits: "credits",
+      viewTasks: "View tasks",
+      createNew: "Create new",
+      refresh: "Refresh",
+      unavailable: "Temporarily unavailable",
+      noData: "No data yet",
+      unknown: "Unknown"
+    },
+    credits: {
+      title: "Workspace credits",
+      description: "Credits are frozen when a workflow starts and settled after generation. Top up here when balance is low or a completed task has debt.",
+      loadError: "Failed to load workspace credits",
+      balance: "Available",
+      frozen: "Frozen",
+      debt: "Debt",
+      totalGranted: "Granted",
+      totalConsumed: "Consumed",
+      buyTitle: "Top up credits",
+      buyDescription: "Choose a credit pack and pay with the configured provider. Successful purchases are added to the current workspace.",
+      noExpiry: "No expiry",
+      recommended: "Recommended",
+      buyNow: "Buy now",
+      purchaseSuccess: "Credits added",
+      purchaseFailed: "Credit purchase failed",
+      ledgerTitle: "Credit ledger",
+      ledgerDescription: "Workspace-level purchase, freeze, settlement, debt, and refund records.",
+      emptyLedger: "No credit records yet",
+      wechatQrTitle: "Scan to pay",
+      wechatQrHint: "Keep this window open. The balance will refresh after payment is confirmed.",
+      wechatQrAlt: "WeChat Pay QR code",
+      providers: {
+        stripe: "Stripe",
+        wechat: "WeChat Pay",
+        alipay: "Alipay",
+        paypal: "PayPal",
+        creem: "Creem",
+        dodo: "Dodo Payments"
+      },
+      ledgerTypes: {
+        purchase: "Purchase",
+        bonus: "Bonus",
+        trial_grant: "Trial",
+        invite_bonus: "Invite bonus",
+        adjustment: "Adjustment",
+        freeze: "Freeze",
+        estimate_freeze: "Freeze",
+        ai_image_generation: "AI image",
+        ai_voice_generation: "AI voice",
+        settlement: "Settlement",
+        debt: "Debt",
+        refund: "Refund"
+      },
+      table: {
+        time: "Time",
+        type: "Type",
+        description: "Description",
+        amount: "Amount",
+        balanceAfter: "Balance after"
+      }
+    },
+    assetLibrary: {
+      title: "Asset library",
+      description: "Review generated task outputs and keep reusable personal materials in the current workspace.",
+      loadError: "Failed to load assets",
+      filters: {
+        all: "All assets",
+        task: "Task outputs",
+        personal: "Personal materials"
+      },
+      allTypes: "All types",
+      searchPlaceholder: "Search asset, template, or file name",
+      empty: "No assets found",
+      emptyHint: "Run a workflow or upload a personal material to build your asset library.",
+      uploadTitle: "Upload material",
+      uploadDescription: "Upload a reusable image, logo, avatar, or reference image for later workflows.",
+      assetType: "Asset type",
+      storageProvider: "Storage service",
+      chooseFile: "Choose image",
+      fileHint: "JPG, PNG, WebP, GIF, SVG or BMP. Max 10MB.",
+      uploadAction: "Upload and save",
+      uploading: "Uploading...",
+      uploadSuccess: "Material saved",
+      uploadFailed: "Upload failed",
+      registerFailed: "Failed to save material",
+      scopeTitle: "Workspace scoped",
+      scopeDescription: "Assets belong to the current workspace. Task outputs are read-only; uploaded materials can be reused by future workflow inputs.",
+      createdAt: "Created",
+      fileSize: "Size",
+      duration: "Duration",
+      template: "Template",
+      jobStatus: "Task status",
+      storageKey: "Storage key",
+      preview: "Preview",
+      previewDescription: "Review this asset before reusing it in a workflow or opening the original file.",
+      openAsset: "Open",
+      openJob: "Task",
+      removeTitle: "Remove material?",
+      removeDescription: "This hides the uploaded material from your asset library. Task outputs stay read-only for traceability.",
+      removeSuccess: "Material removed",
+      removeFailed: "Failed to remove material",
+      sources: {
+        task: "Task output",
+        personal: "Personal",
+        aiGenerated: "AI generated"
+      },
+      providers: {
+        r2: "Cloudflare R2",
+        oss: "Alibaba OSS",
+        s3: "Amazon S3",
+        cos: "Tencent COS",
+        mock: "Mock",
+        "reelflow-local": "Local draft"
+      },
+      errors: {
+        imageOnly: "Only image files are supported",
+        fileTooLarge: "File size must be 10MB or less",
+        noFile: "Choose a file first"
+      }
+    },
+    imageTool: {
+      badge: "Asset tool",
+      title: "Generate a replacement image",
+      description: "Create a usable image for missing or low-quality visuals. The result is saved to your asset library automatically.",
+      openAssets: "Open assets",
+      prompt: "Image prompt",
+      promptPlaceholder: "Describe the image you need, for example: a simple stickman showing anxiety before sleep, white background, clean lines",
+      promptHint: "Write the scene and style in plain language. Avoid account passwords, private data, or sensitive content.",
+      provider: "Generation service",
+      size: "Format",
+      model: "Model",
+      advanced: "Advanced settings",
+      negativePrompt: "Avoid",
+      negativePromptPlaceholder: "Things you do not want in the image",
+      seed: "Seed",
+      randomSeed: "Randomize seed",
+      generate: "Generate image",
+      generating: "Generating...",
+      generatingHint: "Generating and saving the image to your asset library.",
+      result: "Result",
+      resultHint: "Generated images are stored as personal assets.",
+      emptyResult: "Describe the image you need. The generated result will appear here and be saved to assets.",
+      saved: "Saved",
+      success: "Image saved to assets",
+      viewInAssets: "View in assets",
+      newImage: "New image",
+      creditConsumed: "Credits used",
+      balanceAfter: "Balance after",
+      providers: {
+        qwen: "Qwen",
+        fal: "fal.ai",
+        openai: "OpenAI",
+        gemini: "Gemini"
+      },
+      errors: {
+        noPrompt: "Enter an image prompt first",
+        insufficientCredits: "Not enough workspace credits",
+        failed: "Image generation failed"
+      }
+    },
+    voiceTool: {
+      badge: "Asset tool",
+      title: "Generate voiceover audio",
+      description: "Turn short scripts into reusable voice assets for missing narration, replacement audio, or future workflow inputs.",
+      openAssets: "Open assets",
+      text: "Voiceover text",
+      textPlaceholder: "Paste a short narration paragraph here. Keep it clear and conversational.",
+      textHint: "Use plain narration text. Avoid passwords, private data, and sensitive content.",
+      voice: "Voice",
+      speed: "Speed",
+      costTitle: "Workspace credit estimate",
+      estimatedCost: "Estimated cost",
+      generate: "Generate voice",
+      generating: "Generating...",
+      generatingHint: "Generating audio and saving it to your asset library.",
+      result: "Voice result",
+      resultHint: "Generated audio is stored as a personal asset.",
+      emptyResult: "Paste narration text and generate a voice asset. The result will be playable here.",
+      previewTitle: "Audio preview",
+      saved: "Saved",
+      savedHint: "This voice asset is saved to your asset library and can be reused later.",
+      success: "Voice saved to assets",
+      viewInAssets: "View in assets",
+      newVoice: "New voice",
+      creditConsumed: "Credits used",
+      balanceAfter: "Balance after",
+      voices: {
+        alloy: "Balanced",
+        verse: "Narrative",
+        aria: "Warm",
+        sage: "Steady",
+        nova: "Bright"
+      },
+      errors: {
+        noText: "Enter voiceover text first",
+        tooLong: "Voiceover text must be 2000 characters or less",
+        insufficientCredits: "Not enough workspace credits",
+        failed: "Voice generation failed"
+      }
+    },
+    notifications: {
+      title: "Notifications",
+      description: "Track workflow results, credit changes, and email delivery status in one place.",
+      loadError: "Failed to load notifications",
+      updateError: "Failed to update notifications",
+      markedRead: "Notifications marked as read",
+      markAllRead: "Mark all read",
+      empty: "No notifications",
+      emptyHint: "Task and credit updates will appear here.",
+      unread: "Unread",
+      read: "Read",
+      openTarget: "Open",
+      noEmailDelivery: "No email delivery",
+      filters: {
+        all: "All",
+        unread: "Unread"
+      },
+      types: {
+        job_completed: "Task completed",
+        job_failed: "Task failed",
+        credits_granted: "Credits added",
+        credits_debt: "Credit debt",
+        asset_ready: "Asset ready",
+        invite_bonus: "Invite bonus"
+      },
+      deliveryStatus: {
+        pending: "Email pending",
+        sent: "Email sent",
+        failed: "Email failed"
+      }
+    },
+    invites: {
+      title: "Invite friends",
+      description: "Share Reelflow with people who want to try short-video workflows. When they join with your link, both workspaces receive credits automatically.",
+      loadError: "Failed to load invite rewards",
+      shareTitle: "Your invite link",
+      shareDescription: "Send this link directly. New users do not need to understand credits first; rewards are handled after signup.",
+      inviteLink: "Invite link",
+      inviteCode: "Invite code",
+      copyLink: "Copy link",
+      copied: "Invite link copied",
+      copiedShort: "Copied",
+      autoCredit: "Rewards are added automatically",
+      referrerReward: "You receive",
+      referredReward: "Friend receives",
+      successfulInvites: "Successful invites",
+      totalEarned: "earned",
+      recordsTitle: "Invite records",
+      recordsDescription: "Track signup time, reward status, and credits for each invited user.",
+      emptyRecords: "No invited users yet",
+      unnamedUser: "New user",
+      claimed: "Invite reward added",
+      claimedDescription: "Welcome credits have been added to your Reelflow workspace.",
+      signupRewardTitle: "Invite reward detected",
+      signupRewardHint: "Create your account with this link and welcome credits will be added after signup.",
+      status: {
+        registered: "Registered",
+        rewarded: "Rewarded",
+        invalid: "Invalid"
+      },
+      table: {
+        user: "User",
+        status: "Status",
+        reward: "Reward",
+        time: "Time"
+      }
+    },
+    generate: {
+      title: "Create a short-video draft",
+      description: "Choose a proven template, fill in the topic, and let the workflow generate the draft in one run.",
+      templateSection: "Template",
+      inputSection: "Inputs",
+      outputSection: "Output",
+      runSection: "Run",
+      chooseTemplate: "Choose a template",
+      recommended: "Recommended",
+      privateTemplate: "Private",
+      fieldsHint: "Fill only the fields needed by this template. The workflow will handle script, visuals, voice, captions, and draft packaging.",
+      renderMp4: "Also render MP4",
+      renderMp4Hint: "When enabled, Reelflow also creates a default 1080P MP4.",
+      draftOnlyHint: "The default output is a CapCut/Jianying draft package.",
+      estimate: "Estimated cost",
+      estimateHint: "Credits are frozen before execution. Final settlement is based on actual generation and media processing usage.",
+      submit: "Start generation",
+      submitting: "Creating task...",
+      submitSuccess: "Task created",
+      submitError: "Failed to create task",
+      runBlockedTitle: "Task cannot start yet",
+      preflightTitle: "Preflight found issues",
+      preflightBody: "Fix the following items, then start generation again.",
+      checkCredits: "Check credits",
+      checkTasks: "Check tasks",
+      loadError: "Failed to load templates",
+      emptyTemplates: "No available templates",
+      emptyTemplatesHint: "Publish official templates or assign a private template to this workspace first.",
+      requiredMark: "Required",
+      numberRange: "Allowed range: {min}-{max}",
+      selectPlaceholder: "Select an option",
+      textPlaceholder: "Enter content",
+      booleanOn: "Enabled",
+      booleanOff: "Disabled",
+      assetHint: "Choose a reusable material from your asset library. Leave it empty if you want the workflow to generate everything.",
+      assetLoadError: "Failed to load reusable assets",
+      selectedAsset: "Selected",
+      clearAsset: "Clear",
+      openAssets: "Open assets",
+      noAssets: "No reusable image yet",
+      noAssetsHint: "Upload a reference image or generate one with AI, then return to select it here.",
+      loginHint: "Sign in to start creating workflow tasks.",
+      goToTask: "Open task",
+      preflightErrors: {
+        workspace_inactive: "Your workspace is not ready for new tasks. Contact support if this keeps happening.",
+        queue_limit_exceeded: "You already have too many active tasks. Wait for one to finish before starting another.",
+        provider_unavailable: "A required generation service is temporarily unavailable. Try again later.",
+        provider_disabled: "A required generation service is currently disabled by operations.",
+        content_blocked: "Some input content cannot be used for this workflow. Revise it and try again."
+      },
+      fields: {
+        topic: "Topic",
+        audience: "Audience",
+        tone: "Tone",
+        claim: "Core claim",
+        examples: "Examples",
+        voiceStyle: "Voice style",
+        itemCount: "Item count",
+        style: "Visual style",
+        referenceAssetId: "Reference material"
+      }
+    },
+    jobs: {
+      title: "Tasks",
+      description: "Review generated drafts, in-progress runs, and items that need manual follow-up.",
+      loading: "Loading tasks...",
+      loadError: "Failed to load tasks",
+      empty: "No tasks yet",
+      emptyHint: "Create your first video workflow task from an official template.",
+      open: "Open",
+      createdAt: "Created",
+      completedAt: "Completed",
+      template: "Template",
+      estimatedCredits: "Estimated",
+      actualCredits: "Actual",
+      artifact: "Artifact",
+      status: "Status",
+      quality: "Quality",
+      settlement: "Settlement",
+      mp4Requested: "MP4 requested",
+      draftRequested: "Draft package",
+      activeTasks: "Active tasks",
+      completedTasks: "Completed tasks",
+      attentionTasks: "Need attention",
+      autoRefreshOn: "Auto-refresh on",
+      autoRefreshOff: "Auto-refresh off",
+      liveHintTitle: "Live task tracking is on",
+      liveHintBody: "This list refreshes every few seconds while tasks are queued or running.",
+      lastRefreshed: "Last refreshed"
+    },
+    detail: {
+      title: "Task detail",
+      backToTasks: "Back to tasks",
+      taskId: "Task ID",
+      liveTracking: "Live tracking",
+      autoRefreshOn: "Auto-refresh on",
+      autoRefreshOff: "Auto-refresh off",
+      lastRefreshed: "Last refreshed",
+      liveHintTitle: "Task is being generated",
+      liveHintBody: "This page refreshes every few seconds while the task is queued or running, so you can follow stage progress without manually reloading.",
+      progress: "Progress",
+      stages: "Stages",
+      assets: "Assets",
+      usage: "Usage",
+      events: "Logs",
+      qualityIssues: "Quality issues",
+      outputNoticeTitle: "Output is controlled by task state",
+      outputNoticeBody: "Drafts and videos become downloadable after settlement and quality checks. The draft package includes the editing project, material list, and local conversion notes.",
+      actionsTitle: "Task actions",
+      actionsDescription: "Use retry when a system step failed. Use rerun when you want a fresh result from the same inputs.",
+      actionsUnavailable: "Actions become available after the task completes or fails.",
+      retryFailed: "Retry from failed point",
+      retryQueued: "Retry queued",
+      rerun: "Generate again",
+      rerunCreated: "New task created",
+      actionFailed: "Task action failed",
+      downloadDraft: "Download draft package",
+      downloadHint: "The zip includes the editable draft, material list, and local conversion notes.",
+      downloadUnavailable: "The draft package is not downloadable yet.",
+      previewAsset: "Preview",
+      assetPreviewDescription: "Preview generated assets here. Draft packages are downloaded after settlement; media files can be opened when they are ready.",
+      assetUnavailable: "This asset is a trace record. The media file will appear here when it is ready.",
+      assetNote: "Note",
+      usageItem: "Generation usage",
+      issue: "Needs attention",
+      openAsset: "Open file",
+      openInAssets: "Assets",
+      audioPreview: "Audio preview",
+      videoPreview: "Video preview",
+      fileSize: "Size",
+      duration: "Duration",
+      dimensions: "Dimensions",
+      noAssets: "No assets recorded",
+      noUsage: "No usage recorded",
+      noEvents: "No logs yet",
+      noIssues: "No quality issues recorded",
+      source: "Source",
+      storage: "Storage",
+      storageKey: "Storage key",
+      startedAt: "Started",
+      updatedAt: "Updated",
+      error: "Error",
+      loadError: "Failed to load task detail"
+    },
+    status: {
+      queued: "Queued",
+      running: "Running",
+      completed: "Completed",
+      failed: "Failed",
+      canceled: "Canceled",
+      pending: "Pending",
+      skipped: "Skipped",
+      needs_fix: "Needs fix",
+      unchecked: "Unchecked",
+      accepted: "Accepted",
+      generating: "Generating",
+      locked: "Locked",
+      available: "Available",
+      downloadable: "Downloadable",
+      expired: "Expired",
+      estimated: "Estimated",
+      frozen: "Frozen",
+      settled: "Settled",
+      debt: "Debt",
+      refunded: "Refunded"
+    },
+    stages: {
+      precheck: "Precheck",
+      script: "Script",
+      storyboard: "Storyboard",
+      image: "Images",
+      voice: "Voice",
+      caption: "Captions",
+      compose_project: "Compose project",
+      draft_package: "Draft package",
+      render_mp4: "MP4 render",
+      settlement: "Settlement",
+      notify: "Notify"
+    },
+    assets: {
+      script: "Script",
+      storyboard: "Storyboard",
+      image: "Image plan",
+      audio: "Voice plan",
+      caption: "Captions",
+      video: "Video",
+      draft_package: "Draft package",
+      manifest: "Manifest",
+      workflow_project: "Workflow project",
+      rendered_mp4: "Rendered MP4",
+      logo: "Logo",
+      avatar: "Avatar",
+      reference_image: "Reference image"
+    },
+    resources: {
+      llm: "Content generation",
+      image: "Image generation",
+      tts: "Voice generation",
+      draft: "Draft processing",
+      render: "Video rendering",
+      plugin: "Asset processing"
     }
   },
   blog: {

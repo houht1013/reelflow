@@ -12,7 +12,7 @@ interface SocialAuthProps extends React.HTMLAttributes<HTMLDivElement> {
   providers?: SocialProvider[];
 }
 
-const defaultProviders: SocialProvider[] = ['google', 'github', 'wechat', 'phone'];
+const defaultProviders: SocialProvider[] = ['google', 'phone'];
 
 export function SocialAuth({
   className,
@@ -28,13 +28,9 @@ export function SocialAuth({
 
     const params = new URLSearchParams(window.location.search);
     const returnTo = params.get('returnTo');
-    const queryString = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '';
-
     switch (provider) {
-      case 'wechat':
-        router.push(`/${currentLocale}/wechat${queryString}`);
-        break;
       case 'phone':
+        const queryString = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '';
         router.push(`/${currentLocale}/cellphone${queryString}`);
         break;
       default:

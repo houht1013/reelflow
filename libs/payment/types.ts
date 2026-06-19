@@ -25,6 +25,7 @@ export interface PaymentPlan {
     months?: number;
   };
   credits?: number;
+  reelflowCredits?: number;
   stripePriceId?: string;
   creemProductId?: string;
   paypalPlanId?: string;

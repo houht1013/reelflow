@@ -1,0 +1,19 @@
+{
+  "name": "@reelflow/execution-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "once": "tsx src/index.ts --once",
+    "health": "tsx src/index.ts --health",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

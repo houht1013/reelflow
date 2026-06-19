@@ -24,6 +24,7 @@ import { eq, and } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import { creditService, TransactionTypeCode } from '@libs/credits';
+import { grantWorkspaceCredits, grantWorkspaceSubscriptionCredits } from '@libs/reelflow/billing';
 
 export interface DodoWebhookHeaders {
   'webhook-id': string | null;
@@ -210,6 +211,20 @@ export class DodoProvider implements PaymentProvider {
         }
       });
 
+      await grantWorkspaceCredits({
+        userId,
+        amount: credits,
+        type: 'purchase',
+        orderId,
+        description: 'Purchase Reelflow workspace credits',
+        metadata: {
+          paymentId: paymentData.payment_id,
+          planId,
+          provider: 'dodo',
+          userCreditSynced: true,
+        },
+      });
+
       return { success: true, orderId };
     }
 
@@ -286,6 +301,7 @@ export class DodoProvider implements PaymentProvider {
 
     const periodStart = new Date(subData.previous_billing_date);
     const periodEnd = new Date(subData.next_billing_date);
+    const plan = config.payment.plans[planId as keyof typeof config.payment.plans] as PaymentPlan | undefined;
 
     const subscriptionData = {
       id: randomUUID(),
@@ -303,6 +319,23 @@ export class DodoProvider implements PaymentProvider {
       })
     };
     await db.insert(userSubscription).values(subscriptionData);
+
+    if (plan?.reelflowCredits) {
+      await grantWorkspaceSubscriptionCredits({
+        userId,
+        amount: plan.reelflowCredits,
+        provider: 'dodo',
+        planId,
+        subscriptionId: subData.subscription_id,
+        orderId: metadata.orderId,
+        periodStart,
+        periodEnd,
+        metadata: {
+          productId: subData.product_id,
+          trigger: 'subscription.active',
+        },
+      });
+    }
 
     return { success: true, orderId: metadata.orderId };
   }
@@ -328,6 +361,23 @@ export class DodoProvider implements PaymentProvider {
         updatedAt: new Date()
       })
       .where(eq(userSubscription.id, subscription.id));
+
+    const plan = config.payment.plans[subscription.planId as keyof typeof config.payment.plans] as PaymentPlan | undefined;
+    if (plan?.reelflowCredits) {
+      await grantWorkspaceSubscriptionCredits({
+        userId: subscription.userId,
+        amount: plan.reelflowCredits,
+        provider: 'dodo',
+        planId: subscription.planId,
+        subscriptionId: subData.subscription_id,
+        periodStart,
+        periodEnd,
+        metadata: {
+          productId: subData.product_id,
+          trigger: 'subscription.renewed',
+        },
+      });
+    }
 
     console.log(`Dodo subscription renewed: ${subData.subscription_id}, period: ${periodStart.toISOString()} - ${periodEnd.toISOString()}`);
     return { success: true };

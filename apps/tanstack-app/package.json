@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 7001",
-    "dev:cf": "CF_DEPLOY=1 vite dev --port 7001",
-    "preview:cf": "CF_DEPLOY=1 pnpm exec vite build && pnpm exec wrangler dev --port 7001",
-    "build": "CF_DEPLOY=1 vite build",
+    "dev:cf": "cross-env CF_DEPLOY=1 vite dev --port 7001",
+    "preview:cf": "cross-env CF_DEPLOY=1 pnpm exec vite build && pnpm exec wrangler dev --port 7001",
+    "build": "cross-env CF_DEPLOY=1 vite build",
     "start": "NODE_ENV=production node .output/server/index.mjs",
-    "deploy:cf": "CF_DEPLOY=1 vite build && wrangler deploy",
+    "deploy:cf": "cross-env CF_DEPLOY=1 vite build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "typecheck": "tsc --noEmit"
   },
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.33.2",
+    "cross-env": "^7.0.3",
     "@tailwindcss/vite": "^4.2.1",
     "@types/node": "^22",
     "@types/qrcode": "1.5.5",

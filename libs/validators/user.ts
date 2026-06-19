@@ -79,10 +79,8 @@ export function createValidators(t: TranslationFunction) {
       .max(100, t('validators.user.password.maxLength', { max: 100 })),
   });
 
-  // 扩展的注册表单验证器（包含可选的图片URL）
-  const signupFormSchema = emailSignUpSchema.extend({
-    image: z.url(t('validators.user.image.invalidUrl')).optional().or(z.literal('')),
-  });
+  // 注册页暂不收集头像，后续由个人中心补充。
+  const signupFormSchema = emailSignUpSchema;
 
   // 邮箱登录验证器
   const emailSignInSchema = z.object({

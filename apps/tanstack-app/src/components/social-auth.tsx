@@ -15,8 +15,6 @@ interface SocialAuthProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const defaultProviders: SocialProvider[] = [
   "google",
-  "github",
-  "wechat",
   "phone",
 ];
 
@@ -36,18 +34,7 @@ export function SocialAuth({
 
     const params = new URLSearchParams(window.location.search);
     const returnTo = params.get("returnTo");
-    const queryString = returnTo
-      ? `?returnTo=${encodeURIComponent(returnTo)}`
-      : "";
-
     switch (provider) {
-      case "wechat":
-        navigate({
-          to: "/$lang/wechat",
-          params: { lang: currentLocale },
-          search: returnTo ? { returnTo } : undefined,
-        });
-        break;
       case "phone":
         navigate({
           to: "/$lang/cellphone",

@@ -8,6 +8,7 @@ type BasePlan = {
   amount: number;
   currency: string;
   recommended?: boolean;
+  reelflowCredits?: number;
   i18n: {
     [locale: string]: {
       name: string;

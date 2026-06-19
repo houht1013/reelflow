@@ -9,9 +9,8 @@
  */
 
 import { Link, useNavigate, useLocation } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@libs/react-shared/ui/button";
-import { Logo } from "@libs/react-shared/ui/logo";
 import { authClientReact } from "@libs/auth/authClient";
 import { config } from "@config";
 import {
@@ -23,11 +22,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@libs/react-shared/ui/dropdown-menu";
-import { Check, Globe, ChevronDown, Bot, Crown, Upload, ImageIcon, VideoIcon } from "lucide-react";
+import { Check, Globe, ImageIcon, Clapperboard, ListChecks, WalletCards, Archive, Bell, Gift, Mic2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@libs/react-shared/ui/avatar";
 import { type SupportedLocale, locales } from "@libs/i18n";
 import { useTranslation } from "@/hooks/use-translation";
 import { ThemeToggle, ColorSchemeToggle } from "@/components/theme-toggle";
+import { toast } from "sonner";
 
 interface HeaderProps {
   className?: string;
@@ -35,6 +35,7 @@ interface HeaderProps {
 
 export default function Header({ className }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [claimingInviteCode, setClaimingInviteCode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t, locale: currentLocale } = useTranslation();
@@ -44,6 +45,35 @@ export default function Header({ className }: HeaderProps) {
     isPending
   } = authClientReact.useSession();
   const user = session?.user;
+
+  useEffect(() => {
+    if (!user || claimingInviteCode || typeof window === "undefined") return;
+
+    const pendingInviteCode = window.localStorage.getItem("reelflow.pendingInviteCode");
+    if (!pendingInviteCode) return;
+
+    setClaimingInviteCode(true);
+    fetch("/api/reelflow/invites", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: pendingInviteCode }),
+    })
+      .then((response) => response.json())
+      .then((payload) => {
+        if (["rewarded", "already_claimed", "self_invite", "invalid_code"].includes(payload.status)) {
+          window.localStorage.removeItem("reelflow.pendingInviteCode");
+        }
+        if (payload.status === "rewarded") {
+          toast.success(t.reelflow.invites.claimed, {
+            description: t.reelflow.invites.claimedDescription,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to claim pending Reelflow invite:", error);
+      })
+      .finally(() => setClaimingInviteCode(false));
+  }, [claimingInviteCode, t.reelflow.invites.claimed, t.reelflow.invites.claimedDescription, user]);
 
   const handleSignOut = async () => {
     await authClientReact.signOut();
@@ -66,95 +96,54 @@ export default function Header({ className }: HeaderProps) {
         <div className="flex h-16 items-center justify-between">
           {/* Logo and brand */}
           <div className="flex items-center">
-            <Link to="/$lang" params={{ lang: currentLocale }}>
-              <Logo size="md" />
+            <Link to="/$lang" params={{ lang: currentLocale }} className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-950 text-white">
+                <Clapperboard className="h-5 w-5" />
+              </span>
+              <span className="text-xl font-semibold tracking-normal text-foreground">Reelflow</span>
             </Link>
           </div>
 
           {/* Desktop navigation */}
           <nav className="hidden md:flex md:items-center md:space-x-8">
-            {/* Demos Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button 
-                  type="button"
-                  className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {t.header.navigation.demos}
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-96 p-4">
-                <div className="space-y-1">
-                  <DropdownMenuItem asChild className="p-0">
-                    <a href={`/${currentLocale}/ai`} className="group flex items-start gap-4 rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/50 group-hover:bg-primary-foreground">
-                        <Bot className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-sm">{t.header.demos.ai.title}</span>
-                        <span className="text-sm text-muted-foreground leading-snug mt-0.5">
-                          {t.header.demos.ai.description}
-                        </span>
-                      </div>
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-0">
-                    <a href={`/${currentLocale}/image-generate`} className="group flex items-start gap-4 rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/50 group-hover:bg-primary-foreground">
-                        <ImageIcon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-sm">{t.header.demos.aiImage.title}</span>
-                        <span className="text-sm text-muted-foreground leading-snug mt-0.5">
-                          {t.header.demos.aiImage.description}
-                        </span>
-                      </div>
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-0">
-                    <a href={`/${currentLocale}/video-generate`} className="group flex items-start gap-4 rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/50 group-hover:bg-primary-foreground">
-                        <VideoIcon className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-sm">{t.header.demos.aiVideo.title}</span>
-                        <span className="text-sm text-muted-foreground leading-snug mt-0.5">
-                          {t.header.demos.aiVideo.description}
-                        </span>
-                      </div>
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-0">
-                    <a href={`/${currentLocale}/premium-features`} className="group flex items-start gap-4 rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/50 group-hover:bg-primary-foreground">
-                        <Crown className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-sm">{t.header.demos.premium.title}</span>
-                        <span className="text-sm text-muted-foreground leading-snug mt-0.5">
-                          {t.header.demos.premium.description}
-                        </span>
-                      </div>
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="p-0">
-                    <a href={`/${currentLocale}/upload`} className="group flex items-start gap-4 rounded-lg p-3 hover:bg-muted/50 transition-colors">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/50 group-hover:bg-primary-foreground">
-                        <Upload className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-sm">{t.header.demos.upload.title}</span>
-                        <span className="text-sm text-muted-foreground leading-snug mt-0.5">
-                          {t.header.demos.upload.description}
-                        </span>
-                      </div>
-                    </a>
-                  </DropdownMenuItem>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
+            <Link to="/$lang/reelflow" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              {t.header.navigation.reelflow}
+            </Link>
+            {user && (
+              <Link to="/$lang/reelflow/jobs" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowJobs}
+              </Link>
+            )}
+            {user && (
+              <Link to="/$lang/reelflow/image" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowImage}
+              </Link>
+            )}
+            {user && (
+              <Link to="/$lang/reelflow/voice" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowVoice}
+              </Link>
+            )}
+            {user && (
+              <Link to="/$lang/reelflow/assets" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowAssets}
+              </Link>
+            )}
+            {user && (
+              <Link to="/$lang/reelflow/credits" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowCredits}
+              </Link>
+            )}
+            {user && (
+              <Link to="/$lang/reelflow/invites" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowInvites}
+              </Link>
+            )}
+            {user && (
+              <Link to="/$lang/reelflow/notifications" params={{ lang: currentLocale }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {t.header.navigation.reelflowNotifications}
+              </Link>
+            )}
             <Link to="/$lang/blog" params={{ lang: currentLocale }} search={{ page: 1 }} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               {t.header.navigation.blog}
             </Link>
@@ -294,48 +283,54 @@ export default function Header({ className }: HeaderProps) {
       {isMenuOpen && (
         <div className="md:hidden bg-background border-t border-border">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {/* Demos Section */}
+            {/* Reelflow Section */}
             <div className="px-3 py-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                {t.header.navigation.demos}
-              </p>
-              <div className="space-y-1">
-                <a href={`/${currentLocale}/ai`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
-                  <Bot className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <span className="block">{t.header.demos.ai.title}</span>
-                    <span className="block text-xs text-muted-foreground">{t.header.demos.ai.description}</span>
-                  </div>
+              <a href={`/${currentLocale}/reelflow`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                <Clapperboard className="h-5 w-5 text-muted-foreground" />
+                <span>{t.header.navigation.reelflow}</span>
+              </a>
+              {user && (
+                <a href={`/${currentLocale}/reelflow/jobs`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                  <ListChecks className="h-5 w-5 text-muted-foreground" />
+                  <span>{t.header.navigation.reelflowJobs}</span>
                 </a>
-                <a href={`/${currentLocale}/image-generate`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+              )}
+              {user && (
+                <a href={`/${currentLocale}/reelflow/image`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
                   <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <span className="block">{t.header.demos.aiImage.title}</span>
-                    <span className="block text-xs text-muted-foreground">{t.header.demos.aiImage.description}</span>
-                  </div>
+                  <span>{t.header.navigation.reelflowImage}</span>
                 </a>
-                <a href={`/${currentLocale}/video-generate`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
-                  <VideoIcon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <span className="block">{t.header.demos.aiVideo.title}</span>
-                    <span className="block text-xs text-muted-foreground">{t.header.demos.aiVideo.description}</span>
-                  </div>
+              )}
+              {user && (
+                <a href={`/${currentLocale}/reelflow/voice`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                  <Mic2 className="h-5 w-5 text-muted-foreground" />
+                  <span>{t.header.navigation.reelflowVoice}</span>
                 </a>
-                <a href={`/${currentLocale}/premium-features`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
-                  <Crown className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <span className="block">{t.header.demos.premium.title}</span>
-                    <span className="block text-xs text-muted-foreground">{t.header.demos.premium.description}</span>
-                  </div>
+              )}
+              {user && (
+                <a href={`/${currentLocale}/reelflow/assets`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                  <Archive className="h-5 w-5 text-muted-foreground" />
+                  <span>{t.header.navigation.reelflowAssets}</span>
                 </a>
-                <a href={`/${currentLocale}/upload`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
-                  <Upload className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <span className="block">{t.header.demos.upload.title}</span>
-                    <span className="block text-xs text-muted-foreground">{t.header.demos.upload.description}</span>
-                  </div>
+              )}
+              {user && (
+                <a href={`/${currentLocale}/reelflow/credits`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                  <WalletCards className="h-5 w-5 text-muted-foreground" />
+                  <span>{t.header.navigation.reelflowCredits}</span>
                 </a>
-              </div>
+              )}
+              {user && (
+                <a href={`/${currentLocale}/reelflow/invites`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                  <Gift className="h-5 w-5 text-muted-foreground" />
+                  <span>{t.header.navigation.reelflowInvites}</span>
+                </a>
+              )}
+              {user && (
+                <a href={`/${currentLocale}/reelflow/notifications`} className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>
+                  <Bell className="h-5 w-5 text-muted-foreground" />
+                  <span>{t.header.navigation.reelflowNotifications}</span>
+                </a>
+              )}
             </div>
             <div className="border-t border-border my-2" />
             <Link to="/$lang/blog" params={{ lang: currentLocale }} search={{ page: 1 }} className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-foreground hover:bg-muted" onClick={() => setIsMenuOpen(false)}>

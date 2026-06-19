@@ -22,6 +22,7 @@ import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import crypto from 'crypto';
 import { creditService, TransactionTypeCode } from '@libs/credits';
+import { grantWorkspaceCredits, grantWorkspaceSubscriptionCredits } from '@libs/reelflow/billing';
 
 // Creem Return URL 参数接口
 export interface CreemRedirectParams {
@@ -304,6 +305,20 @@ export class CreemProvider implements PaymentProvider {
         }
       });
 
+      await grantWorkspaceCredits({
+        userId,
+        amount: plan.credits,
+        type: 'purchase',
+        orderId,
+        description: 'Purchase Reelflow workspace credits',
+        metadata: {
+          checkoutId: webhookData.object.id,
+          planId,
+          provider: 'creem',
+          userCreditSynced: true,
+        },
+      });
+
       return { success: true, orderId };
     }
 
@@ -331,6 +346,7 @@ export class CreemProvider implements PaymentProvider {
         console.log(`Using calculated period dates - Period: ${periodStart.toISOString()} to ${periodEnd.toISOString()}`);
       }
 
+      const creemSubscriptionId = webhookData.object.subscription?.id || null;
       const subscriptionData = {
         id: randomUUID(),
         userId: userId,
@@ -340,7 +356,7 @@ export class CreemProvider implements PaymentProvider {
         creemCustomerId: typeof webhookData.object.customer === 'string' 
           ? webhookData.object.customer 
           : webhookData.object.customer?.id || null,
-        creemSubscriptionId: webhookData.object.subscription?.id || null,
+        creemSubscriptionId,
         periodStart: periodStart,
         periodEnd: periodEnd,
         cancelAtPeriodEnd: false,
@@ -349,6 +365,23 @@ export class CreemProvider implements PaymentProvider {
         })
       };
       await db.insert(userSubscription).values(subscriptionData);
+
+      if (plan.reelflowCredits) {
+        await grantWorkspaceSubscriptionCredits({
+          userId,
+          amount: plan.reelflowCredits,
+          provider: 'creem',
+          planId,
+          subscriptionId: creemSubscriptionId ?? undefined,
+          orderId,
+          periodStart,
+          periodEnd,
+          metadata: {
+            checkoutId: webhookData.object.id,
+            trigger: 'checkout.completed',
+          },
+        });
+      }
     } else {
       // Handle one-time payment
       const now = utcNow();
@@ -439,6 +472,23 @@ export class CreemProvider implements PaymentProvider {
           updatedAt: new Date()
         })
         .where(eq(userSubscription.id, subscription.id));
+
+      const plan = config.payment.plans[subscription.planId as keyof typeof config.payment.plans] as PaymentPlan | undefined;
+      if (plan?.reelflowCredits) {
+        await grantWorkspaceSubscriptionCredits({
+          userId: subscription.userId,
+          amount: plan.reelflowCredits,
+          provider: 'creem',
+          planId: subscription.planId,
+          subscriptionId,
+          periodStart: newPeriodStart,
+          periodEnd: newPeriodEnd,
+          metadata: {
+            eventId: webhookData.id,
+            trigger: 'subscription.paid',
+          },
+        });
+      }
 
       console.log(`Subscription renewal successful for ${subscriptionId}, new period: ${newPeriodStart.toISOString()} - ${newPeriodEnd.toISOString()}`);
       return { success: true };

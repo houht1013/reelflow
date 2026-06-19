@@ -7,8 +7,22 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import { auth } from "@libs/auth";
+import { MVP_PRICING_SEEDS } from "@libs/reelflow/pricing";
+import { MVP_PROVIDER_PROFILE_SEEDS } from "@libs/reelflow/providers";
+import { MVP_TEMPLATE_SEEDS } from "@libs/reelflow/templates";
 import { db } from "./client";
-import { user, account, blogPost } from "./schema";
+import {
+  account,
+  blogPost,
+  creditAccount,
+  pricingItem,
+  providerProfile,
+  retentionPolicy,
+  template,
+  user,
+  workspace,
+  workspaceMember,
+} from "./schema";
 import { eq } from "drizzle-orm/expressions";
 import { getDialect } from "./shared/dialect";
 
@@ -24,6 +38,169 @@ function generateUserId(): string {
  */
 function generateAccountId(): string {
   return `account_${Math.random().toString(36).substring(2, 15)}`;
+}
+
+async function ensureDefaultWorkspace(owner: { id: string; name?: string | null; email: string }) {
+  const existingWorkspace = await db
+    .select()
+    .from(workspace)
+    .where(eq(workspace.ownerUserId, owner.id))
+    .limit(1);
+
+  if (existingWorkspace.length > 0) {
+    return existingWorkspace[0];
+  }
+
+  const workspaceId = crypto.randomUUID();
+  await db.insert(workspace).values({
+    id: workspaceId,
+    name: owner.name ? `${owner.name}'s Workspace` : `${owner.email}'s Workspace`,
+    ownerUserId: owner.id,
+    status: "active",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  await db.insert(workspaceMember).values({
+    id: crypto.randomUUID(),
+    workspaceId,
+    userId: owner.id,
+    role: "owner",
+    status: "active",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  await db.insert(creditAccount).values({
+    id: crypto.randomUUID(),
+    workspaceId,
+    balance: "100",
+    frozenBalance: "0",
+    debtBalance: "0",
+    totalGranted: "100",
+    totalConsumed: "0",
+    updatedAt: new Date(),
+  });
+
+  return (await db.select().from(workspace).where(eq(workspace.id, workspaceId)).limit(1))[0];
+}
+
+async function seedReelflowDefaults() {
+  console.log("创建 Reelflow 默认 workspace...");
+  const seededUsers = await db.select().from(user);
+  for (const seededUser of seededUsers) {
+    await ensureDefaultWorkspace(seededUser);
+  }
+  console.log(`✓ 已确保 ${seededUsers.length} 个用户拥有默认 workspace`);
+
+  console.log("创建 Reelflow MVP 模板...");
+  for (const seed of MVP_TEMPLATE_SEEDS) {
+    const existing = await db.select({ id: template.id }).from(template).where(eq(template.code, seed.code)).limit(1);
+    if (existing.length > 0) {
+      await db
+        .update(template)
+        .set({
+          name: seed.name,
+          description: seed.description,
+          category: seed.category,
+          recommended: seed.recommended,
+          featuredOrder: seed.featuredOrder,
+          builderVersion: seed.builderVersion,
+          inputSchema: seed.inputSchema,
+          capabilityRequirements: seed.capabilityRequirements,
+          updatedAt: new Date(),
+        })
+        .where(eq(template.id, existing[0].id));
+      continue;
+    }
+
+    await db.insert(template).values({
+      id: crypto.randomUUID(),
+      code: seed.code,
+      name: seed.name,
+      description: seed.description,
+      category: seed.category,
+      visibility: "public",
+      status: "published",
+      recommended: seed.recommended,
+      featuredOrder: seed.featuredOrder,
+      builderVersion: seed.builderVersion,
+      inputSchema: seed.inputSchema,
+      capabilityRequirements: seed.capabilityRequirements,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+  console.log("✓ 已确保 Reelflow MVP 模板存在");
+
+  console.log("创建 Reelflow 价格清单...");
+  for (const seed of MVP_PRICING_SEEDS) {
+    const existing = await db
+      .select({ id: pricingItem.id })
+      .from(pricingItem)
+      .where(eq(pricingItem.id, `${seed.resourceType}:${seed.provider}:${seed.model ?? "default"}:${seed.usageUnit}`))
+      .limit(1);
+
+    if (existing.length > 0) continue;
+
+    await db.insert(pricingItem).values({
+      id: `${seed.resourceType}:${seed.provider}:${seed.model ?? "default"}:${seed.usageUnit}`,
+      resourceType: seed.resourceType,
+      provider: seed.provider,
+      model: seed.model,
+      usageUnit: seed.usageUnit,
+      providerCostUnitPrice: seed.providerCostUnitPrice,
+      providerCostCurrency: seed.providerCostCurrency,
+      creditUnitPrice: seed.creditUnitPrice,
+      minCreditCost: seed.minCreditCost,
+      enabled: true,
+      updatedAt: new Date(),
+    });
+  }
+  console.log("✓ 已确保 Reelflow 价格清单存在");
+
+  console.log("创建 Reelflow Provider Profile...");
+  for (const seed of MVP_PROVIDER_PROFILE_SEEDS) {
+    const id = `${seed.providerType}:${seed.provider}`;
+    const existing = await db.select({ id: providerProfile.id }).from(providerProfile).where(eq(providerProfile.id, id)).limit(1);
+    if (existing.length > 0) continue;
+
+    await db.insert(providerProfile).values({
+      id,
+      providerType: seed.providerType,
+      provider: seed.provider,
+      displayName: seed.displayName,
+      enabled: seed.enabled,
+      priority: seed.priority,
+      config: seed.config,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+  console.log("✓ 已确保 Reelflow Provider Profile 存在");
+
+  console.log("创建 Reelflow 默认保留策略...");
+  const retentionSeeds = [
+    { id: "default:draft_package", targetType: "draft_package", retentionDays: 30 },
+    { id: "default:rendered_mp4", targetType: "rendered_mp4", retentionDays: 30 },
+    { id: "default:asset", targetType: "asset", retentionDays: 90 },
+    { id: "default:job_event", targetType: "job_event", retentionDays: 30 },
+  ];
+
+  for (const seed of retentionSeeds) {
+    const existing = await db.select({ id: retentionPolicy.id }).from(retentionPolicy).where(eq(retentionPolicy.id, seed.id)).limit(1);
+    if (existing.length > 0) continue;
+
+    await db.insert(retentionPolicy).values({
+      id: seed.id,
+      targetType: seed.targetType,
+      scope: "default",
+      retentionDays: seed.retentionDays,
+      enabled: true,
+      updatedAt: new Date(),
+    });
+  }
+  console.log("✓ 已确保 Reelflow 默认保留策略存在");
 }
 
 /**
@@ -178,6 +355,8 @@ async function seedDatabase() {
         console.error("❌ 创建博客文章失败:", error.message || error);
       }
     }
+
+    await seedReelflowDefaults();
 
     console.log("\n✅ 数据填充完成!");
     console.log("测试账户信息:");

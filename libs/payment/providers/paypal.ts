@@ -18,6 +18,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import { creditService, TransactionTypeCode } from '@libs/credits';
+import { grantWorkspaceCredits, grantWorkspaceSubscriptionCredits } from '@libs/reelflow/billing';
 
 // PayPal API Response Types
 interface PayPalOrder {
@@ -522,6 +523,20 @@ export class PayPalProvider implements PaymentProvider {
           }
         });
 
+        await grantWorkspaceCredits({
+          userId,
+          amount: plan.credits,
+          type: 'purchase',
+          orderId,
+          description: 'Purchase Reelflow workspace credits',
+          metadata: {
+            paypalCaptureId: event.resource.id,
+            planId,
+            provider: 'paypal',
+            userCreditSynced: true,
+          },
+        });
+
         return { success: true, orderId };
       }
 
@@ -653,8 +668,14 @@ export class PayPalProvider implements PaymentProvider {
       }
 
       const { orderId, userId, planId } = metadata;
+      const plan = config.payment.plans[planId as keyof typeof config.payment.plans] as PaymentPlan;
 
       const now = utcNow();
+      const periodStart = event.resource.start_time
+        ? new Date(event.resource.start_time)
+        : event.create_time
+          ? new Date(event.create_time)
+          : now;
 
       // Update order status only if still pending to prevent double fulfillment
       const updatedOrders = await db.update(order)
@@ -662,24 +683,19 @@ export class PayPalProvider implements PaymentProvider {
         .where(and(eq(order.id, orderId), eq(order.status, orderStatus.PENDING)))
         .returning({ id: order.id });
 
-      if (updatedOrders.length === 0) {
-        return { success: true, orderId };
-      }
-
       // Calculate subscription period
-      let periodEnd = new Date(now);
+      let periodEnd = new Date(periodStart);
       
       // Try to get billing info from the subscription
       if (event.resource.billing_info?.next_billing_time) {
         periodEnd = new Date(event.resource.billing_info.next_billing_time);
       } else {
         // Fallback: calculate based on plan config
-        const plan = config.payment.plans[planId as keyof typeof config.payment.plans] as PaymentPlan;
         const months = plan.duration.months ?? 1;
         periodEnd.setMonth(periodEnd.getMonth() + months);
       }
 
-      console.log(`PayPal subscription activated - Period: ${now.toISOString()} to ${periodEnd.toISOString()}`);
+      console.log(`PayPal subscription activated - Period: ${periodStart.toISOString()} to ${periodEnd.toISOString()}`);
 
       const paypalSubscriptionId = event.resource.id;
       if (!paypalSubscriptionId) {
@@ -695,7 +711,7 @@ export class PayPalProvider implements PaymentProvider {
         await db.update(userSubscription)
           .set({
             status: subscriptionStatus.ACTIVE,
-            periodStart: now,
+            periodStart,
             periodEnd: periodEnd,
             cancelAtPeriodEnd: false,
             updatedAt: now,
@@ -714,13 +730,32 @@ export class PayPalProvider implements PaymentProvider {
           status: subscriptionStatus.ACTIVE,
           paymentType: paymentTypes.RECURRING,
           paypalSubscriptionId: paypalSubscriptionId,
-          periodStart: now,
+          periodStart,
           periodEnd: periodEnd,
           cancelAtPeriodEnd: false,
           metadata: JSON.stringify({
             paypalPlanId: event.resource.plan_id,
             processedBy: 'webhook'
           })
+        });
+      }
+
+      if (plan.reelflowCredits) {
+        await grantWorkspaceSubscriptionCredits({
+          userId,
+          amount: plan.reelflowCredits,
+          provider: 'paypal',
+          planId,
+          subscriptionId: paypalSubscriptionId,
+          orderId,
+          periodStart,
+          periodEnd,
+          metadata: {
+            paypalPlanId: event.resource.plan_id,
+            processedBy: 'webhook',
+            trigger: 'BILLING.SUBSCRIPTION.ACTIVATED',
+            orderStatusChanged: updatedOrders.length > 0,
+          },
         });
       }
 
@@ -877,14 +912,37 @@ export class PayPalProvider implements PaymentProvider {
         }
 
         const now = utcNow();
+        const periodStart = subscriptionDetails.billing_info?.last_payment?.time
+          ? new Date(subscriptionDetails.billing_info.last_payment.time)
+          : event.create_time
+            ? new Date(event.create_time)
+            : now;
         await db.update(userSubscription)
           .set({
             status: subscriptionStatus.ACTIVE,
-            periodStart: now,
+            periodStart,
             periodEnd: periodEnd,
             updatedAt: now
           })
           .where(eq(userSubscription.id, subscription.id));
+
+        const plan = config.payment.plans[subscription.planId as keyof typeof config.payment.plans] as PaymentPlan | undefined;
+        if (plan?.reelflowCredits) {
+          await grantWorkspaceSubscriptionCredits({
+            userId: subscription.userId,
+            amount: plan.reelflowCredits,
+            provider: 'paypal',
+            planId: subscription.planId,
+            subscriptionId: paypalSubscriptionId,
+            periodStart,
+            periodEnd,
+            metadata: {
+              paypalSaleId: event.resource.id,
+              paypalPlanId: subscriptionDetails.plan_id,
+              trigger: 'PAYMENT.SALE.COMPLETED',
+            },
+          });
+        }
       }
 
       return { success: true };

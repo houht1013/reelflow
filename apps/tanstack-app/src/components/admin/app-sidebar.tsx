@@ -1,4 +1,4 @@
-import { User, CreditCard, ShoppingCart, LayoutDashboard, Coins, FileText } from "lucide-react"
+import { User, CreditCard, ShoppingCart, LayoutDashboard, Coins, FileText, Clapperboard } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation"
 import { Logo } from "@libs/react-shared/ui/logo"
 import { useRouterState } from "@tanstack/react-router"
@@ -46,6 +46,11 @@ export function AppSidebar() {
       title: t.navigation.admin.credits,
       url: `/admin/credits`,
       icon: Coins,
+    },
+    {
+      title: t.navigation.admin.reelflow,
+      url: `/admin/reelflow`,
+      icon: Clapperboard,
     },
     {
       title: t.navigation.admin.blog,

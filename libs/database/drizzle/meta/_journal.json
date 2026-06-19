@@ -15,6 +15,13 @@
       "when": 1780024497079,
       "tag": "0001_eminent_james_howlett",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781805253805,
+      "tag": "0002_sticky_gorilla_man",
+      "breakpoints": true
     }
   ]
 }

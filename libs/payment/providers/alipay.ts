@@ -9,6 +9,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import { creditService, TransactionTypeCode } from '@libs/credits';
+import { grantWorkspaceCredits } from '@libs/reelflow/billing';
 
 // Alipay notification parameters
 interface AlipayNotification {
@@ -242,6 +243,20 @@ export class AlipayProvider implements PaymentProvider {
               tradeNo: notifyData.trade_no,
               planId: orderRecord.planId,
               provider: 'alipay'
+            }
+          });
+
+          await grantWorkspaceCredits({
+            userId: orderRecord.userId,
+            amount: plan.credits,
+            type: 'purchase',
+            orderId,
+            description: 'Purchase Reelflow workspace credits',
+            metadata: {
+              tradeNo: notifyData.trade_no,
+              planId: orderRecord.planId,
+              provider: 'alipay',
+              userCreditSynced: true
             }
           });
           

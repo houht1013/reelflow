@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "noEmit": true,
+    "baseUrl": "../..",
+    "paths": {
+      "@/*": ["./*"],
+      "@config": ["./config"],
+      "@libs/*": ["libs/*"]
+    },
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "../../libs/reelflow/**/*.ts",
+    "../../config/**/*.ts",
+    "../../config.ts"
+  ],
+  "exclude": ["node_modules"]
+}
