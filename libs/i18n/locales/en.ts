@@ -2,15 +2,15 @@ import type { Locale } from './types'
 
 export const en: Locale = {
   common: {
-    welcome: "Welcome to TinyShip",
-    siteName: "TinyShip",
+    welcome: "Welcome to Reelflow",
+    siteName: "Reelflow",
     login: "Login",
     signup: "Sign Up",
     logout: "Logout",
     profile: "Profile",
     settings: "Settings",
     and: "and",
-    loading: "Loading...",
+    loading: "Loading…",
     unexpectedError: "An unexpected error occurred",
     notAvailable: "N/A",
     viewPlans: "View Plans",
@@ -100,50 +100,63 @@ export const en: Locale = {
     }
   },
   auth: {
+    brand: {
+      name: "Reelflow",
+      tagline: "Creation workspace",
+      homeLabel: "Back to Reelflow home",
+      eyebrow: "Short-video draft generation",
+      title: "Create deliverable video drafts faster with templates",
+      description: "Choose an official template, fill in a few fields, and generate CapCut drafts or finished media. Progress, assets, and credits stay in one workspace.",
+      points: {
+        templates: "Curated templates fit knowledge sharing, opinion videos, and emotional-value content.",
+        assets: "Generated outputs and uploaded materials are archived for reuse and review.",
+        credits: "Credits are recorded by actual usage, with clear task history."
+      }
+    },
     metadata: {
       signin: {
-        title: "TinyShip - Sign In",
-        description: "Sign in to your TinyShip account to access your dashboard, manage subscriptions, and use premium features.",
+        title: "Reelflow - Sign In",
+        description: "Sign in to Reelflow to create video drafts, track tasks, and manage assets.",
         keywords: "sign in, login, authentication, account access, dashboard"
       },
       signup: {
-        title: "TinyShip - Create Account",
-        description: "Create your TinyShip account and start building amazing SaaS applications with our comprehensive starter kit.",
+        title: "Reelflow - Create Account",
+        description: "Create your Reelflow account and start generating short-video drafts with templates.",
         keywords: "sign up, register, create account, new user, get started"
       },
       forgotPassword: {
-        title: "TinyShip - Reset Password",
-        description: "Reset your TinyShip account password securely. Enter your email to receive password reset instructions.",
+        title: "Reelflow - Reset Password",
+        description: "Reset your Reelflow account password securely. Enter your email to receive password reset instructions.",
         keywords: "forgot password, reset password, password recovery, account recovery"
       },
       resetPassword: {
-        title: "TinyShip - Create New Password",
-        description: "Create a new secure password for your TinyShip account. Choose a strong password to protect your account.",
+        title: "Reelflow - Create New Password",
+        description: "Create a new secure password for your Reelflow account.",
         keywords: "new password, password reset, secure password, account security"
       },
       phone: {
-        title: "TinyShip - Phone Login",
-        description: "Sign in to TinyShip using your phone number. Quick and secure authentication with SMS verification.",
+        title: "Reelflow - Phone Login",
+        description: "Sign in to Reelflow with your phone number and enter the workspace quickly.",
         keywords: "phone login, SMS verification, mobile authentication, phone number"
       },
       wechat: {
-        title: "TinyShip - WeChat Login",
-        description: "Sign in to TinyShip using your WeChat account. Convenient authentication for Chinese users.",
+        title: "Reelflow - WeChat Login",
+        description: "Sign in to Reelflow using your WeChat account.",
         keywords: "WeChat login, 微信登录, social login, Chinese authentication"
       }
     },
     signin: {
       title: "Sign in to your account",
-      welcomeBack: "Welcome back",
-      socialLogin: "Sign in with your favorite social account",
-      continueWith: "Or continue with",
+      welcomeBack: "Welcome back to Reelflow",
+      socialLogin: "Continue with Google or phone",
+      continueWith: "Or continue with email",
       email: "Email",
-      emailPlaceholder: "Enter your email",
+      emailPlaceholder: "Enter your email…",
       password: "Password",
       forgotPassword: "Forgot password?",
       rememberMe: "Remember me",
       submit: "Sign in",
-      submitting: "Signing in...",
+      submitting: "Signing in…",
       noAccount: "Don't have an account?",
       signupLink: "Sign up",
       termsNotice: "By clicking continue, you agree to our",
@@ -171,27 +184,27 @@ export const en: Locale = {
           dialogDescription: "Please complete the captcha verification before resending the verification email",
           emailLabel: "Email Address",
           sendButton: "Send Verification Email",
-          sendingButton: "Sending...",
+          sendingButton: "Sending…",
           waitButton: "Wait {seconds}s"
         }
       }
     },
     signup: {
-      title: "Sign up for TinyShip",
-      createAccount: "Create an account",
-      socialSignup: "Sign up with your favorite social account",
-      continueWith: "Or continue with",
+      title: "Sign up for Reelflow",
+      createAccount: "Create a Reelflow account",
+      socialSignup: "Sign up with Google or phone",
+      continueWith: "Or create with email",
       name: "Name",
-      namePlaceholder: "Enter your name",
+      namePlaceholder: "Enter your name…",
       email: "Email",
-      emailPlaceholder: "Enter your email",
+      emailPlaceholder: "Enter your email…",
       password: "Password",
-      passwordPlaceholder: "Create a password",
+      passwordPlaceholder: "Create a password…",
       imageUrl: "Profile Image URL",
       imageUrlPlaceholder: "https://example.com/your-image.jpg",
       optional: "Optional",
       submit: "Create account",
-      submitting: "Creating account...",
+      submitting: "Creating account…",
       haveAccount: "Already have an account?",
       signinLink: "Sign in",
       termsNotice: "By clicking continue, you agree to our",
@@ -220,12 +233,12 @@ export const en: Locale = {
       title: "Login with Phone",
       description: "Enter your phone number to receive a verification code",
       phoneNumber: "Phone Number",
-      phoneNumberPlaceholder: "Enter your phone number",
+      phoneNumberPlaceholder: "Enter your phone number…",
       countryCode: "Country/Region",
       verificationCode: "Verification Code",
       enterCode: "Enter Verification Code",
-      sendingCode: "Sending code...",
-      verifying: "Verifying...",
+      sendingCode: "Sending code…",
+      verifying: "Verifying…",
       codeSentTo: "Verification code sent to",
       resendIn: "Resend in",
       seconds: "seconds",
@@ -247,9 +260,9 @@ export const en: Locale = {
       title: "Forgot Password",
       description: "Reset your password and regain access to your account",
       email: "Email",
-      emailPlaceholder: "Enter your email",
+      emailPlaceholder: "Enter your email…",
       submit: "Send reset link",
-      submitting: "Sending...",
+      submitting: "Sending…",
       termsNotice: "By clicking continue, you agree to our",
       termsOfService: "Terms of Service",
       privacyPolicy: "Privacy Policy",
@@ -268,11 +281,11 @@ export const en: Locale = {
       title: "Reset Password",
       description: "Create a new password for your account",
       password: "New Password",
-      passwordPlaceholder: "Enter your new password",
+      passwordPlaceholder: "Enter your new password…",
       confirmPassword: "Confirm Password",
-      confirmPasswordPlaceholder: "Confirm your new password",
+      confirmPasswordPlaceholder: "Confirm your new password…",
       submit: "Reset Password",
-      submitting: "Resetting...",
+      submitting: "Resetting…",
       success: {
         title: "Password Reset Successful",
         description: "Your password has been successfully reset.",
@@ -291,7 +304,7 @@ export const en: Locale = {
       description: "Scan with WeChat to log in",
       scanQRCode: "Please scan the QR code with WeChat",
       orUseOtherMethods: "Or use other login methods",
-      loadingQRCode: "Loading QR code...",
+      loadingQRCode: "Loading QR code…",
       termsNotice: "By clicking continue, you agree to our",
       termsOfService: "Terms of Service",
       privacyPolicy: "Privacy Policy",
@@ -1019,6 +1032,107 @@ export const en: Locale = {
           "终身免费更新": "Free lifetime updates"
         }
       }
+    },
+    v2: {
+      eyebrow: "Pricing",
+      title: "Choose the plan that fits your pace",
+      subtitle: "Subscribe for steady monthly credits and every template, or top up credits on demand. Upgrade or cancel anytime.",
+      tabs: { subscription: "Subscription", credits: "Credits" },
+      billing: {
+        monthly: "Monthly",
+        yearly: "Yearly",
+        save: "Save {n}%",
+        perMonth: "/mo",
+        billedYearlyAs: "Billed ¥{total}/year",
+        billedMonthly: "Billed monthly, cancel anytime"
+      },
+      mostPopular: "Most popular",
+      monthlyCredits: "{n} credits / month",
+      choosePlan: "Choose plan",
+      subscriptionPlans: [
+        {
+          id: "starter",
+          name: "Starter",
+          tagline: "For trying things out and getting started",
+          monthly: 39,
+          credits: 300,
+          features: ["300 workspace credits / month", "Core official templates", "Standard generation queue", "Editable Jianying draft", "Email support"]
+        },
+        {
+          id: "growth",
+          name: "Growth",
+          tagline: "For creators publishing regularly",
+          monthly: 99,
+          credits: 1200,
+          recommended: true,
+          features: ["1,200 workspace credits / month", "All official templates", "Priority generation queue", "Optional 1080P HD export", "AI image & voice fill", "Priority support"]
+        },
+        {
+          id: "pro",
+          name: "Pro",
+          tagline: "For teams and high-volume output",
+          monthly: 299,
+          credits: 4000,
+          features: ["4,000 workspace credits / month", "All templates + private template priority", "Highest-priority queue", "Parallel batch tasks", "Dedicated support", "Team collaboration (coming soon)"]
+        }
+      ],
+      credits: {
+        title: "Top up credits",
+        subtitle: "Credits power short-video drafts, images, and more. They never expire.",
+        unit: "credits",
+        bonusTag: "incl. {n} bonus",
+        perCredit: "≈ ¥{n}/credit",
+        buy: "Top up",
+        packs: [
+          { id: "c100", credits: 100, amount: 9 },
+          { id: "c550", credits: 500, bonus: 50, amount: 45, recommended: true },
+          { id: "c1200", credits: 1000, bonus: 200, amount: 99 }
+        ],
+        custom: {
+          title: "Custom amount",
+          hint: "Enter the number of credits you need; price is calculated automatically.",
+          label: "Number of credits",
+          minHint: "Minimum {n} credits, in steps of {step}",
+          amountLabel: "Amount due",
+          cta: "Top up custom amount"
+        }
+      },
+      trust: [
+        { title: "Secure payment", desc: "Payment completes on a dedicated, fully encrypted checkout." },
+        { title: "Flexible billing", desc: "Upgrade or cancel anytime; credits never expire." },
+        { title: "Pay as you go", desc: "Subscription or credits — pick what matches your output." }
+      ]
+    },
+    checkout: {
+      metadata: { title: "Reelflow - Checkout", description: "Confirm your order and choose a payment method." },
+      eyebrow: "Confirm order",
+      title: "Confirm & pay",
+      back: "Back to pricing",
+      orderSummary: "Order summary",
+      billingCycle: "Billing cycle",
+      cycleMonthly: "Monthly subscription",
+      cycleYearly: "Yearly subscription",
+      creditsItem: "{n} credits top-up",
+      bonusIncluded: "incl. {n} bonus credits",
+      subscriptionItem: "{name} plan",
+      total: "Total due",
+      methodTitle: "Choose payment method",
+      methodHint: "Pick your preferred method; after confirming you'll be taken to the matching secure checkout.",
+      methods: {
+        wechat: "WeChat Pay",
+        wechatDesc: "Scan to pay with WeChat",
+        alipay: "Alipay",
+        alipayDesc: "Scan to pay with Alipay",
+        card: "Card / Credit card",
+        cardDesc: "Visa, Mastercard, and more",
+        paypal: "PayPal",
+        paypalDesc: "Recommended for overseas users"
+      },
+      reservedNote: "Payment channels are being connected; this is a reserved design.",
+      confirm: "Confirm payment",
+      emptyTitle: "No plan selected",
+      emptyHint: "Please choose a plan or credit pack on the pricing page first.",
+      toPricing: "Go to pricing"
     }
   },
   payment: {
@@ -1905,6 +2019,10 @@ export const en: Locale = {
   header: {
     navigation: {
       ai: "AI tools",
+      product: "Product",
+      workflow: "Workflow",
+      docs: "Docs",
+      workbench: "Workbench",
       reelflow: "Create",
       reelflowJobs: "Tasks",
       reelflowImage: "AI image",
@@ -1948,6 +2066,8 @@ export const en: Locale = {
       signOut: "Sign Out"
     },
     userMenu: {
+      open: "Open user menu",
+      defaultUser: "User",
       dashboard: "Dashboard",
       profile: "Profile",
       settings: "Settings",
@@ -2022,10 +2142,20 @@ export const en: Locale = {
   },
   reelflow: {
     metadata: {
+      home: {
+        title: "Reelflow - Creation Workspace",
+        description: "Open the Reelflow workspace to create short-video drafts, generate images, track tasks, and manage assets.",
+        keywords: "Reelflow, creation workspace, short-video draft, image generation, asset library"
+      },
       generate: {
         title: "Reelflow - Create Video Draft",
         description: "Create short-video workflow tasks from reusable templates.",
         keywords: "short video, workflow, template, CapCut draft, AI video"
+      },
+      templates: {
+        title: "Reelflow - Templates",
+        description: "Browse official templates and available private templates to choose a creation starting point.",
+        keywords: "short-video templates, official templates, private templates, video creation"
       },
       jobs: {
         title: "Reelflow - Tasks",
@@ -2071,15 +2201,17 @@ export const en: Locale = {
     shell: {
       workspace: "Creator workspace",
       workspaceName: "Default workspace",
-      workspaceHint: "Drafts, assets, and credits belong to this workspace",
+      workspaceHint: "Drafts · Assets · Credits",
       loadingCredits: "Loading credits",
       openMenu: "Open menu",
+      collapseSidebar: "Collapse sidebar",
+      expandSidebar: "Expand sidebar",
       userMenu: "Open user menu",
       signOut: "Sign out",
       comingSoon: "Soon",
       groups: {
         main: "Workspace",
-        create: "Create",
+        create: "Creation tools",
         account: "Account"
       },
       nav: {
@@ -2102,17 +2234,24 @@ export const en: Locale = {
       }
     },
     home: {
+      eyebrow: "Creator workbench",
       title: "What do you want to create today?",
-      description: "Generate short-video drafts from templates, or create image assets as an independent capability. Tasks, credits, and outputs stay in the current workspace.",
+      description: "Start from a template draft, or create supporting image assets first. Tasks, credits, and outputs stay here.",
       primaryCta: "Create a short-video draft",
       secondaryCta: "Generate image",
       quickTitle: "Quick actions",
       statusTitle: "Workspace status",
+      recentTasks: "Recent tasks",
+      emptyRecentTasks: "No tasks yet",
+      galleryEyebrow: "Curated",
       galleryTitle: "Official selected works",
-      galleryDescription: "These examples show the rhythm and output quality of official templates.",
+      galleryDescription: "Effect references from official templates.",
+      recommendationEyebrow: "For you",
       recommendationTitle: "Recommended",
-      createCenterTitle: "Creation center",
-      createCenterDescription: "Short-video drafts and independent creative capabilities start here. Short-video drafts and image generation are available first.",
+      createCenterEyebrow: "Quick start",
+      createCenterTitle: "Start creating",
+      createCenterDescription: "Your most used entries.",
+      draftAnchorEyebrow: "Start creating",
       draftAnchorTitle: "Short-video draft",
       draftAnchorDescription: "Choose an official template, fill in a topic and a few inputs, then generate an editable draft in one run.",
       actions: {
@@ -2138,11 +2277,11 @@ export const en: Locale = {
         },
         video: {
           title: "Video generation",
-          description: "Independent video generation will open later."
+          description: "Video generation has its own entry for fuller visual creation."
         },
         voice: {
           title: "Voice generation",
-          description: "Narration and replacement voice generation will open later."
+          description: "Voice generation has its own entry for narration and replacement audio."
         }
       },
       gallery: [
@@ -2177,6 +2316,10 @@ export const en: Locale = {
         }
       ]
     },
+    templates: {
+      title: "Template library",
+      description: "Browse official and private templates available to the current workspace. Choose a template to create a short-video draft."
+    },
     landing: {
       metadata: {
         title: "Reelflow - Short video draft workflow",
@@ -2185,23 +2328,30 @@ export const en: Locale = {
       },
       hero: {
         eyebrow: "Template-driven short-video production",
-        title: "Create editable short-video drafts without learning editing tools",
-        subtitle: "Choose an official template, fill in a few plain-language inputs, and Reelflow runs script, visuals, voice, captions, draft packaging, and optional MP4 rendering as one long-running task.",
-        primaryCta: "Start creating",
+        title: "Turn proven short-video templates into editable drafts",
+        subtitle: "Reelflow turns official templates into scripts, visuals, voice, captions, and draft packages. Enter a topic and a few simple inputs, then continue refining the editable result.",
+        primaryCta: "Start creating free",
         secondaryCta: "View plans",
         trust: [
           "Editable Jianying draft",
-          "Workspace credits",
-          "Traceable long tasks"
+          "Official selected templates",
+          "Optional 1080P MP4"
         ]
       },
       preview: {
         title: "Psychology Stickman",
         subtitle: "Official template",
         status: "Running",
+        verticalBadge: "Vertical draft",
         template: "Template workflow",
         credits: "35 credits frozen",
         caption: "Why do people overthink at night?",
+        duration: "00:32",
+        sceneLabels: [
+          "Opening hook",
+          "Emotion explain",
+          "Closing line"
+        ],
         progress: "Generation progress",
         stages: [
           "Script accepted",
@@ -2215,14 +2365,14 @@ export const en: Locale = {
         auditValue: "Stages and assets logged"
       },
       metrics: [
-        { value: "3", label: "Official launch templates" },
-        { value: "90%", label: "Automated production target" },
-        { value: "1080P", label: "Optional cloud MP4 output" },
-        { value: "1", label: "One-click generation flow" }
+        { value: "3", label: "Steps: pick · fill · generate" },
+        { value: "0", label: "Editing experience needed" },
+        { value: "1080P", label: "Optional HD MP4 export" },
+        { value: "100%", label: "Fully editable draft" }
       ],
       workflow: {
-        title: "Built for non-technical creators",
-        description: "Choose a template, fill in simple inputs, and review the output when the task finishes.",
+        title: "From template to draft in one clear action",
+        description: "Choose a template, enter a topic, generate a draft, and download the result through one clear path.",
         steps: [
           {
             title: "Choose a template",
@@ -2230,11 +2380,11 @@ export const en: Locale = {
           },
           {
             title: "Fill simple inputs",
-            description: "Enter topic, tone, audience, and optional reusable assets from the workspace asset library."
+            description: "Enter topic, tone, and audience. Reelflow structures the script, visuals, and captions around the template."
           },
           {
             title: "Track progress",
-            description: "Review progress, logs, outputs, usage, quality issues, and retry actions while generation runs."
+            description: "See generation progress, key stages, and created materials while the run continues."
           },
           {
             title: "Download outputs",
@@ -2243,8 +2393,8 @@ export const en: Locale = {
         ]
       },
       templates: {
-        title: "Start with formats that already fit the platform",
-        description: "Start from reusable short-video structures and generate drafts that are ready to refine.",
+        title: "Official selected cases",
+        description: "Show new users what each template can produce before they enter the workbench.",
         tags: [
           "Knowledge sharing",
           "Opinion expression",
@@ -2288,10 +2438,26 @@ export const en: Locale = {
         ]
       },
       finalCta: {
-        title: "Start with your first editable draft",
-        description: "Choose a template, enter a topic, and generate a short-video draft you can keep refining.",
-        primaryCta: "Create a task",
-        secondaryCta: "Buy credits"
+        title: "Generate your first short-video draft now",
+        description: "Sign up free to try the official templates. Start from a single topic and get an editable draft you can keep refining.",
+        primaryCta: "Start creating free",
+        secondaryCta: "View plans"
+      },
+      docs: {
+        items: [
+          {
+            title: "Template guide",
+            description: "Learn what each official template is for, which inputs it needs, and what it delivers."
+          },
+          {
+            title: "Draft delivery",
+            description: "Generated results prioritize editable draft packages, with optional fixed-spec MP4 output."
+          },
+          {
+            title: "Custom service",
+            description: "Private templates are built by the official team and assigned to selected workspaces."
+          }
+        ]
       }
     },
     common: {
@@ -2309,19 +2475,29 @@ export const en: Locale = {
       description: "Credits are frozen when a workflow starts and settled after generation. Top up here when balance is low or a completed task has debt.",
       loadError: "Failed to load workspace credits",
       balance: "Available",
+      balanceHint: "Used for short-video drafts, image generation, and future creative tools.",
       frozen: "Frozen",
+      frozenHint: "Estimated credits are frozen while a task runs, then settled by actual usage.",
       debt: "Debt",
+      debtHint: "Debt will not stop completed tasks. Top up to continue downloading and using outputs.",
+      accountHealthy: "Account healthy",
+      debtAttention: "Top-up needed",
       totalGranted: "Granted",
+      totalGrantedHint: "Purchases, gifts, and invite rewards are included.",
       totalConsumed: "Consumed",
+      totalConsumedHint: "Tracked from actual task usage over time.",
       buyTitle: "Top up credits",
-      buyDescription: "Choose a credit pack and pay with the configured provider. Successful purchases are added to the current workspace.",
+      buyDescription: "Choose a credit pack. Credits are added to the current workspace after payment.",
+      planCardDescription: "For short-video drafts, image generation, and future creative usage.",
+      planBenefitWorkspace: "Added to the current workspace after payment",
+      planBenefitNoExpiry: "No expiry, usable across available creative tools",
       noExpiry: "No expiry",
       recommended: "Recommended",
       buyNow: "Buy now",
       purchaseSuccess: "Credits added",
       purchaseFailed: "Credit purchase failed",
       ledgerTitle: "Credit ledger",
-      ledgerDescription: "Workspace-level purchase, freeze, settlement, debt, and refund records.",
+      ledgerDescription: "Purchases, freezes, settlements, debt, and refunds appear here.",
       emptyLedger: "No credit records yet",
       wechatQrTitle: "Scan to pay",
       wechatQrHint: "Keep this window open. The balance will refresh after payment is confirmed.",
@@ -2358,7 +2534,7 @@ export const en: Locale = {
     },
     assetLibrary: {
       title: "Asset library",
-      description: "Review generated task outputs and keep reusable personal materials in the current workspace.",
+      description: "Manage task outputs and reusable materials.",
       loadError: "Failed to load assets",
       filters: {
         all: "All assets",
@@ -2366,22 +2542,22 @@ export const en: Locale = {
         personal: "Personal materials"
       },
       allTypes: "All types",
-      searchPlaceholder: "Search asset, template, or file name",
+      searchPlaceholder: "Search asset, template, or file name…",
       empty: "No assets found",
-      emptyHint: "Run a workflow or upload a personal material to build your asset library.",
+      emptyHint: "Generate something once or upload a personal material to build your asset library.",
       uploadTitle: "Upload material",
-      uploadDescription: "Upload a reusable image, logo, avatar, or reference image for later workflows.",
+      uploadDescription: "Optional images, logos, avatars, and references for later reuse.",
       assetType: "Asset type",
       storageProvider: "Storage service",
       chooseFile: "Choose image",
-      fileHint: "JPG, PNG, WebP, GIF, SVG or BMP. Max 10MB.",
+      fileHint: "JPG, PNG, WebP, GIF, SVG, or BMP. Max 10 MB.",
       uploadAction: "Upload and save",
-      uploading: "Uploading...",
+      uploading: "Uploading…",
       uploadSuccess: "Material saved",
       uploadFailed: "Upload failed",
       registerFailed: "Failed to save material",
       scopeTitle: "Workspace scoped",
-      scopeDescription: "Assets belong to the current workspace. Task outputs are read-only; uploaded materials can be reused by future workflow inputs.",
+      scopeDescription: "Task outputs are read-only. Uploaded materials can be reused.",
       createdAt: "Created",
       fileSize: "Size",
       duration: "Duration",
@@ -2389,7 +2565,7 @@ export const en: Locale = {
       jobStatus: "Task status",
       storageKey: "Storage key",
       preview: "Preview",
-      previewDescription: "Review this asset before reusing it in a workflow or opening the original file.",
+      previewDescription: "Review this asset before reusing it in future creation or opening the original file.",
       openAsset: "Open",
       openJob: "Task",
       removeTitle: "Remove material?",
@@ -2416,27 +2592,27 @@ export const en: Locale = {
       }
     },
     imageTool: {
-      badge: "Asset tool",
+      badge: "Creation tool",
       title: "Generate a replacement image",
-      description: "Create a usable image for missing or low-quality visuals. The result is saved to your asset library automatically.",
+      description: "Create covers, storyboard frames, and references for drafts.",
       openAssets: "Open assets",
       prompt: "Image prompt",
-      promptPlaceholder: "Describe the image you need, for example: a simple stickman showing anxiety before sleep, white background, clean lines",
-      promptHint: "Write the scene and style in plain language. Avoid account passwords, private data, or sensitive content.",
+      promptPlaceholder: "Describe the image you need, for example: a simple stickman showing anxiety before sleep, white background, clean lines…",
+      promptHint: "Do not enter passwords, private data, or sensitive content.",
       provider: "Generation service",
       size: "Format",
       model: "Model",
       advanced: "Advanced settings",
       negativePrompt: "Avoid",
-      negativePromptPlaceholder: "Things you do not want in the image",
+      negativePromptPlaceholder: "Things you do not want in the image…",
       seed: "Seed",
       randomSeed: "Randomize seed",
       generate: "Generate image",
-      generating: "Generating...",
+      generating: "Generating…",
       generatingHint: "Generating and saving the image to your asset library.",
       result: "Result",
-      resultHint: "Generated images are stored as personal assets.",
-      emptyResult: "Describe the image you need. The generated result will appear here and be saved to assets.",
+      resultHint: "Saved to assets automatically.",
+      emptyResult: "Generated images will appear here.",
       saved: "Saved",
       success: "Image saved to assets",
       viewInAssets: "View in assets",
@@ -2456,19 +2632,23 @@ export const en: Locale = {
       }
     },
     voiceTool: {
-      badge: "Asset tool",
+      badge: "Creation tool",
       title: "Generate voiceover audio",
       description: "Turn short scripts into reusable voice assets for missing narration, replacement audio, or future workflow inputs.",
+      comingSoonTitle: "Voice generation is coming soon",
+      comingSoonDescription: "Voiceover, replacement audio, and narration repair will open as a standalone tool. For now, use short-video draft templates for voiceover workflows, or generate images to fill missing visual assets.",
+      backToDraft: "Create short-video draft",
+      openImageTool: "Generate image",
       openAssets: "Open assets",
       text: "Voiceover text",
-      textPlaceholder: "Paste a short narration paragraph here. Keep it clear and conversational.",
+      textPlaceholder: "Paste a short narration paragraph here. Keep it clear and conversational…",
       textHint: "Use plain narration text. Avoid passwords, private data, and sensitive content.",
       voice: "Voice",
       speed: "Speed",
       costTitle: "Workspace credit estimate",
       estimatedCost: "Estimated cost",
       generate: "Generate voice",
-      generating: "Generating...",
+      generating: "Generating…",
       generatingHint: "Generating audio and saving it to your asset library.",
       result: "Voice result",
       resultHint: "Generated audio is stored as a personal asset.",
@@ -2541,9 +2721,9 @@ export const en: Locale = {
       referrerReward: "You receive",
       referredReward: "Friend receives",
       successfulInvites: "Successful invites",
-      totalEarned: "earned",
+      totalEarned: "Earned",
       recordsTitle: "Invite records",
-      recordsDescription: "Track signup time, reward status, and credits for each invited user.",
+      recordsDescription: "Invited signups and credited rewards appear here.",
       emptyRecords: "No invited users yet",
       unnamedUser: "New user",
       claimed: "Invite reward added",
@@ -2565,21 +2745,26 @@ export const en: Locale = {
     generate: {
       title: "Create a short-video draft",
       description: "Choose a proven template, fill in the topic, and let the workflow generate the draft in one run.",
-      templateSection: "Template",
-      inputSection: "Inputs",
+      templateSection: "Choose a template",
+      inputSection: "Fill in the content",
       outputSection: "Output",
       runSection: "Run",
-      chooseTemplate: "Choose a template",
+      settingsSection: "Generation check",
+      chooseTemplate: "Pick the closest template for this content direction.",
+      createFromTemplate: "Use template",
+      availableTemplates: "available templates",
+      templateCategory: "Official template",
+      currentTemplate: "Current template",
       recommended: "Recommended",
       privateTemplate: "Private",
-      fieldsHint: "Fill only the fields needed by this template. The workflow will handle script, visuals, voice, captions, and draft packaging.",
-      renderMp4: "Also render MP4",
+      fieldsHint: "Only fill in what you know. Reference material can stay empty.",
+      renderMp4: "Also render finished MP4",
       renderMp4Hint: "When enabled, Reelflow also creates a default 1080P MP4.",
       draftOnlyHint: "The default output is a CapCut/Jianying draft package.",
-      estimate: "Estimated cost",
+      estimate: "This run",
       estimateHint: "Credits are frozen before execution. Final settlement is based on actual generation and media processing usage.",
       submit: "Start generation",
-      submitting: "Creating task...",
+      submitting: "Creating task…",
       submitSuccess: "Task created",
       submitError: "Failed to create task",
       runBlockedTitle: "Task cannot start yet",
@@ -2591,18 +2776,19 @@ export const en: Locale = {
       emptyTemplates: "No available templates",
       emptyTemplatesHint: "Publish official templates or assign a private template to this workspace first.",
       requiredMark: "Required",
+      requiredField: "Enter {field}",
       numberRange: "Allowed range: {min}-{max}",
       selectPlaceholder: "Select an option",
-      textPlaceholder: "Enter content",
+      textPlaceholder: "Enter content…",
       booleanOn: "Enabled",
       booleanOff: "Disabled",
-      assetHint: "Choose a reusable material from your asset library. Leave it empty if you want the workflow to generate everything.",
+      assetHint: "Choose a reusable material from your asset library. Leave it empty if you want Reelflow to fill in what is needed.",
       assetLoadError: "Failed to load reusable assets",
       selectedAsset: "Selected",
       clearAsset: "Clear",
       openAssets: "Open assets",
       noAssets: "No reusable image yet",
-      noAssetsHint: "Upload a reference image or generate one with AI, then return to select it here.",
+      noAssetsHint: "Upload a reference image, or generate one and return to select it here.",
       loginHint: "Sign in to start creating workflow tasks.",
       goToTask: "Open task",
       preflightErrors: {
@@ -2625,9 +2811,10 @@ export const en: Locale = {
       }
     },
     jobs: {
+      eyebrow: "Task center",
       title: "Tasks",
       description: "Review generated drafts, in-progress runs, and items that need manual follow-up.",
-      loading: "Loading tasks...",
+      loading: "Loading tasks…",
       loadError: "Failed to load tasks",
       empty: "No tasks yet",
       emptyHint: "Create your first video workflow task from an official template.",
@@ -2646,32 +2833,34 @@ export const en: Locale = {
       activeTasks: "Active tasks",
       completedTasks: "Completed tasks",
       attentionTasks: "Need attention",
+      done: "Done",
       autoRefreshOn: "Auto-refresh on",
       autoRefreshOff: "Auto-refresh off",
-      liveHintTitle: "Live task tracking is on",
-      liveHintBody: "This list refreshes every few seconds while tasks are queued or running.",
-      lastRefreshed: "Last refreshed"
+      liveHintTitle: "Tracking active tasks",
+      liveHintBody: "The list updates automatically while tasks are queued or generating.",
+      lastRefreshed: "Last refreshed",
+      progress: "Task progress"
     },
     detail: {
       title: "Task detail",
       backToTasks: "Back to tasks",
-      taskId: "Task ID",
+      taskId: "Task number",
       liveTracking: "Live tracking",
       autoRefreshOn: "Auto-refresh on",
       autoRefreshOff: "Auto-refresh off",
       lastRefreshed: "Last refreshed",
       liveHintTitle: "Task is being generated",
-      liveHintBody: "This page refreshes every few seconds while the task is queued or running, so you can follow stage progress without manually reloading.",
+      liveHintBody: "This page updates stage progress while the task is queued or generating.",
       progress: "Progress",
       stages: "Stages",
       assets: "Assets",
       usage: "Usage",
       events: "Logs",
       qualityIssues: "Quality issues",
-      outputNoticeTitle: "Output is controlled by task state",
-      outputNoticeBody: "Drafts and videos become downloadable after settlement and quality checks. The draft package includes the editing project, material list, and local conversion notes.",
+      outputNoticeTitle: "Outputs unlock when ready",
+      outputNoticeBody: "Drafts and videos become downloadable after quality checks. The draft package includes the editing project, material list, and local conversion notes.",
       actionsTitle: "Task actions",
-      actionsDescription: "Use retry when a system step failed. Use rerun when you want a fresh result from the same inputs.",
+      actionsDescription: "Retry from the failed point when generation stops, or generate a fresh result from the same inputs.",
       actionsUnavailable: "Actions become available after the task completes or fails.",
       retryFailed: "Retry from failed point",
       retryQueued: "Retry queued",
@@ -2686,6 +2875,14 @@ export const en: Locale = {
       assetUnavailable: "This asset is a trace record. The media file will appear here when it is ready.",
       assetNote: "Note",
       usageItem: "Generation usage",
+      usageUnits: {
+        token: "tokens",
+        image: "images",
+        second: "seconds",
+        minute: "minutes",
+        hour: "hours",
+        request: "requests"
+      },
       issue: "Needs attention",
       openAsset: "Open file",
       openInAssets: "Assets",
@@ -2698,6 +2895,13 @@ export const en: Locale = {
       noUsage: "No usage recorded",
       noEvents: "No logs yet",
       noIssues: "No quality issues recorded",
+      eventLevels: {
+        info: "Note",
+        success: "Done",
+        warn: "Notice",
+        warning: "Notice",
+        error: "Issue"
+      },
       source: "Source",
       storage: "Storage",
       storageKey: "Storage key",
@@ -2727,6 +2931,11 @@ export const en: Locale = {
       settled: "Settled",
       debt: "Debt",
       refunded: "Refunded"
+    },
+    issueStatus: {
+      open: "Open",
+      resolved: "Resolved",
+      ignored: "Ignored"
     },
     stages: {
       precheck: "Precheck",

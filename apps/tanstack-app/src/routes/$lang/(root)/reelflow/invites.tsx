@@ -10,6 +10,7 @@ import { Badge } from '@libs/react-shared/ui/badge'
 import { Button } from '@libs/react-shared/ui/button'
 import { Input } from '@libs/react-shared/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@libs/react-shared/ui/table'
+import { PageHeader, SkeletonRows } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/invites')({
   beforeLoad: async ({ params }) => {
@@ -88,46 +89,37 @@ function ReelflowInvitesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background" data-testid="reelflow-invites-page">
-      <section className="border-b bg-muted/20">
-        <div className="container mx-auto flex flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Gift className="h-5 w-5" />
-              </div>
-              <p className="text-sm font-medium text-muted-foreground">{t.reelflow.common.productName}</p>
-            </div>
-            <h1 className="mt-4 text-3xl font-semibold tracking-tight">{t.reelflow.invites.title}</h1>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{t.reelflow.invites.description}</p>
-          </div>
-          <Button variant="outline" onClick={loadInvites} disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-            {t.reelflow.common.refresh}
-          </Button>
-        </div>
-      </section>
+    <main className="min-h-screen" data-testid="reelflow-invites-page">
+      <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+        <PageHeader
+          eyebrow={t.reelflow.common.productName}
+          title={t.reelflow.invites.title}
+          description={t.reelflow.invites.description}
+          actions={
+            <Button type="button" variant="outline" onClick={loadInvites} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />}
+              {t.reelflow.common.refresh}
+            </Button>
+          }
+        />
 
-      <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         {error ? (
           <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
             <AlertTitle>{t.reelflow.invites.loadError}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         ) : loading ? (
-          <div className="flex h-56 items-center justify-center rounded-lg border">
-            <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
-          </div>
+          <SkeletonRows count={3} className="h-28" />
         ) : data ? (
           <>
             <section className="grid gap-4 md:grid-cols-3">
-              <InviteMetric testId="reelflow-invite-referrer-reward" icon={<Coins className="h-4 w-4" />} label={t.reelflow.invites.referrerReward} value={`${formatCredits(data.bonuses.referrer)} ${t.reelflow.common.credits}`} />
-              <InviteMetric testId="reelflow-invite-referred-reward" icon={<Gift className="h-4 w-4" />} label={t.reelflow.invites.referredReward} value={`${formatCredits(data.bonuses.referred)} ${t.reelflow.common.credits}`} />
-              <InviteMetric testId="reelflow-invite-successful-count" icon={<Users className="h-4 w-4" />} label={t.reelflow.invites.successfulInvites} value={String(data.bonuses.successfulInvites)} detail={`${formatCredits(data.bonuses.totalEarned)} ${t.reelflow.invites.totalEarned}`} />
+              <InviteMetric testId="reelflow-invite-referrer-reward" icon={<Coins className="h-4 w-4" aria-hidden="true" />} label={t.reelflow.invites.referrerReward} value={`${formatCredits(data.bonuses.referrer)} ${t.reelflow.common.credits}`} />
+              <InviteMetric testId="reelflow-invite-referred-reward" icon={<Gift className="h-4 w-4" aria-hidden="true" />} label={t.reelflow.invites.referredReward} value={`${formatCredits(data.bonuses.referred)} ${t.reelflow.common.credits}`} />
+              <InviteMetric testId="reelflow-invite-successful-count" icon={<Users className="h-4 w-4" aria-hidden="true" />} label={t.reelflow.invites.successfulInvites} value={String(data.bonuses.successfulInvites)} detail={`${t.reelflow.invites.totalEarned}: ${formatCredits(data.bonuses.totalEarned)} ${t.reelflow.common.credits}`} />
             </section>
 
-            <section className="rounded-lg border bg-card p-5 shadow-sm">
+            <section className="reelflow-panel p-5">
               <div className="mb-5">
                 <h2 className="text-lg font-semibold">{t.reelflow.invites.shareTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{t.reelflow.invites.shareDescription}</p>
@@ -137,11 +129,20 @@ function ReelflowInvitesPage() {
                   <label className="text-sm font-medium text-muted-foreground" htmlFor="reelflow-invite-url">
                     {t.reelflow.invites.inviteLink}
                   </label>
-                  <Input id="reelflow-invite-url" value={data.inviteUrl} readOnly className="font-mono text-sm" />
+                  <Input
+                    id="reelflow-invite-url"
+                    name="inviteUrl"
+                    type="url"
+                    value={data.inviteUrl}
+                    readOnly
+                    spellCheck={false}
+                    autoComplete="off"
+                    className="font-mono text-sm"
+                  />
                 </div>
                 <div className="flex items-end">
-                  <Button className="w-full lg:w-auto" onClick={copyInviteUrl} data-testid="reelflow-copy-invite">
-                    {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+                  <Button type="button" className="w-full lg:w-auto" onClick={copyInviteUrl} data-testid="reelflow-copy-invite">
+                    {copied ? <Check className="mr-2 h-4 w-4" aria-hidden="true" /> : <Copy className="mr-2 h-4 w-4" aria-hidden="true" />}
                     {copied ? t.reelflow.invites.copiedShort : t.reelflow.invites.copyLink}
                   </Button>
                 </div>
@@ -152,7 +153,7 @@ function ReelflowInvitesPage() {
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-lg border bg-card shadow-sm" data-testid="reelflow-invite-records">
+            <section className="reelflow-panel overflow-hidden" data-testid="reelflow-invite-records">
               <div className="border-b px-5 py-4">
                 <h2 className="text-lg font-semibold">{t.reelflow.invites.recordsTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{t.reelflow.invites.recordsDescription}</p>
@@ -214,7 +215,7 @@ function InviteMetric({
   detail?: string
 }) {
   return (
-    <section className="rounded-lg border bg-card p-5 shadow-sm" data-testid={testId}>
+    <section className="reelflow-panel p-5" data-testid={testId}>
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
         <p className="text-sm font-medium text-muted-foreground">{label}</p>

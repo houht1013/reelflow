@@ -37,7 +37,7 @@ export function CountrySelect({
 
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger className={cn("h-9 w-[140px]", className)}>
+      <SelectTrigger aria-label={placeholder} className={cn("h-9 w-[140px]", className)}>
         <SelectValue placeholder={placeholder}>
           {selectedCountry && (
             <div className="flex items-center gap-2">

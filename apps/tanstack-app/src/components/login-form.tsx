@@ -115,6 +115,7 @@ export function LoginForm({
                 className={cn(errors.email && "border-destructive")}
                 aria-invalid={errors.email ? "true" : "false"}
                 autoComplete="email"
+                spellCheck={false}
               />
               {errors.email && (
                 <span className="text-destructive text-xs absolute -bottom-5 left-0">

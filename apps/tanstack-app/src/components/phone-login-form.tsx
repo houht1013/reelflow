@@ -222,9 +222,11 @@ export function PhoneLoginForm({
                   id="phone"
                   placeholder={t.auth.phone.phoneNumberPlaceholder}
                   type="tel"
+                  inputMode="tel"
                   autoCapitalize="none"
                   autoComplete="tel"
                   autoCorrect="off"
+                  spellCheck={false}
                   disabled={loading}
                   className="flex-1"
                   {...register("phone")}
@@ -250,6 +252,7 @@ export function PhoneLoginForm({
             />
 
             <Button
+              type="submit"
               disabled={
                 loading || (config.captcha.enabled && !turnstileToken)
               }

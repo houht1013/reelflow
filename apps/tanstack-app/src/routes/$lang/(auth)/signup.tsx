@@ -1,6 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
-import { SignupForm } from '@/components/signup-form'
 import { SocialAuth } from '@/components/social-auth'
 import {
   Card,
@@ -17,28 +16,33 @@ export const Route = createFileRoute('/$lang/(auth)/signup')({
 })
 
 function SignupPage() {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
 
   return (
-    <Card className="w-[380px]">
+    <Card className="reelflow-panel w-full gap-5 border-transparent py-6 shadow-none">
       <CardHeader className="text-center">
-        <CardTitle className="text-xl">
+        <CardTitle className="reelflow-display text-xl">
           {t.auth.signup.createAccount}
         </CardTitle>
         <CardDescription>{t.auth.signup.socialSignup}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <SocialAuth />
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-          <span className="bg-card text-muted-foreground relative z-10 px-2">
-            {t.auth.signup.continueWith}
-          </span>
+        <div className="reelflow-muted-tile px-4 py-3 text-center text-sm leading-6 text-muted-foreground">
+          {t.auth.signup.haveAccount}{' '}
+          <Link
+            to="/$lang/signin"
+            params={{ lang: locale }}
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {t.auth.signup.signinLink}
+          </Link>
         </div>
-        <SignupForm />
-        <div className="text-muted-foreground *:[a]:hover:text-primary text-balance text-center text-xs *:[a]:underline *:[a]:underline-offset-4">
+        <div className="text-muted-foreground text-balance text-center text-xs leading-5">
           {t.auth.signup.termsNotice}{' '}
-          <a href="#">{t.auth.signup.termsOfService}</a>{' '}
-          {t.common.and} <a href="#">{t.auth.signup.privacyPolicy}</a>.
+          <span className="font-medium text-foreground">{t.auth.signup.termsOfService}</span>{' '}
+          {t.common.and}{' '}
+          <span className="font-medium text-foreground">{t.auth.signup.privacyPolicy}</span>.
         </div>
       </CardContent>
     </Card>

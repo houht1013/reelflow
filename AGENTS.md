@@ -253,3 +253,17 @@ When asking any coding model to build a feature in this repo, prepend:
 
 `Please follow /AGENTS.md as the default implementation checklist and keep Next/Nuxt/TanStack parity unless I explicitly say otherwise.`
 
+
+## Agent skills
+
+### Issue tracker
+
+Issues, PRDs, and triage live in **GitHub Issues** for `houht1013/reelflow` (via the `gh` CLI). External PRs are **not** a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical roles using their **default** label strings: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+**Single-context**: one `CONTEXT.md` + `docs/adr/` at the repo root (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.

@@ -23,7 +23,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           description: 'text-muted-foreground font-normal leading-[1.4] mt-0.5',
           actionButton: 'bg-primary text-primary-foreground hover:bg-primary/90 px-2 py-1.5 rounded text-xs font-medium ml-auto mr-0',
           cancelButton: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 px-2 py-1.5 rounded text-xs font-medium',
-          closeButton: 'absolute top-0 right-0 h-5 w-5 flex justify-center items-center p-0 bg-popover border border-border rounded-full cursor-pointer z-[1] transition-all duration-100 transform translate-x-[35%] -translate-y-[35%] hover:bg-accent hover:border-accent-foreground/20',
+          closeButton: 'absolute top-0 right-0 h-5 w-5 flex justify-center items-center p-0 bg-popover border border-border rounded-full cursor-pointer z-[1] transition-[background-color,border-color,transform] duration-100 transform translate-x-[35%] -translate-y-[35%] hover:bg-accent hover:border-accent-foreground/20',
         },
       }}
       {...props}

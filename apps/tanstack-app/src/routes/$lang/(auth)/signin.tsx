@@ -20,9 +20,9 @@ function SigninPage() {
   const { t } = useTranslation()
 
   return (
-    <Card className="w-[380px]">
+    <Card className="reelflow-panel w-full gap-5 border-transparent py-6 shadow-none">
       <CardHeader className="text-center">
-        <CardTitle className="text-xl">{t.auth.signin.welcomeBack}</CardTitle>
+        <CardTitle className="reelflow-display text-xl">{t.auth.signin.welcomeBack}</CardTitle>
         <CardDescription>{t.auth.signin.socialLogin}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
@@ -35,10 +35,11 @@ function SigninPage() {
         <div className="flex flex-col gap-4">
           <LoginForm />
         </div>
-        <div className="text-muted-foreground *:[a]:hover:text-primary text-balance text-center text-xs *:[a]:underline *:[a]:underline-offset-4">
+        <div className="text-muted-foreground text-balance text-center text-xs leading-5">
           {t.auth.signin.termsNotice}{' '}
-          <a href="#">{t.auth.signin.termsOfService}</a>{' '}
-          {t.common.and} <a href="#">{t.auth.signin.privacyPolicy}</a>.
+          <span className="font-medium text-foreground">{t.auth.signin.termsOfService}</span>{' '}
+          {t.common.and}{' '}
+          <span className="font-medium text-foreground">{t.auth.signin.privacyPolicy}</span>.
         </div>
       </CardContent>
     </Card>

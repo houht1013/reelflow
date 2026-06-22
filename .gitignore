@@ -82,3 +82,5 @@ seed-data.sql
 
 # Local review artifacts
 code_review/
+# Local scratch: screenshots, dev logs, audit captures
+output/

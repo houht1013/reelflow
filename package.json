@@ -11,6 +11,7 @@
     "dev:next": "turbo run dev --filter=@tinyship/next-app",
     "dev:nuxt": "turbo run dev --filter=@tinyship/nuxt-app",
     "dev:tanstack": "turbo run dev --filter=@tinyship/tanstack-app",
+    "dev:local": "powershell -ExecutionPolicy Bypass -File ./scripts/start-dev.ps1",
     "dev:worker": "corepack pnpm --filter @reelflow/execution-worker dev",
     "dev:docs": "turbo run dev --filter=docs-app",
     "build:next": "turbo run build --filter=@tinyship/next-app",

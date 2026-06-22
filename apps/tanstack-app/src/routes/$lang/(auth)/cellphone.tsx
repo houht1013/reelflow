@@ -19,17 +19,18 @@ function CellphonePage() {
   const { t, locale } = useTranslation()
 
   return (
-    <Card className="w-[380px]">
+    <Card className="reelflow-panel w-full gap-5 border-transparent py-6 shadow-none">
       <CardHeader className="text-center">
-        <CardTitle className="text-xl">{t.auth.phone.title}</CardTitle>
+        <CardTitle className="reelflow-display text-xl">{t.auth.phone.title}</CardTitle>
         <CardDescription>{t.auth.phone.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         <PhoneLoginForm />
-        <div className="text-muted-foreground text-balance text-center text-xs [&_a:hover]:text-primary [&_a]:underline [&_a]:underline-offset-4">
+        <div className="text-muted-foreground text-balance text-center text-xs leading-5">
           {t.auth.phone.termsNotice}{' '}
-          <a href="#">{t.auth.phone.termsOfService}</a>{' '}
-          {t.common.and} <a href="#">{t.auth.phone.privacyPolicy}</a>.
+          <span className="font-medium text-foreground">{t.auth.phone.termsOfService}</span>{' '}
+          {t.common.and}{' '}
+          <span className="font-medium text-foreground">{t.auth.phone.privacyPolicy}</span>.
         </div>
         <div className="flex justify-center gap-4 text-sm">
           <Link

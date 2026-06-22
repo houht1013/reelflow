@@ -72,6 +72,8 @@ export async function listWorkspaceAssets(input: ListWorkspaceAssetsInput) {
   if (query) {
     conditions.push(
       or(
+        ilike(asset.id, `%${query}%`),
+        ilike(job.id, `%${query}%`),
         ilike(asset.storageKey, `%${query}%`),
         ilike(asset.url, `%${query}%`),
         ilike(asset.mimeType, `%${query}%`),

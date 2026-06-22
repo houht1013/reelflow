@@ -2,15 +2,15 @@ import type { Locale } from './types'
 
 export const zhCN: Locale = {
   common: {
-    welcome: "欢迎使用 TinyShip",
-    siteName: "TinyShip",
+    welcome: "欢迎使用 Reelflow",
+    siteName: "Reelflow",
     login: "登录",
     signup: "注册",
     logout: "退出登录",
     profile: "个人资料",
     settings: "设置",
     and: "和",
-    loading: "加载中...",
+    loading: "加载中…",
     unexpectedError: "发生了意外错误",
     notAvailable: "不可用",
     viewPlans: "查看计划",
@@ -100,50 +100,63 @@ export const zhCN: Locale = {
     }
   },
   auth: {
+    brand: {
+      name: "Reelflow",
+      tagline: "创作工作台",
+      homeLabel: "返回 Reelflow 首页",
+      eyebrow: "短视频草稿生成",
+      title: "用模板更快产出可交付的视频草稿",
+      description: "选择官方模板，填写少量参数，生成剪映草稿或成片素材。任务进度、资产和积分都在同一个工作台里管理。",
+      points: {
+        templates: "精选模板适合知识分享、观点表达和情绪价值内容。",
+        assets: "生成结果和上传素材自动归档，方便复用和审核。",
+        credits: "积分按实际消耗记录，执行过程清晰可追溯。"
+      }
+    },
     metadata: {
       signin: {
-        title: "TinyShip - 登录",
-        description: "登录您的 TinyShip 账户，访问仪表板、管理订阅并使用高级功能。",
+        title: "Reelflow - 登录",
+        description: "登录 Reelflow，继续生成短视频草稿、查看任务进度并管理资产。",
         keywords: "登录, 账户登录, 身份验证, 访问账户, 仪表板"
       },
       signup: {
-        title: "TinyShip - 创建账户",
-        description: "创建您的 TinyShip 账户，开始使用我们全面的脚手架构建出色的 SaaS 应用程序。",
+        title: "Reelflow - 创建账户",
+        description: "创建 Reelflow 账户，使用模板开始生成短视频草稿。",
         keywords: "注册, 创建账户, 新用户, 开始使用, 账户注册"
       },
       forgotPassword: {
-        title: "TinyShip - 重置密码",
-        description: "安全地重置您的 TinyShip 账户密码。输入您的邮箱以接收密码重置说明。",
+        title: "Reelflow - 重置密码",
+        description: "安全地重置您的 Reelflow 账户密码。输入邮箱以接收密码重置说明。",
         keywords: "忘记密码, 重置密码, 密码恢复, 账户恢复"
       },
       resetPassword: {
-        title: "TinyShip - 创建新密码",
-        description: "为您的 TinyShip 账户创建新的安全密码。选择强密码来保护您的账户。",
+        title: "Reelflow - 创建新密码",
+        description: "为您的 Reelflow 账户创建新的安全密码。",
         keywords: "新密码, 密码重置, 安全密码, 账户安全"
       },
       phone: {
-        title: "TinyShip - 手机登录",
-        description: "使用手机号登录 TinyShip。通过短信验证进行快速安全的身份验证。",
+        title: "Reelflow - 手机登录",
+        description: "使用手机号登录 Reelflow。通过短信验证码快速进入工作台。",
         keywords: "手机登录, 短信验证, 移动端认证, 手机号码"
       },
       wechat: {
-        title: "TinyShip - 微信登录",
-        description: "使用微信账户登录 TinyShip。为中国用户提供便捷的身份验证。",
+        title: "Reelflow - 微信登录",
+        description: "使用微信账户登录 Reelflow。",
         keywords: "微信登录, WeChat登录, 社交登录, 中国认证"
       }
     },
     signin: {
       title: "登录您的账户",
-      welcomeBack: "欢迎回来",
-      socialLogin: "使用您喜欢的社交账号登录",
-      continueWith: "或继续使用",
+      welcomeBack: "欢迎回到 Reelflow",
+      socialLogin: "使用 Google 或手机号继续",
+      continueWith: "或使用邮箱继续",
       email: "邮箱",
-      emailPlaceholder: "请输入邮箱地址",
+      emailPlaceholder: "请输入邮箱地址…",
       password: "密码",
       forgotPassword: "忘记密码？",
       rememberMe: "记住我",
       submit: "登录",
-      submitting: "登录中...",
+      submitting: "登录中…",
       noAccount: "还没有账户？",
       signupLink: "注册",
       termsNotice: "点击继续即表示您同意我们的",
@@ -171,27 +184,27 @@ export const zhCN: Locale = {
           dialogDescription: "请完成验证码验证后重新发送验证邮件",
           emailLabel: "邮箱地址",
           sendButton: "发送验证邮件",
-          sendingButton: "发送中...",
+          sendingButton: "发送中…",
           waitButton: "等待 {seconds}s"
         }
       }
     },
     signup: {
-      title: "注册 TinyShip",
-      createAccount: "创建账户",
-      socialSignup: "使用您喜欢的社交账号注册",
-      continueWith: "或继续使用",
+      title: "注册 Reelflow",
+      createAccount: "创建 Reelflow 账户",
+      socialSignup: "使用 Google 或手机号注册",
+      continueWith: "或使用邮箱创建",
       name: "姓名",
-      namePlaceholder: "请输入您的姓名",
+      namePlaceholder: "请输入您的姓名…",
       email: "邮箱",
-      emailPlaceholder: "请输入邮箱地址",
+      emailPlaceholder: "请输入邮箱地址…",
       password: "密码",
-      passwordPlaceholder: "创建密码",
+      passwordPlaceholder: "创建密码…",
       imageUrl: "头像图片链接",
       imageUrlPlaceholder: "https://example.com/your-image.jpg",
       optional: "可选",
       submit: "创建账户",
-      submitting: "创建账户中...",
+      submitting: "创建账户中…",
       haveAccount: "已有账户？",
       signinLink: "登录",
       termsNotice: "点击继续即表示您同意我们的",
@@ -220,12 +233,12 @@ export const zhCN: Locale = {
       title: "手机号登录",
       description: "输入您的手机号以接收验证码",
       phoneNumber: "手机号",
-      phoneNumberPlaceholder: "请输入您的手机号",
+      phoneNumberPlaceholder: "请输入您的手机号…",
       countryCode: "国家/地区",
       verificationCode: "验证码",
       enterCode: "输入验证码",
-      sendingCode: "发送验证码中...",
-      verifying: "验证中...",
+      sendingCode: "发送验证码中…",
+      verifying: "验证中…",
       codeSentTo: "已发送验证码到",
       resendIn: "重新发送",
       seconds: "秒",
@@ -247,9 +260,9 @@ export const zhCN: Locale = {
       title: "忘记密码",
       description: "重置密码并重新获得账户访问权限",
       email: "邮箱",
-      emailPlaceholder: "请输入邮箱地址",
+      emailPlaceholder: "请输入邮箱地址…",
       submit: "发送重置链接",
-      submitting: "发送中...",
+      submitting: "发送中…",
       termsNotice: "点击继续即表示您同意我们的",
       termsOfService: "服务条款",
       privacyPolicy: "隐私政策",
@@ -268,11 +281,11 @@ export const zhCN: Locale = {
       title: "重置密码",
       description: "为您的账户创建新密码",
       password: "新密码",
-      passwordPlaceholder: "请输入新密码",
+      passwordPlaceholder: "请输入新密码…",
       confirmPassword: "确认密码",
-      confirmPasswordPlaceholder: "请再次输入新密码",
+      confirmPasswordPlaceholder: "请再次输入新密码…",
       submit: "重置密码",
-      submitting: "重置中...",
+      submitting: "重置中…",
       success: {
         title: "密码重置成功",
         description: "您的密码已经成功重置。",
@@ -291,7 +304,7 @@ export const zhCN: Locale = {
       description: "使用微信扫码登录",
       scanQRCode: "请使用微信扫描二维码",
       orUseOtherMethods: "或使用其他登录方式",
-      loadingQRCode: "加载二维码中...",
+      loadingQRCode: "加载二维码中…",
       termsNotice: "点击继续即表示您同意我们的",
       termsOfService: "服务条款",
       privacyPolicy: "隐私政策",
@@ -1026,6 +1039,107 @@ export const zhCN: Locale = {
           "终身免费更新": "终身免费更新"
         }
       }
+    },
+    v2: {
+      eyebrow: "定价方案",
+      title: "选择适合你的创作节奏",
+      subtitle: "订阅获得稳定的每月积分与全部模板，或按需充值积分。随时升级，随时取消。",
+      tabs: { subscription: "订阅套餐", credits: "积分充值" },
+      billing: {
+        monthly: "按月",
+        yearly: "按年",
+        save: "省 {n}%",
+        perMonth: "/月",
+        billedYearlyAs: "按年计费 ¥{total}",
+        billedMonthly: "按月计费，可随时取消"
+      },
+      mostPopular: "最受欢迎",
+      monthlyCredits: "每月 {n} 积分",
+      choosePlan: "选择套餐",
+      subscriptionPlans: [
+        {
+          id: "starter",
+          name: "入门",
+          tagline: "适合个人试用和起号",
+          monthly: 39,
+          credits: 300,
+          features: ["每月 300 工作区积分", "基础官方模板", "标准生成队列", "可编辑剪映草稿", "邮件支持"]
+        },
+        {
+          id: "growth",
+          name: "成长",
+          tagline: "适合稳定更新的创作者",
+          monthly: 99,
+          credits: 1200,
+          recommended: true,
+          features: ["每月 1200 工作区积分", "全部官方模板", "优先生成队列", "可选 1080P 高清导出", "AI 补图与补语音", "优先支持"]
+        },
+        {
+          id: "pro",
+          name: "专业",
+          tagline: "适合团队和高频产出",
+          monthly: 299,
+          credits: 4000,
+          features: ["每月 4000 工作区积分", "全部模板 + 私有模板优先", "最高优先级队列", "批量任务并行", "专属客户支持", "团队协作（即将开放）"]
+        }
+      ],
+      credits: {
+        title: "积分充值",
+        subtitle: "积分用于生成短视频草稿、图片等创作能力，长期有效。",
+        unit: "积分",
+        bonusTag: "含 {n} 赠送",
+        perCredit: "约 ¥{n}/积分",
+        buy: "立即充值",
+        packs: [
+          { id: "c100", credits: 100, amount: 9 },
+          { id: "c550", credits: 500, bonus: 50, amount: 45, recommended: true },
+          { id: "c1200", credits: 1000, bonus: 200, amount: 99 }
+        ],
+        custom: {
+          title: "自定义额度",
+          hint: "输入需要的积分数量，价格按标准单价自动计算。",
+          label: "积分数量",
+          minHint: "最少 {n} 积分，{step} 递增",
+          amountLabel: "应付金额",
+          cta: "充值自定义额度"
+        }
+      },
+      trust: [
+        { title: "安全支付", desc: "支付在独立的安全收银台完成，全程加密。" },
+        { title: "灵活计费", desc: "订阅可随时升级或取消，积分长期有效。" },
+        { title: "按需付费", desc: "订阅与积分两种模式，按你的产出节奏选择。" }
+      ]
+    },
+    checkout: {
+      metadata: { title: "Reelflow - 确认支付", description: "确认订单并选择支付方式。" },
+      eyebrow: "确认订单",
+      title: "确认并支付",
+      back: "返回定价",
+      orderSummary: "订单摘要",
+      billingCycle: "计费周期",
+      cycleMonthly: "按月订阅",
+      cycleYearly: "按年订阅",
+      creditsItem: "{n} 积分充值",
+      bonusIncluded: "含 {n} 赠送积分",
+      subscriptionItem: "{name} 套餐",
+      total: "应付总计",
+      methodTitle: "选择支付方式",
+      methodHint: "选择偏好的支付方式，确认后将跳转到对应的安全收银台完成支付。",
+      methods: {
+        wechat: "微信支付",
+        wechatDesc: "使用微信扫码支付",
+        alipay: "支付宝",
+        alipayDesc: "使用支付宝扫码支付",
+        card: "银行卡 / 信用卡",
+        cardDesc: "支持 Visa、Mastercard 等",
+        paypal: "PayPal",
+        paypalDesc: "海外用户推荐"
+      },
+      reservedNote: "支付通道正在接入中，当前为预留设计。",
+      confirm: "确认支付",
+      emptyTitle: "未选择套餐",
+      emptyHint: "请先在定价页面选择一个套餐或积分包。",
+      toPricing: "前往定价"
     }
   },
   payment: {
@@ -1912,6 +2026,10 @@ export const zhCN: Locale = {
   header: {
     navigation: {
       ai: "AI 工具",
+      product: "产品",
+      workflow: "工作流",
+      docs: "文档",
+      workbench: "工作台",
       reelflow: "创作",
       reelflowJobs: "任务",
       reelflowImage: "AI 生图",
@@ -1955,6 +2073,8 @@ export const zhCN: Locale = {
       signOut: "退出登录"
     },
     userMenu: {
+      open: "打开用户菜单",
+      defaultUser: "用户",
       dashboard: "控制台",
       profile: "个人资料",
       settings: "设置",
@@ -2029,10 +2149,20 @@ export const zhCN: Locale = {
   },
   reelflow: {
     metadata: {
+      home: {
+        title: "Reelflow - 创作工作台",
+        description: "进入 Reelflow 工作台，快速创建短视频草稿、生成图片、查看任务和管理资产。",
+        keywords: "Reelflow, 创作工作台, 短视频草稿, 图像生成, 资产库"
+      },
       generate: {
         title: "Reelflow - 创建短视频草稿",
         description: "基于可复用模板创建短视频工作流任务。",
         keywords: "短视频, 工作流, 模板, 剪映草稿, AI视频"
+      },
+      templates: {
+        title: "Reelflow - 模板库",
+        description: "浏览官方模板和可用的私有模板，选择适合当前内容的创作起点。",
+        keywords: "短视频模板, 官方模板, 私有模板, 视频创作"
       },
       jobs: {
         title: "Reelflow - 任务",
@@ -2078,15 +2208,17 @@ export const zhCN: Locale = {
     shell: {
       workspace: "创作工作台",
       workspaceName: "默认工作区",
-      workspaceHint: "短视频草稿、资产和积分归属于当前工作区",
+      workspaceHint: "草稿 · 资产 · 积分",
       loadingCredits: "积分加载中",
       openMenu: "打开菜单",
+      collapseSidebar: "收起侧栏",
+      expandSidebar: "展开侧栏",
       userMenu: "打开用户菜单",
       signOut: "退出登录",
-      comingSoon: "待开放",
+      comingSoon: "准备中",
       groups: {
         main: "工作台",
-        create: "创作",
+        create: "创作工具",
         account: "账户"
       },
       nav: {
@@ -2109,17 +2241,24 @@ export const zhCN: Locale = {
       }
     },
     home: {
+      eyebrow: "创作工作台",
       title: "今天从哪个创作开始？",
-      description: "选择模板生成短视频草稿，或用独立创作能力补齐图片素材。任务进度、积分和产物都归属于当前工作区。",
+      description: "从模板草稿开始，也可以先补齐图片素材。任务、积分和产物都在这里。",
       primaryCta: "创建短视频草稿",
       secondaryCta: "生成图片",
       quickTitle: "快捷入口",
       statusTitle: "工作区状态",
+      recentTasks: "最近任务",
+      emptyRecentTasks: "暂无任务记录",
+      galleryEyebrow: "官方精选",
       galleryTitle: "官方精选案例",
-      galleryDescription: "这些案例用于说明官方模板的视觉节奏和交付效果。",
+      galleryDescription: "官方模板的效果参考。",
+      recommendationEyebrow: "为你推荐",
       recommendationTitle: "推荐关注",
-      createCenterTitle: "创作中心",
-      createCenterDescription: "短视频草稿和独立创作能力都从这里进入。当前优先开放短视频草稿和图像生成。",
+      createCenterEyebrow: "常用能力",
+      createCenterTitle: "开始创作",
+      createCenterDescription: "常用入口放在这里。",
+      draftAnchorEyebrow: "开始创作",
       draftAnchorTitle: "短视频草稿",
       draftAnchorDescription: "选择官方模板，填写主题和少量参数，一键生成可编辑草稿。",
       actions: {
@@ -2145,11 +2284,11 @@ export const zhCN: Locale = {
         },
         video: {
           title: "视频生成",
-          description: "独立视频生成能力后续开放。"
+          description: "视频生成会作为独立入口，适合更完整的画面生成。"
         },
         voice: {
           title: "语音生成",
-          description: "旁白和补配音能力后续开放。"
+          description: "语音生成会作为独立入口，适合旁白和补配音。"
         }
       },
       gallery: [
@@ -2184,6 +2323,10 @@ export const zhCN: Locale = {
         }
       ]
     },
+    templates: {
+      title: "模板库",
+      description: "浏览当前工作区可用的官方模板和私有模板。选择模板后进入短视频草稿创建。"
+    },
     landing: {
       metadata: {
         title: "Reelflow - 短视频草稿工作流",
@@ -2192,23 +2335,30 @@ export const zhCN: Locale = {
       },
       hero: {
         eyebrow: "模板化短视频生产",
-        title: "不用学剪辑，也能生成可编辑短视频草稿",
-        subtitle: "选择官方模板，填写少量人能理解的参数，Reelflow 一次性完成脚本、画面、配音、字幕、草稿打包，并可选云端 MP4 渲染。",
-        primaryCta: "开始创作",
+        title: "把爆款短视频模板，变成可编辑草稿",
+        subtitle: "Reelflow 用官方模板承接脚本、画面、配音、字幕和草稿打包。你只需要填写主题和少量参数，就能拿到可继续精修的短视频草稿。",
+        primaryCta: "免费开始创作",
         secondaryCta: "查看套餐",
         trust: [
           "可编辑剪映草稿",
-          "工作区积分",
-          "长任务可追溯"
+          "官方精选模板",
+          "可选 1080P MP4"
         ]
       },
       preview: {
         title: "心理学火柴人",
         subtitle: "官方模板",
         status: "生成中",
+        verticalBadge: "竖版草稿",
         template: "模板工作流",
         credits: "已冻结 35 积分",
         caption: "为什么人一到晚上就容易想太多？",
+        duration: "00:32",
+        sceneLabels: [
+          "开场钩子",
+          "情绪解释",
+          "结尾金句"
+        ],
         progress: "生成进度",
         stages: [
           "脚本已确认",
@@ -2222,14 +2372,14 @@ export const zhCN: Locale = {
         auditValue: "阶段和产物留痕"
       },
       metrics: [
-        { value: "3", label: "首发官方模板" },
-        { value: "90%", label: "自动化生产目标" },
-        { value: "1080P", label: "可选云端 MP4" },
-        { value: "1", label: "一键生成流程" }
+        { value: "3", label: "三步生成：选模板 · 填参数 · 生成" },
+        { value: "0", label: "无需任何剪辑经验" },
+        { value: "1080P", label: "可选高清 MP4 导出" },
+        { value: "100%", label: "草稿可继续精修编辑" }
       ],
       workflow: {
-        title: "为非技术创作者设计",
-        description: "用户不需要配置工作流。选择模板，填写能理解的参数，任务完成后查看和下载产物。",
+        title: "从模板到草稿，保持一个清晰动作",
+        description: "把选模板、填主题、生成草稿和下载交付物收进一条清晰路径，新手也能直接开始。",
         steps: [
           {
             title: "选择模板",
@@ -2237,11 +2387,11 @@ export const zhCN: Locale = {
           },
           {
             title: "填写简单参数",
-            description: "输入主题、语气、人群，也可以从工作区资产库选择可复用参考素材。"
+            description: "输入主题、语气和目标人群，系统会按模板组织脚本、画面和字幕。"
           },
           {
             title: "追踪生成过程",
-            description: "生成过程中可以查看进度、阶段、产物、用量、质量问题和重试操作。"
+            description: "生成过程中可以看到当前进度、主要节点和已经产出的内容。"
           },
           {
             title: "下载交付物",
@@ -2250,8 +2400,8 @@ export const zhCN: Locale = {
         ]
       },
       templates: {
-        title: "先从适合平台传播的结构开始",
-        description: "从可复用的短视频结构开始，快速生成适合发布的草稿。",
+        title: "官方精选案例",
+        description: "先展示可被验证的内容结构，让新用户理解模板可以生成什么样的草稿。",
         tags: [
           "知识分享",
           "观点表达",
@@ -2295,10 +2445,26 @@ export const zhCN: Locale = {
         ]
       },
       finalCta: {
-        title: "从第一个可编辑草稿开始",
-        description: "选择模板，填写主题，生成可继续调整和发布的短视频草稿。",
-        primaryCta: "创建任务",
-        secondaryCta: "购买积分"
+        title: "现在就生成你的第一个短视频草稿",
+        description: "免费注册即可体验官方模板，从一个主题开始，拿到可继续精修的可编辑草稿。",
+        primaryCta: "免费开始创作",
+        secondaryCta: "查看套餐"
+      },
+      docs: {
+        items: [
+          {
+            title: "模板说明",
+            description: "了解官方模板适合的内容方向、输入参数和交付物。"
+          },
+          {
+            title: "草稿交付",
+            description: "生成结果优先交付可编辑草稿包，并可选输出固定规格 MP4。"
+          },
+          {
+            title: "定制服务",
+            description: "私有模板由官方承接开发，并指定给对应工作区使用。"
+          }
+        ]
       }
     },
     common: {
@@ -2316,19 +2482,29 @@ export const zhCN: Locale = {
       description: "工作流开始前冻结积分，生成完成后结算。余额不足或任务产生欠费时，可在这里充值补足。",
       loadError: "积分账户加载失败",
       balance: "可用积分",
+      balanceHint: "用于生成短视频草稿、图片和后续可开放的创作能力。",
       frozen: "冻结积分",
+      frozenHint: "任务执行中会先冻结预估额度，完成后按实际消耗结算。",
       debt: "欠费积分",
+      debtHint: "欠费不会中断已完成任务，补足后即可继续下载和使用产物。",
+      accountHealthy: "账户正常",
+      debtAttention: "需补足",
       totalGranted: "累计发放",
+      totalGrantedHint: "充值、赠送和邀请奖励都会计入。",
       totalConsumed: "累计消耗",
+      totalConsumedHint: "按任务实际消耗持续记录。",
       buyTitle: "积分充值",
-      buyDescription: "选择积分包并通过已配置的支付服务完成付款。支付成功后积分发放到当前工作区。",
+      buyDescription: "选择合适的积分包，完成付款后积分会发放到当前工作区。",
+      planCardDescription: "适合补充短视频草稿、图像生成和后续创作额度。",
+      planBenefitWorkspace: "付款成功后自动发放到当前工作区",
+      planBenefitNoExpiry: "积分长期有效，可用于已开放的创作能力",
       noExpiry: "长期有效",
       recommended: "推荐",
       buyNow: "立即购买",
       purchaseSuccess: "积分已到账",
       purchaseFailed: "积分购买失败",
       ledgerTitle: "积分流水",
-      ledgerDescription: "记录工作区维度的购买、冻结、结算、欠费和退回。",
+      ledgerDescription: "购买、冻结、结算、欠费和退回会显示在这里。",
       emptyLedger: "暂无积分流水",
       wechatQrTitle: "扫码支付",
       wechatQrHint: "支付确认后余额会自动刷新，请保持当前窗口打开。",
@@ -2365,7 +2541,7 @@ export const zhCN: Locale = {
     },
     assetLibrary: {
       title: "资产库",
-      description: "查看生成任务产物，并保存可复用的个人素材到当前工作区。",
+      description: "管理任务产物和可复用素材。",
       loadError: "资产加载失败",
       filters: {
         all: "全部资产",
@@ -2373,22 +2549,22 @@ export const zhCN: Locale = {
         personal: "个人素材"
       },
       allTypes: "全部类型",
-      searchPlaceholder: "搜索资产、模板或文件名",
+      searchPlaceholder: "搜索资产、模板或文件名…",
       empty: "暂无资产",
-      emptyHint: "运行一个工作流，或上传个人素材后即可在这里查看。",
+      emptyHint: "生成一次内容，或上传个人素材后即可在这里查看。",
       uploadTitle: "上传素材",
-      uploadDescription: "上传可复用的图片、Logo、头像或参考图，供后续工作流使用。",
+      uploadDescription: "可选上传图片、Logo、头像或参考图，后续创作时复用。",
       assetType: "资产类型",
       storageProvider: "存储服务",
       chooseFile: "选择图片",
-      fileHint: "支持 JPG、PNG、WebP、GIF、SVG、BMP，最大 10MB。",
+      fileHint: "支持 JPG、PNG、WebP、GIF、SVG、BMP，最大 10 MB。",
       uploadAction: "上传并保存",
-      uploading: "上传中...",
+      uploading: "上传中…",
       uploadSuccess: "素材已保存",
       uploadFailed: "上传失败",
       registerFailed: "素材保存失败",
       scopeTitle: "归属当前工作区",
-      scopeDescription: "资产归属于当前工作区。任务产物只读展示；上传素材可在后续工作流输入中复用。",
+      scopeDescription: "任务产物只读；上传素材可复用。",
       createdAt: "创建时间",
       fileSize: "大小",
       duration: "时长",
@@ -2396,7 +2572,7 @@ export const zhCN: Locale = {
       jobStatus: "任务状态",
       storageKey: "存储键",
       preview: "预览",
-      previewDescription: "先预览资产，再决定是否在工作流中复用或打开原文件。",
+      previewDescription: "先预览资产，再决定是否在后续创作中复用或打开原文件。",
       openAsset: "打开",
       openJob: "任务",
       removeTitle: "移除素材？",
@@ -2423,27 +2599,27 @@ export const zhCN: Locale = {
       }
     },
     imageTool: {
-      badge: "资产工具",
+      badge: "创作工具",
       title: "生成补图素材",
-      description: "当任务里缺图、图片不合适，或需要一张参考图时，可以在这里直接生成。结果会自动保存到资产库。",
+      description: "为草稿补齐封面、分镜和参考图。",
       openAssets: "打开资产库",
       prompt: "图片描述",
-      promptPlaceholder: "描述你需要的画面，例如：一个表现睡前焦虑的简笔火柴人，白色背景，线条干净",
-      promptHint: "用普通语言描述画面和风格即可。不要填写账号密码、隐私信息或敏感内容。",
+      promptPlaceholder: "描述你需要的画面，例如：一个表现睡前焦虑的简笔火柴人，白色背景，线条干净…",
+      promptHint: "不要填写账号密码、隐私信息或敏感内容。",
       provider: "生成服务",
       size: "画面比例",
       model: "模型",
       advanced: "高级设置",
       negativePrompt: "不想出现",
-      negativePromptPlaceholder: "写下你不希望图片里出现的内容",
+      negativePromptPlaceholder: "写下你不希望图片里出现的内容…",
       seed: "随机种子",
       randomSeed: "随机生成种子",
       generate: "生成图片",
-      generating: "生成中...",
+      generating: "生成中…",
       generatingHint: "正在生成图片，并保存到你的资产库。",
       result: "生成结果",
-      resultHint: "生成后的图片会作为个人资产保存。",
-      emptyResult: "先描述你需要的图片。生成结果会显示在这里，并保存到资产库。",
+      resultHint: "自动保存到资产库。",
+      emptyResult: "生成结果会显示在这里。",
       saved: "已保存",
       success: "图片已保存到资产库",
       viewInAssets: "在资产库查看",
@@ -2463,19 +2639,23 @@ export const zhCN: Locale = {
       }
     },
     voiceTool: {
-      badge: "资产工具",
+      badge: "创作工具",
       title: "生成配音素材",
       description: "把短文案生成可复用的旁白音频，用于补配音、替换不满意的声音，或后续工作流输入。",
+      comingSoonTitle: "语音生成即将开放",
+      comingSoonDescription: "旁白、补配音和声音替换会作为独立能力开放。当前可以先使用短视频草稿模板完成配音流程，或用图像生成补齐画面素材。",
+      backToDraft: "创建短视频草稿",
+      openImageTool: "生成图片",
       openAssets: "打开资产库",
       text: "旁白文案",
-      textPlaceholder: "粘贴一段简短旁白。尽量口语化、清晰、自然。",
+      textPlaceholder: "粘贴一段简短旁白。尽量口语化、清晰、自然…",
       textHint: "只填写需要朗读的正文。不要填写账号密码、隐私信息或敏感内容。",
       voice: "音色",
       speed: "语速",
       costTitle: "工作区积分预估",
       estimatedCost: "预估消耗",
       generate: "生成语音",
-      generating: "生成中...",
+      generating: "生成中…",
       generatingHint: "正在生成音频，并保存到你的资产库。",
       result: "生成结果",
       resultHint: "生成后的音频会作为个人资产保存。",
@@ -2550,7 +2730,7 @@ export const zhCN: Locale = {
       successfulInvites: "成功邀请",
       totalEarned: "已获得",
       recordsTitle: "邀请记录",
-      recordsDescription: "记录好友注册时间、奖励状态和双方积分，方便后续查看。",
+      recordsDescription: "好友注册和奖励到账后会显示在这里。",
       emptyRecords: "暂无邀请记录",
       unnamedUser: "新用户",
       claimed: "邀请奖励已到账",
@@ -2572,21 +2752,26 @@ export const zhCN: Locale = {
     generate: {
       title: "创建短视频草稿",
       description: "选择验证过的模板，填写主题，一键运行完整工作流。",
-      templateSection: "模板",
-      inputSection: "输入参数",
+      templateSection: "选择模板",
+      inputSection: "填写内容",
       outputSection: "输出",
       runSection: "执行",
-      chooseTemplate: "选择模板",
+      settingsSection: "生成确认",
+      chooseTemplate: "选一个最接近当前内容方向的模板。",
+      createFromTemplate: "使用模板",
+      availableTemplates: "个可用模板",
+      templateCategory: "官方模板",
+      currentTemplate: "当前模板",
       recommended: "推荐",
       privateTemplate: "私有",
-      fieldsHint: "只填写当前模板需要的内容。脚本、画面、配音、字幕和草稿打包由工作流自动处理。",
-      renderMp4: "同时生成 MP4",
+      fieldsHint: "只填写你确定的信息，参考素材可以留空。",
+      renderMp4: "同时生成成片 MP4",
       renderMp4Hint: "勾选后会额外生成默认 1080P MP4。",
       draftOnlyHint: "默认输出剪映草稿包。",
-      estimate: "预估消耗",
+      estimate: "本次预估",
       estimateHint: "任务开始前会冻结积分。后续按实际生成和媒体处理用量进行结算。",
       submit: "开始生成",
-      submitting: "正在创建任务...",
+      submitting: "正在创建任务…",
       submitSuccess: "任务已创建",
       submitError: "创建任务失败",
       runBlockedTitle: "任务暂时不能开始",
@@ -2598,18 +2783,19 @@ export const zhCN: Locale = {
       emptyTemplates: "暂无可用模板",
       emptyTemplatesHint: "请先发布官方模板，或将私有模板分配到当前工作区。",
       requiredMark: "必填",
+      requiredField: "请填写{field}",
       numberRange: "允许范围：{min}-{max}",
       selectPlaceholder: "请选择",
-      textPlaceholder: "请输入内容",
+      textPlaceholder: "请输入内容…",
       booleanOn: "已开启",
       booleanOff: "已关闭",
-      assetHint: "从资产库选择可复用素材。不选择也可以，工作流会自动生成所需内容。",
+      assetHint: "从资产库选择可复用素材。不选择也可以，所需素材会自动补齐。",
       assetLoadError: "可复用素材加载失败",
       selectedAsset: "已选择",
       clearAsset: "清除",
       openAssets: "打开资产库",
       noAssets: "暂无可复用图片",
-      noAssetsHint: "可以先上传参考图，或用 AI 生图生成素材后再回来选择。",
+      noAssetsHint: "可以先上传参考图，也可以生成图片后再回来选择。",
       loginHint: "登录后即可创建工作流任务。",
       goToTask: "打开任务",
       preflightErrors: {
@@ -2632,9 +2818,10 @@ export const zhCN: Locale = {
       }
     },
     jobs: {
+      eyebrow: "任务中心",
       title: "任务",
       description: "查看已生成草稿、运行中的任务，以及需要人工补齐的内容。",
-      loading: "正在加载任务...",
+      loading: "正在加载任务…",
       loadError: "任务加载失败",
       empty: "暂无任务",
       emptyHint: "从官方模板创建第一个视频工作流任务。",
@@ -2653,32 +2840,34 @@ export const zhCN: Locale = {
       activeTasks: "进行中任务",
       completedTasks: "已完成任务",
       attentionTasks: "需要关注",
+      done: "已完成",
       autoRefreshOn: "自动刷新已开启",
       autoRefreshOff: "自动刷新已关闭",
-      liveHintTitle: "任务列表正在实时追踪",
-      liveHintBody: "只要有任务处于排队或运行中，列表会每隔几秒自动刷新。",
-      lastRefreshed: "最近刷新"
+      liveHintTitle: "正在跟踪运行中的任务",
+      liveHintBody: "有任务排队或生成时，列表会自动更新。",
+      lastRefreshed: "最近刷新",
+      progress: "任务进度"
     },
     detail: {
       title: "任务详情",
       backToTasks: "返回任务",
-      taskId: "任务 ID",
+      taskId: "任务编号",
       liveTracking: "实时追踪",
       autoRefreshOn: "自动刷新已开启",
       autoRefreshOff: "自动刷新已关闭",
       lastRefreshed: "最近刷新",
       liveHintTitle: "任务正在生成",
-      liveHintBody: "任务排队或运行时，页面会每隔几秒自动刷新一次，你可以直接观察阶段进度，不需要反复手动刷新。",
+      liveHintBody: "任务排队或生成时，页面会自动更新阶段进度。",
       progress: "进度",
       stages: "阶段",
       assets: "产物",
       usage: "用量",
       events: "日志",
       qualityIssues: "质量问题",
-      outputNoticeTitle: "产物下载受任务状态控制",
-      outputNoticeBody: "草稿和视频会在结算与质量检查后开放下载。草稿包会包含剪辑工程、素材清单和本地转换说明。",
+      outputNoticeTitle: "产物准备好后即可下载",
+      outputNoticeBody: "草稿和视频会在质量检查后开放下载。草稿包会包含剪辑工程、素材清单和本地转换说明。",
       actionsTitle: "任务操作",
-      actionsDescription: "系统步骤失败时优先从失败点重试；如果想基于同一输入重新生成一份结果，可以重新生成。",
+      actionsDescription: "生成失败时可以从失败点重试；也可以基于同一输入重新生成一份结果。",
       actionsUnavailable: "任务完成或失败后才可以执行后续操作。",
       retryFailed: "从失败点重试",
       retryQueued: "已重新排队",
@@ -2693,6 +2882,14 @@ export const zhCN: Locale = {
       assetUnavailable: "这是产物追踪记录，真实媒体文件准备好后会显示在这里。",
       assetNote: "说明",
       usageItem: "本次生成用量",
+      usageUnits: {
+        token: "tokens",
+        image: "张",
+        second: "秒",
+        minute: "分钟",
+        hour: "小时",
+        request: "次"
+      },
       issue: "待处理",
       openAsset: "打开文件",
       openInAssets: "资产库",
@@ -2705,6 +2902,13 @@ export const zhCN: Locale = {
       noUsage: "暂无用量记录",
       noEvents: "暂无日志",
       noIssues: "暂无质量问题记录",
+      eventLevels: {
+        info: "记录",
+        success: "完成",
+        warn: "提醒",
+        warning: "提醒",
+        error: "异常"
+      },
       source: "来源",
       storage: "存储",
       storageKey: "存储键",
@@ -2734,6 +2938,11 @@ export const zhCN: Locale = {
       settled: "已结算",
       debt: "欠费",
       refunded: "已退回"
+    },
+    issueStatus: {
+      open: "待处理",
+      resolved: "已处理",
+      ignored: "已忽略"
     },
     stages: {
       precheck: "预检",

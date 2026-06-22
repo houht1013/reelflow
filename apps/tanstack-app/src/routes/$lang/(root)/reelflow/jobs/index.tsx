@@ -1,12 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Button } from '@libs/react-shared/ui/button'
-import { Badge } from '@libs/react-shared/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
-import { Activity, AlertCircle, ArrowRight, CheckCircle2, Clock3, Coins, FileWarning, Film, Loader2, PauseCircle, Plus, RefreshCw } from 'lucide-react'
+import { Activity, AlertCircle, ArrowRight, CheckCircle2, Clock3, Coins, FileWarning, Film, ListChecks, Loader2, PauseCircle, Plus, RefreshCw } from 'lucide-react'
+import { PageHeader, StatCard, StatusPill, EmptyState, SkeletonRows } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/jobs/')({
   beforeLoad: async ({ params }) => {
@@ -91,122 +91,113 @@ function ReelflowJobsPage() {
 
   const formatDate = (value: string | null) => {
     if (!value) return t.reelflow.common.noData
-    return new Date(value).toLocaleString(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
+    return new Intl.DateTimeFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    })
+    }).format(new Date(value))
   }
 
   const formatTime = (value: Date) => {
-    return value.toLocaleTimeString(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
+    return new Intl.DateTimeFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-    })
+    }).format(value)
   }
 
   const statusText = (status: string) => (t.reelflow.status as Record<string, string>)[status] || status
 
   return (
-    <main className="min-h-screen bg-background" data-testid="reelflow-jobs-page">
-      <section>
-        <div className="container mx-auto flex flex-col gap-4 px-4 py-8 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">{t.reelflow.jobs.title}</h1>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{t.reelflow.jobs.description}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => void loadJobs()} disabled={loading || refreshing}>
-              {loading || refreshing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-              {t.reelflow.common.refresh}
-            </Button>
-            <Button variant={autoRefresh ? 'secondary' : 'outline'} onClick={() => setAutoRefresh((current) => !current)}>
-              {autoRefresh ? <Activity className="mr-2 h-4 w-4" /> : <PauseCircle className="mr-2 h-4 w-4" />}
-              {autoRefresh ? t.reelflow.jobs.autoRefreshOn : t.reelflow.jobs.autoRefreshOff}
-            </Button>
-            <Button asChild>
-              <a href={`/${locale}/reelflow`}>
-                <Plus className="mr-2 h-4 w-4" />
-                {t.reelflow.common.createNew}
-              </a>
-            </Button>
-          </div>
-        </div>
-      </section>
+    <main className="min-h-screen" data-testid="reelflow-jobs-page">
+      <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <PageHeader
+          eyebrow={t.reelflow.jobs.eyebrow}
+          title={t.reelflow.jobs.title}
+          description={t.reelflow.jobs.description}
+          actions={
+            <>
+              <Button type="button" variant="outline" onClick={() => void loadJobs()} disabled={loading || refreshing}>
+                {loading || refreshing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
+                )}
+                {t.reelflow.common.refresh}
+              </Button>
+              <Button
+                type="button"
+                variant={autoRefresh ? 'secondary' : 'outline'}
+                onClick={() => setAutoRefresh((current) => !current)}
+                aria-pressed={autoRefresh}
+              >
+                {autoRefresh ? (
+                  <Activity className="mr-2 h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <PauseCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+                )}
+                {autoRefresh ? t.reelflow.jobs.autoRefreshOn : t.reelflow.jobs.autoRefreshOff}
+              </Button>
+              <Button asChild>
+                <Link to="/$lang/reelflow/draft" params={{ lang: locale }}>
+                  <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {t.reelflow.common.createNew}
+                </Link>
+              </Button>
+            </>
+          }
+        />
 
-      <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        {!loading && jobs.length > 0 && (
-          <div className="mb-5 grid gap-3 md:grid-cols-3">
-            <div className="reelflow-muted-tile p-4">
-              <div className="flex items-center gap-3">
-                <Clock3 className="h-5 w-5 text-primary" />
-                <p className="text-sm text-muted-foreground">{t.reelflow.jobs.activeTasks}</p>
-              </div>
-              <p className="mt-3 text-2xl font-semibold">{summary.active}</p>
+        <div className="mt-7">
+          {!loading && jobs.length > 0 && (
+            <div className="reelflow-reveal mb-5 grid gap-3 md:grid-cols-3" data-delay="1">
+              <StatCard icon={Clock3} label={t.reelflow.jobs.activeTasks} value={summary.active} tone="blue" />
+              <StatCard icon={CheckCircle2} label={t.reelflow.jobs.completedTasks} value={summary.completed} tone="green" />
+              <StatCard icon={AlertCircle} label={t.reelflow.jobs.attentionTasks} value={summary.attention} tone="amber" />
             </div>
-            <div className="reelflow-muted-tile p-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-                <p className="text-sm text-muted-foreground">{t.reelflow.jobs.completedTasks}</p>
-              </div>
-              <p className="mt-3 text-2xl font-semibold">{summary.completed}</p>
-            </div>
-            <div className="reelflow-muted-tile p-4">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-primary" />
-                <p className="text-sm text-muted-foreground">{t.reelflow.jobs.attentionTasks}</p>
-              </div>
-              <p className="mt-3 text-2xl font-semibold">{summary.attention}</p>
-            </div>
-          </div>
-        )}
+          )}
 
-        {!loading && hasLiveJobs && (
-          <Alert className="mb-5">
-            <Activity className="h-4 w-4" />
-            <AlertTitle>{t.reelflow.jobs.liveHintTitle}</AlertTitle>
-            <AlertDescription>
-              {t.reelflow.jobs.liveHintBody}
-              {lastRefreshedAt && (
-                <span className="ml-2 text-muted-foreground">
-                  {t.reelflow.jobs.lastRefreshed}: {formatTime(lastRefreshedAt)}
-                </span>
-              )}
-            </AlertDescription>
-          </Alert>
-        )}
+          {!loading && hasLiveJobs && (
+            <Alert className="mb-5">
+              <Activity className="h-4 w-4" aria-hidden="true" />
+              <AlertTitle>{t.reelflow.jobs.liveHintTitle}</AlertTitle>
+              <AlertDescription>
+                {t.reelflow.jobs.liveHintBody}
+                {lastRefreshedAt && (
+                  <span className="ml-2 text-muted-foreground">
+                    {t.reelflow.jobs.lastRefreshed}: {formatTime(lastRefreshedAt)}
+                  </span>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {error ? (
-          <Alert variant="destructive">
-            <AlertTitle>{t.reelflow.jobs.loadError}</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        ) : loading ? (
-          <div className="reelflow-panel flex h-56 items-center justify-center">
-            <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
-          </div>
-        ) : jobs.length === 0 ? (
-          <div className="reelflow-panel p-10 text-center" data-testid="reelflow-jobs-empty">
-            <h2 className="text-lg font-semibold">{t.reelflow.jobs.empty}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{t.reelflow.jobs.emptyHint}</p>
-            <Button className="mt-5" asChild>
-              <a href={`/${locale}/reelflow`}>{t.reelflow.common.createNew}</a>
-            </Button>
-          </div>
-        ) : (
-          <div className="reelflow-panel overflow-hidden" data-testid="reelflow-jobs-table">
-            <div className="bg-muted/25 px-5 py-3 ring-1 ring-inset ring-border/25">
-              <div className="grid gap-4 text-xs font-medium uppercase tracking-wide text-muted-foreground lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_160px_120px]">
-                <span>{t.reelflow.jobs.template}</span>
-                <span>{t.reelflow.jobs.status}</span>
-                <span>{t.reelflow.jobs.artifact}</span>
-                <span>{t.reelflow.jobs.createdAt}</span>
-                <span className="text-right">{t.reelflow.jobs.open}</span>
-              </div>
+          {error ? (
+            <Alert variant="destructive">
+              <AlertTitle>{t.reelflow.jobs.loadError}</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : loading ? (
+            <SkeletonRows count={4} className="h-[5.5rem]" />
+          ) : jobs.length === 0 ? (
+            <div data-testid="reelflow-jobs-empty">
+              <EmptyState
+                icon={ListChecks}
+                title={t.reelflow.jobs.empty}
+                description={t.reelflow.jobs.emptyHint}
+                action={
+                  <Button asChild>
+                    <Link to="/$lang/reelflow/draft" params={{ lang: locale }}>
+                      <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+                      {t.reelflow.common.createNew}
+                    </Link>
+                  </Button>
+                }
+              />
             </div>
-            <div className="divide-y divide-border/35">
+          ) : (
+            <div className="reelflow-reveal space-y-3" data-delay="2" data-testid="reelflow-jobs-table">
               {jobs.map((jobItem) => (
                 <TaskRow
                   key={jobItem.id}
@@ -218,8 +209,8 @@ function ReelflowJobsPage() {
                 />
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </main>
   )
@@ -239,83 +230,77 @@ function TaskRow({
   formatDate: (value: string | null) => string
 }) {
   const hasIssue = job.status === 'failed' || job.qualityStatus === 'needs_fix' || Number(job.debtCredits) > 0
-  const isLive = job.status === 'queued' || job.status === 'running'
-  const isDone = job.status === 'completed'
+  const progress = taskProgress(job.status)
 
   return (
     <article
-      className="grid gap-4 px-5 py-4 transition-colors hover:bg-muted/20 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_160px_120px] lg:items-center"
+      className="reelflow-soft-tile overflow-hidden"
       data-testid={`reelflow-job-row-${job.id}`}
     >
-      <div className="min-w-0">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/70 text-muted-foreground ring-1 ring-inset ring-border/30">
-            <Film className="h-5 w-5" />
-          </span>
-          <div className="min-w-0">
-            <h2 className="truncate text-base font-semibold">{job.templateName}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{job.renderMp4Requested ? t.reelflow.jobs.mp4Requested : t.reelflow.jobs.draftRequested}</p>
+      <div className="h-1 bg-muted">
+        <div
+          className="h-full rounded-r-full bg-[linear-gradient(90deg,var(--reelflow-coral),var(--reelflow-amber))]"
+          style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-label={t.reelflow.jobs.progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+        />
+      </div>
+
+      <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.4fr)_auto] lg:items-center">
+        <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,color-mix(in_oklch,var(--reelflow-coral)_16%,transparent),color-mix(in_oklch,var(--reelflow-blue)_12%,transparent))] text-foreground shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
+              <Film className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-base font-semibold">{job.templateName}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{job.renderMp4Requested ? t.reelflow.jobs.mp4Requested : t.reelflow.jobs.draftRequested}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <StatusPill status={job.status} label={statusText(job.status)} />
-        {isLive && <Badge variant="outline">{t.reelflow.detail.liveTracking}</Badge>}
-        {isDone && <Badge variant="outline">{t.reelflow.jobs.completedTasks}</Badge>}
-      </div>
-
-      <div className="min-w-0 space-y-2">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <StatusPill status={job.artifactStatus} label={statusText(job.artifactStatus)} compact />
-          <StatusPill status={job.qualityStatus} label={statusText(job.qualityStatus)} compact />
+        <div className="grid gap-2 sm:grid-cols-3">
+          <TaskInfo label={t.reelflow.jobs.status} value={<StatusPill status={job.status} label={statusText(job.status)} />} />
+          <TaskInfo label={t.reelflow.jobs.artifact} value={<StatusPill status={job.artifactStatus} label={statusText(job.artifactStatus)} />} />
+          <TaskInfo label={t.reelflow.jobs.quality} value={<StatusPill status={job.qualityStatus} label={statusText(job.qualityStatus)} />} />
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {hasIssue ? <FileWarning className="h-4 w-4 text-destructive" /> : <Coins className="h-4 w-4" />}
-          <span>{job.estimatedCredits} {t.reelflow.common.credits}</span>
+
+        <div className="flex flex-col gap-3 lg:items-end">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {hasIssue ? <FileWarning className="h-4 w-4 text-destructive" aria-hidden="true" /> : <Coins className="h-4 w-4" aria-hidden="true" />}
+            <span className="reelflow-num whitespace-nowrap">{job.estimatedCredits} {t.reelflow.common.credits}</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t.reelflow.jobs.createdAt}: {formatDate(job.createdAt)}
+          </p>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/$lang/reelflow/jobs/$id" params={{ lang: locale, id: job.id }}>
+              {t.reelflow.jobs.open}
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
         </div>
-      </div>
-
-      <div className="text-sm text-muted-foreground">{formatDate(job.createdAt)}</div>
-
-      <div className="flex justify-start lg:justify-end">
-        <Button variant="ghost" size="sm" asChild>
-          <a href={`/${locale}/reelflow/jobs/${job.id}`}>
-            {t.reelflow.jobs.open}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
-        </Button>
       </div>
     </article>
   )
 }
 
-function StatusPill({ status, label, compact = false }: { status: string; label: string; compact?: boolean }) {
-  const tone = statusTone(status)
-  const Icon = tone.icon
+function TaskInfo({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <span
-      className={`inline-flex max-w-full items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${tone.className}`}
-      data-status={status}
-    >
-      <Icon className={compact ? 'h-3.5 w-3.5 shrink-0' : 'h-4 w-4 shrink-0'} />
-      <span className="truncate">{label}</span>
-    </span>
+    <div className="reelflow-muted-tile min-w-0 px-3 py-2.5">
+      <p className="mb-1.5 truncate text-xs text-muted-foreground">{label}</p>
+      <div className="min-w-0">{value}</div>
+    </div>
   )
 }
 
-function statusTone(status: string) {
-  if (status === 'failed' || status === 'canceled' || status === 'debt' || status === 'needs_fix') {
-    return { icon: AlertCircle, className: 'bg-destructive/10 text-destructive ring-destructive/25' }
-  }
-  if (status === 'completed' || status === 'downloadable' || status === 'accepted' || status === 'settled' || status === 'available') {
-    return { icon: CheckCircle2, className: 'bg-emerald-500/10 text-emerald-700 ring-emerald-500/25 dark:text-emerald-300' }
-  }
-  if (status === 'queued' || status === 'pending' || status === 'frozen') {
-    return { icon: Clock3, className: 'bg-amber-500/10 text-amber-700 ring-amber-500/25 dark:text-amber-300' }
-  }
-  if (status === 'running' || status === 'generating') {
-    return { icon: Activity, className: 'bg-blue-500/10 text-blue-700 ring-blue-500/25 dark:text-blue-300' }
-  }
-  return { icon: Clock3, className: 'bg-muted text-muted-foreground ring-border/45' }
+function taskProgress(status: string) {
+  if (status === 'completed') return 100
+  if (status === 'failed' || status === 'canceled') return 100
+  if (status === 'running') return 62
+  if (status === 'queued') return 18
+  return 8
 }

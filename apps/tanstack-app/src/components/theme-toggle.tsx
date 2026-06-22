@@ -18,13 +18,15 @@ export function ThemeToggle() {
 
   return (
     <Button
+      type="button"
       variant="ghost"
       size="icon"
+      aria-label={t.common.theme.toggle}
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       className="relative"
     >
-      <Sun className="size-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <Sun className="size-5 rotate-0 scale-100 transition-[transform,opacity] dark:-rotate-90 dark:scale-0" aria-hidden="true" />
+      <Moon className="absolute size-5 rotate-90 scale-0 transition-[transform,opacity] dark:rotate-0 dark:scale-100" aria-hidden="true" />
       <span className="sr-only">{t.common.theme.toggle}</span>
     </Button>
   )
@@ -32,12 +34,13 @@ export function ThemeToggle() {
 
 export function ColorSchemeToggle() {
   const { colorScheme, setColorScheme } = useTheme()
+  const { t } = useTranslation()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-9 px-3">
-          <Palette className="mr-2 h-4 w-4" />
+        <Button type="button" variant="ghost" size="sm" className="h-9 px-3" aria-label={t.common.theme.colorScheme}>
+          <Palette className="mr-2 h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">
             {THEME_CONFIG[colorScheme]?.name || 'Unknown'}
           </span>
@@ -55,7 +58,7 @@ export function ColorSchemeToggle() {
             />
             <span>{config.name}</span>
             {colorScheme === key && (
-              <Check className="ml-auto h-4 w-4" />
+              <Check className="ml-auto h-4 w-4" aria-hidden="true" />
             )}
           </DropdownMenuItem>
         ))}
@@ -66,12 +69,13 @@ export function ColorSchemeToggle() {
 
 export function ThemeSelector() {
   const { theme, colorScheme, setTheme, setColorScheme } = useTheme()
+  const { t } = useTranslation()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-9 px-3">
-          <Palette className="mr-2 h-4 w-4" />
+        <Button type="button" variant="ghost" size="sm" className="h-9 px-3" aria-label={t.common.theme.toggle}>
+          <Palette className="mr-2 h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">Theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -84,16 +88,16 @@ export function ThemeSelector() {
         <DropdownMenuItem 
           onClick={() => setTheme('light')}
         >
-          <Sun className="mr-2 h-4 w-4" />
+          <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>Light</span>
-          {theme === 'light' && <Check className="ml-auto h-4 w-4" />}
+          {theme === 'light' && <Check className="ml-auto h-4 w-4" aria-hidden="true" />}
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setTheme('dark')}
         >
-          <Moon className="mr-2 h-4 w-4" />
+          <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>Dark</span>
-          {theme === 'dark' && <Check className="ml-auto h-4 w-4" />}
+          {theme === 'dark' && <Check className="ml-auto h-4 w-4" aria-hidden="true" />}
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
@@ -111,7 +115,7 @@ export function ThemeSelector() {
               style={{ backgroundColor: config.color }}
             ></div>
             <span>{config.name}</span>
-            {colorScheme === key && <Check className="ml-auto h-4 w-4" />}
+            {colorScheme === key && <Check className="ml-auto h-4 w-4" aria-hidden="true" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

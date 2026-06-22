@@ -87,7 +87,7 @@ function ResetPasswordPage() {
   }
 
   return (
-    <Card className="w-[380px]">
+    <Card className="w-full border-black/[0.06] bg-white/90 shadow-xl shadow-black/[0.06]">
       {!resetSuccess ? (
         <>
           <CardHeader className="text-center">
@@ -110,6 +110,7 @@ function ResetPasswordPage() {
                     placeholder={t.auth.resetPassword.passwordPlaceholder}
                     type="password"
                     autoComplete="new-password"
+                    spellCheck={false}
                     disabled={loading}
                     {...register('password')}
                   />
@@ -130,6 +131,7 @@ function ResetPasswordPage() {
                     }
                     type="password"
                     autoComplete="new-password"
+                    spellCheck={false}
                     disabled={loading}
                     {...register('confirmPassword')}
                   />

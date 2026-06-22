@@ -1,10 +1,18 @@
 import { redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import type { AppUser } from '@libs/permissions'
+import { authClientReact } from '@libs/auth/authClient'
+
+type GuardUser = { id: string; role?: string | null }
 
 /**
- * Server function to get the current user's session.
- * Works both during SSR and client-side navigation (via RPC).
+ * Server function to read the session from request headers.
+ *
+ * Used during SSR (full page loads / first paint). On *client-side* navigation
+ * TanStack server-fn results don't deserialize reliably in this setup (the call
+ * resolves to `undefined` even though the user is authenticated), which made
+ * `beforeLoad` guards bounce logged-in users to /signin. The client paths below
+ * therefore read the session via the better-auth client instead.
  */
 const getAuthSession = createServerFn({ method: 'GET' }).handler(async () => {
   const { withDbContext } = await import('@/lib/with-request-db')
@@ -29,8 +37,7 @@ const getAuthSession = createServerFn({ method: 'GET' }).handler(async () => {
 })
 
 /**
- * Server function to get auth + subscription access state.
- * Works for SSR and client-side navigation (via RPC).
+ * Server function to get auth + subscription access state (SSR path).
  */
 const getSubscriptionAccess = createServerFn({ method: 'GET' }).handler(async () => {
   const { withDbContext } = await import('@/lib/with-request-db')
@@ -61,6 +68,46 @@ const getSubscriptionAccess = createServerFn({ method: 'GET' }).handler(async ()
 })
 
 /**
+ * Resolve the current user. SSR uses the server function; the browser uses the
+ * better-auth client (server-fn results are unreliable on client navigation).
+ */
+async function resolveUser(): Promise<GuardUser | null> {
+  if (typeof window === 'undefined') {
+    const result = await getAuthSession()
+    return result?.user ?? null
+  }
+  try {
+    const { data } = await authClientReact.getSession()
+    if (!data?.user) return null
+    return { id: data.user.id, role: (data.user as { role?: string | null }).role ?? null }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Resolve user + subscription state. SSR uses the server function; the browser
+ * resolves the user via the better-auth client and the subscription flag via
+ * the status API.
+ */
+async function resolveSubscription(): Promise<{ user: GuardUser | null; hasSubscription: boolean }> {
+  if (typeof window === 'undefined') {
+    const result = await getSubscriptionAccess()
+    return { user: result?.user ?? null, hasSubscription: !!result?.hasSubscription }
+  }
+  const user = await resolveUser()
+  if (!user) return { user: null, hasSubscription: false }
+  try {
+    const res = await fetch('/api/subscription/status')
+    if (!res.ok) return { user, hasSubscription: false }
+    const data = await res.json()
+    return { user, hasSubscription: !!data?.hasSubscription }
+  } catch {
+    return { user, hasSubscription: false }
+  }
+}
+
+/**
  * Redirect authenticated users away from auth pages (signin, signup, etc.)
  * to the dashboard. Use in `beforeLoad` of auth routes.
  */
@@ -69,8 +116,8 @@ export async function redirectIfAuthenticated({
 }: {
   params: { lang: string }
 }) {
-  const result = await getAuthSession()
-  if (result?.user) {
+  const user = await resolveUser()
+  if (user) {
     throw redirect({
       to: '/$lang/dashboard',
       params: { lang: params.lang },
@@ -87,8 +134,7 @@ export async function requireAuth({
 }: {
   params: { lang: string }
 }) {
-  const result = await getAuthSession()
-  const user = result?.user
+  const user = await resolveUser()
   if (!user) {
     throw redirect({
       to: '/$lang/signin',
@@ -133,20 +179,20 @@ export async function requireSubscription({
 }: {
   params: { lang: string }
 }) {
-  const result = await getSubscriptionAccess()
-  if (!result?.user) {
+  const { user, hasSubscription } = await resolveSubscription()
+  if (!user) {
     throw redirect({
       to: '/$lang/signin',
       params: { lang: params.lang },
     })
   }
 
-  if (!result.hasSubscription) {
+  if (!hasSubscription) {
     throw redirect({
       to: '/$lang/pricing',
       params: { lang: params.lang },
     })
   }
 
-  return { user: result.user }
+  return { user }
 }

@@ -97,7 +97,7 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <Card className="w-[380px]">
+    <Card className="w-full border-black/[0.06] bg-white/90 shadow-xl shadow-black/[0.06]">
       {!emailSent ? (
         <>
           <CardHeader className="text-center">
@@ -122,6 +122,7 @@ function ForgotPasswordPage() {
                     autoCapitalize="none"
                     autoComplete="email"
                     autoCorrect="off"
+                    spellCheck={false}
                     disabled={loading}
                     {...register('email')}
                   />
@@ -157,11 +158,11 @@ function ForgotPasswordPage() {
             {error && (
               <FormError message={error.message} code={error.code} />
             )}
-            <div className="text-muted-foreground *:[a]:hover:text-primary text-balance text-center text-xs *:[a]:underline *:[a]:underline-offset-4">
+            <div className="text-muted-foreground text-balance text-center text-xs">
               {t.auth.forgetPassword.termsNotice}{' '}
-              <a href="#">{t.auth.forgetPassword.termsOfService}</a>{' '}
+              <span className="font-medium text-foreground">{t.auth.forgetPassword.termsOfService}</span>{' '}
               {t.common.and}{' '}
-              <a href="#">{t.auth.forgetPassword.privacyPolicy}</a>.
+              <span className="font-medium text-foreground">{t.auth.forgetPassword.privacyPolicy}</span>.
             </div>
           </CardContent>
         </>

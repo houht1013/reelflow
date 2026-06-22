@@ -2,6 +2,30 @@
 
 **中文** | [English](./README_EN.md)
 
+## Reelflow 本地开发
+
+本仓库当前作为 Reelflow SaaS 产品开发主仓库使用。MVP 主应用是 `apps/tanstack-app`，本地开发优先使用 PostgreSQL。
+
+Windows 环境可直接运行：
+
+```powershell
+.\scripts\start-dev.ps1
+```
+
+或：
+
+```bat
+scripts\start-dev.cmd
+```
+
+也可以使用 npm 脚本入口：
+
+```powershell
+corepack pnpm dev:local
+```
+
+启动后访问 `http://localhost:7001/zh-CN`。详细说明见 [Windows 本地开发启动说明](./docs/user-guide/local-development-windows.md)。
+
 ![Build Status](https://github.com/vikingmute/tinyship/actions/workflows/ci.yml/badge.svg)
 
 🚀 一个现代化、功能齐全的 Monorepo 启动模板，专为构建支持国内和国际市场的 SaaS 应用而设计。

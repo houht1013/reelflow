@@ -34,12 +34,20 @@ export function SocialAuth({
 
     const params = new URLSearchParams(window.location.search);
     const returnTo = params.get("returnTo");
+    const inviteCode = params.get("ref")?.trim();
+    if (inviteCode) {
+      window.localStorage.setItem("reelflow.pendingInviteCode", inviteCode);
+    }
+
     switch (provider) {
       case "phone":
         navigate({
           to: "/$lang/cellphone",
           params: { lang: currentLocale },
-          search: returnTo ? { returnTo } : undefined,
+          search: {
+            ...(returnTo ? { returnTo } : {}),
+            ...(inviteCode ? { ref: inviteCode } : {}),
+          },
         });
         break;
       default:

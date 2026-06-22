@@ -41,6 +41,7 @@ export function SocialButton({ provider, className, onClick, loading, disabled, 
 
   return (
     <Button
+      type="button"
       variant="outline"
       className={cn(
         "w-full bg-background hover:bg-accent hover:text-accent-foreground",
@@ -51,9 +52,9 @@ export function SocialButton({ provider, className, onClick, loading, disabled, 
       {...props}
     >
       {loading ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
       ) : (
-        <Icon className="mr-2 h-4 w-4" />
+        <Icon className="mr-2 h-4 w-4" aria-hidden="true" />
       )}
       {providerNames[provider]}
     </Button>

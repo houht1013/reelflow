@@ -49,8 +49,8 @@ import { Route as LangrootPaymentSuccessRouteImport } from './routes/$lang/(root
 import { Route as LangrootPaymentCancelRouteImport } from './routes/$lang/(root)/payment-cancel'
 import { Route as LangrootImageGenerateRouteImport } from './routes/$lang/(root)/image-generate'
 import { Route as LangrootDashboardRouteImport } from './routes/$lang/(root)/dashboard'
+import { Route as LangrootCheckoutRouteImport } from './routes/$lang/(root)/checkout'
 import { Route as LangrootAiRouteImport } from './routes/$lang/(root)/ai'
-import { Route as LangauthWechatRouteImport } from './routes/$lang/(auth)/wechat'
 import { Route as LangauthSignupRouteImport } from './routes/$lang/(auth)/signup'
 import { Route as LangauthSigninRouteImport } from './routes/$lang/(auth)/signin'
 import { Route as LangauthResetPasswordRouteImport } from './routes/$lang/(auth)/reset-password'
@@ -89,9 +89,11 @@ import { Route as ApiAdminStatsMonthlyRouteImport } from './routes/api/admin/sta
 import { Route as ApiAdminReelflowOverviewRouteImport } from './routes/api/admin/reelflow/overview'
 import { Route as ApiAdminBlogIdRouteImport } from './routes/api/admin/blog/$id'
 import { Route as LangrootReelflowVoiceRouteImport } from './routes/$lang/(root)/reelflow/voice'
+import { Route as LangrootReelflowTemplatesRouteImport } from './routes/$lang/(root)/reelflow/templates'
 import { Route as LangrootReelflowNotificationsRouteImport } from './routes/$lang/(root)/reelflow/notifications'
 import { Route as LangrootReelflowInvitesRouteImport } from './routes/$lang/(root)/reelflow/invites'
 import { Route as LangrootReelflowImageRouteImport } from './routes/$lang/(root)/reelflow/image'
+import { Route as LangrootReelflowDraftRouteImport } from './routes/$lang/(root)/reelflow/draft'
 import { Route as LangrootReelflowCreditsRouteImport } from './routes/$lang/(root)/reelflow/credits'
 import { Route as LangrootReelflowAssetsRouteImport } from './routes/$lang/(root)/reelflow/assets'
 import { Route as LangrootBlogSlugRouteImport } from './routes/$lang/(root)/blog/$slug'
@@ -310,15 +312,15 @@ const LangrootDashboardRoute = LangrootDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => LangrootRouteRoute,
 } as any)
+const LangrootCheckoutRoute = LangrootCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
 const LangrootAiRoute = LangrootAiRouteImport.update({
   id: '/ai',
   path: '/ai',
   getParentRoute: () => LangrootRouteRoute,
-} as any)
-const LangauthWechatRoute = LangauthWechatRouteImport.update({
-  id: '/wechat',
-  path: '/wechat',
-  getParentRoute: () => LangauthRouteRoute,
 } as any)
 const LangauthSignupRoute = LangauthSignupRouteImport.update({
   id: '/signup',
@@ -515,6 +517,12 @@ const LangrootReelflowVoiceRoute = LangrootReelflowVoiceRouteImport.update({
   path: '/reelflow/voice',
   getParentRoute: () => LangrootRouteRoute,
 } as any)
+const LangrootReelflowTemplatesRoute =
+  LangrootReelflowTemplatesRouteImport.update({
+    id: '/reelflow/templates',
+    path: '/reelflow/templates',
+    getParentRoute: () => LangrootRouteRoute,
+  } as any)
 const LangrootReelflowNotificationsRoute =
   LangrootReelflowNotificationsRouteImport.update({
     id: '/reelflow/notifications',
@@ -529,6 +537,11 @@ const LangrootReelflowInvitesRoute = LangrootReelflowInvitesRouteImport.update({
 const LangrootReelflowImageRoute = LangrootReelflowImageRouteImport.update({
   id: '/reelflow/image',
   path: '/reelflow/image',
+  getParentRoute: () => LangrootRouteRoute,
+} as any)
+const LangrootReelflowDraftRoute = LangrootReelflowDraftRouteImport.update({
+  id: '/reelflow/draft',
+  path: '/reelflow/draft',
   getParentRoute: () => LangrootRouteRoute,
 } as any)
 const LangrootReelflowCreditsRoute = LangrootReelflowCreditsRouteImport.update({
@@ -645,8 +658,8 @@ export interface FileRoutesByFullPath {
   '/$lang/reset-password': typeof LangauthResetPasswordRoute
   '/$lang/signin': typeof LangauthSigninRoute
   '/$lang/signup': typeof LangauthSignupRoute
-  '/$lang/wechat': typeof LangauthWechatRoute
   '/$lang/ai': typeof LangrootAiRoute
+  '/$lang/checkout': typeof LangrootCheckoutRoute
   '/$lang/dashboard': typeof LangrootDashboardRoute
   '/$lang/image-generate': typeof LangrootImageGenerateRoute
   '/$lang/payment-cancel': typeof LangrootPaymentCancelRoute
@@ -679,9 +692,11 @@ export interface FileRoutesByFullPath {
   '/$lang/blog/$slug': typeof LangrootBlogSlugRoute
   '/$lang/reelflow/assets': typeof LangrootReelflowAssetsRoute
   '/$lang/reelflow/credits': typeof LangrootReelflowCreditsRoute
+  '/$lang/reelflow/draft': typeof LangrootReelflowDraftRoute
   '/$lang/reelflow/image': typeof LangrootReelflowImageRoute
   '/$lang/reelflow/invites': typeof LangrootReelflowInvitesRoute
   '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
+  '/$lang/reelflow/templates': typeof LangrootReelflowTemplatesRoute
   '/$lang/reelflow/voice': typeof LangrootReelflowVoiceRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
   '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
@@ -745,8 +760,8 @@ export interface FileRoutesByTo {
   '/$lang/reset-password': typeof LangauthResetPasswordRoute
   '/$lang/signin': typeof LangauthSigninRoute
   '/$lang/signup': typeof LangauthSignupRoute
-  '/$lang/wechat': typeof LangauthWechatRoute
   '/$lang/ai': typeof LangrootAiRoute
+  '/$lang/checkout': typeof LangrootCheckoutRoute
   '/$lang/dashboard': typeof LangrootDashboardRoute
   '/$lang/image-generate': typeof LangrootImageGenerateRoute
   '/$lang/payment-cancel': typeof LangrootPaymentCancelRoute
@@ -778,9 +793,11 @@ export interface FileRoutesByTo {
   '/$lang/blog/$slug': typeof LangrootBlogSlugRoute
   '/$lang/reelflow/assets': typeof LangrootReelflowAssetsRoute
   '/$lang/reelflow/credits': typeof LangrootReelflowCreditsRoute
+  '/$lang/reelflow/draft': typeof LangrootReelflowDraftRoute
   '/$lang/reelflow/image': typeof LangrootReelflowImageRoute
   '/$lang/reelflow/invites': typeof LangrootReelflowInvitesRoute
   '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
+  '/$lang/reelflow/templates': typeof LangrootReelflowTemplatesRoute
   '/$lang/reelflow/voice': typeof LangrootReelflowVoiceRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
   '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
@@ -848,8 +865,8 @@ export interface FileRoutesById {
   '/$lang/(auth)/reset-password': typeof LangauthResetPasswordRoute
   '/$lang/(auth)/signin': typeof LangauthSigninRoute
   '/$lang/(auth)/signup': typeof LangauthSignupRoute
-  '/$lang/(auth)/wechat': typeof LangauthWechatRoute
   '/$lang/(root)/ai': typeof LangrootAiRoute
+  '/$lang/(root)/checkout': typeof LangrootCheckoutRoute
   '/$lang/(root)/dashboard': typeof LangrootDashboardRoute
   '/$lang/(root)/image-generate': typeof LangrootImageGenerateRoute
   '/$lang/(root)/payment-cancel': typeof LangrootPaymentCancelRoute
@@ -882,9 +899,11 @@ export interface FileRoutesById {
   '/$lang/(root)/blog/$slug': typeof LangrootBlogSlugRoute
   '/$lang/(root)/reelflow/assets': typeof LangrootReelflowAssetsRoute
   '/$lang/(root)/reelflow/credits': typeof LangrootReelflowCreditsRoute
+  '/$lang/(root)/reelflow/draft': typeof LangrootReelflowDraftRoute
   '/$lang/(root)/reelflow/image': typeof LangrootReelflowImageRoute
   '/$lang/(root)/reelflow/invites': typeof LangrootReelflowInvitesRoute
   '/$lang/(root)/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
+  '/$lang/(root)/reelflow/templates': typeof LangrootReelflowTemplatesRoute
   '/$lang/(root)/reelflow/voice': typeof LangrootReelflowVoiceRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
   '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
@@ -951,8 +970,8 @@ export interface FileRouteTypes {
     | '/$lang/reset-password'
     | '/$lang/signin'
     | '/$lang/signup'
-    | '/$lang/wechat'
     | '/$lang/ai'
+    | '/$lang/checkout'
     | '/$lang/dashboard'
     | '/$lang/image-generate'
     | '/$lang/payment-cancel'
@@ -985,9 +1004,11 @@ export interface FileRouteTypes {
     | '/$lang/blog/$slug'
     | '/$lang/reelflow/assets'
     | '/$lang/reelflow/credits'
+    | '/$lang/reelflow/draft'
     | '/$lang/reelflow/image'
     | '/$lang/reelflow/invites'
     | '/$lang/reelflow/notifications'
+    | '/$lang/reelflow/templates'
     | '/$lang/reelflow/voice'
     | '/api/admin/blog/$id'
     | '/api/admin/reelflow/overview'
@@ -1051,8 +1072,8 @@ export interface FileRouteTypes {
     | '/$lang/reset-password'
     | '/$lang/signin'
     | '/$lang/signup'
-    | '/$lang/wechat'
     | '/$lang/ai'
+    | '/$lang/checkout'
     | '/$lang/dashboard'
     | '/$lang/image-generate'
     | '/$lang/payment-cancel'
@@ -1084,9 +1105,11 @@ export interface FileRouteTypes {
     | '/$lang/blog/$slug'
     | '/$lang/reelflow/assets'
     | '/$lang/reelflow/credits'
+    | '/$lang/reelflow/draft'
     | '/$lang/reelflow/image'
     | '/$lang/reelflow/invites'
     | '/$lang/reelflow/notifications'
+    | '/$lang/reelflow/templates'
     | '/$lang/reelflow/voice'
     | '/api/admin/blog/$id'
     | '/api/admin/reelflow/overview'
@@ -1153,8 +1176,8 @@ export interface FileRouteTypes {
     | '/$lang/(auth)/reset-password'
     | '/$lang/(auth)/signin'
     | '/$lang/(auth)/signup'
-    | '/$lang/(auth)/wechat'
     | '/$lang/(root)/ai'
+    | '/$lang/(root)/checkout'
     | '/$lang/(root)/dashboard'
     | '/$lang/(root)/image-generate'
     | '/$lang/(root)/payment-cancel'
@@ -1187,9 +1210,11 @@ export interface FileRouteTypes {
     | '/$lang/(root)/blog/$slug'
     | '/$lang/(root)/reelflow/assets'
     | '/$lang/(root)/reelflow/credits'
+    | '/$lang/(root)/reelflow/draft'
     | '/$lang/(root)/reelflow/image'
     | '/$lang/(root)/reelflow/invites'
     | '/$lang/(root)/reelflow/notifications'
+    | '/$lang/(root)/reelflow/templates'
     | '/$lang/(root)/reelflow/voice'
     | '/api/admin/blog/$id'
     | '/api/admin/reelflow/overview'
@@ -1579,19 +1604,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangrootDashboardRouteImport
       parentRoute: typeof LangrootRouteRoute
     }
+    '/$lang/(root)/checkout': {
+      id: '/$lang/(root)/checkout'
+      path: '/checkout'
+      fullPath: '/$lang/checkout'
+      preLoaderRoute: typeof LangrootCheckoutRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
     '/$lang/(root)/ai': {
       id: '/$lang/(root)/ai'
       path: '/ai'
       fullPath: '/$lang/ai'
       preLoaderRoute: typeof LangrootAiRouteImport
       parentRoute: typeof LangrootRouteRoute
-    }
-    '/$lang/(auth)/wechat': {
-      id: '/$lang/(auth)/wechat'
-      path: '/wechat'
-      fullPath: '/$lang/wechat'
-      preLoaderRoute: typeof LangauthWechatRouteImport
-      parentRoute: typeof LangauthRouteRoute
     }
     '/$lang/(auth)/signup': {
       id: '/$lang/(auth)/signup'
@@ -1859,6 +1884,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangrootReelflowVoiceRouteImport
       parentRoute: typeof LangrootRouteRoute
     }
+    '/$lang/(root)/reelflow/templates': {
+      id: '/$lang/(root)/reelflow/templates'
+      path: '/reelflow/templates'
+      fullPath: '/$lang/reelflow/templates'
+      preLoaderRoute: typeof LangrootReelflowTemplatesRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
     '/$lang/(root)/reelflow/notifications': {
       id: '/$lang/(root)/reelflow/notifications'
       path: '/reelflow/notifications'
@@ -1878,6 +1910,13 @@ declare module '@tanstack/react-router' {
       path: '/reelflow/image'
       fullPath: '/$lang/reelflow/image'
       preLoaderRoute: typeof LangrootReelflowImageRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/draft': {
+      id: '/$lang/(root)/reelflow/draft'
+      path: '/reelflow/draft'
+      fullPath: '/$lang/reelflow/draft'
+      preLoaderRoute: typeof LangrootReelflowDraftRouteImport
       parentRoute: typeof LangrootRouteRoute
     }
     '/$lang/(root)/reelflow/credits': {
@@ -2015,7 +2054,6 @@ interface LangauthRouteRouteChildren {
   LangauthResetPasswordRoute: typeof LangauthResetPasswordRoute
   LangauthSigninRoute: typeof LangauthSigninRoute
   LangauthSignupRoute: typeof LangauthSignupRoute
-  LangauthWechatRoute: typeof LangauthWechatRoute
 }
 
 const LangauthRouteRouteChildren: LangauthRouteRouteChildren = {
@@ -2024,7 +2062,6 @@ const LangauthRouteRouteChildren: LangauthRouteRouteChildren = {
   LangauthResetPasswordRoute: LangauthResetPasswordRoute,
   LangauthSigninRoute: LangauthSigninRoute,
   LangauthSignupRoute: LangauthSignupRoute,
-  LangauthWechatRoute: LangauthWechatRoute,
 }
 
 const LangauthRouteRouteWithChildren = LangauthRouteRoute._addFileChildren(
@@ -2033,6 +2070,7 @@ const LangauthRouteRouteWithChildren = LangauthRouteRoute._addFileChildren(
 
 interface LangrootRouteRouteChildren {
   LangrootAiRoute: typeof LangrootAiRoute
+  LangrootCheckoutRoute: typeof LangrootCheckoutRoute
   LangrootDashboardRoute: typeof LangrootDashboardRoute
   LangrootImageGenerateRoute: typeof LangrootImageGenerateRoute
   LangrootPaymentCancelRoute: typeof LangrootPaymentCancelRoute
@@ -2045,9 +2083,11 @@ interface LangrootRouteRouteChildren {
   LangrootBlogSlugRoute: typeof LangrootBlogSlugRoute
   LangrootReelflowAssetsRoute: typeof LangrootReelflowAssetsRoute
   LangrootReelflowCreditsRoute: typeof LangrootReelflowCreditsRoute
+  LangrootReelflowDraftRoute: typeof LangrootReelflowDraftRoute
   LangrootReelflowImageRoute: typeof LangrootReelflowImageRoute
   LangrootReelflowInvitesRoute: typeof LangrootReelflowInvitesRoute
   LangrootReelflowNotificationsRoute: typeof LangrootReelflowNotificationsRoute
+  LangrootReelflowTemplatesRoute: typeof LangrootReelflowTemplatesRoute
   LangrootReelflowVoiceRoute: typeof LangrootReelflowVoiceRoute
   LangrootBlogIndexRoute: typeof LangrootBlogIndexRoute
   LangrootReelflowIndexRoute: typeof LangrootReelflowIndexRoute
@@ -2057,6 +2097,7 @@ interface LangrootRouteRouteChildren {
 
 const LangrootRouteRouteChildren: LangrootRouteRouteChildren = {
   LangrootAiRoute: LangrootAiRoute,
+  LangrootCheckoutRoute: LangrootCheckoutRoute,
   LangrootDashboardRoute: LangrootDashboardRoute,
   LangrootImageGenerateRoute: LangrootImageGenerateRoute,
   LangrootPaymentCancelRoute: LangrootPaymentCancelRoute,
@@ -2069,9 +2110,11 @@ const LangrootRouteRouteChildren: LangrootRouteRouteChildren = {
   LangrootBlogSlugRoute: LangrootBlogSlugRoute,
   LangrootReelflowAssetsRoute: LangrootReelflowAssetsRoute,
   LangrootReelflowCreditsRoute: LangrootReelflowCreditsRoute,
+  LangrootReelflowDraftRoute: LangrootReelflowDraftRoute,
   LangrootReelflowImageRoute: LangrootReelflowImageRoute,
   LangrootReelflowInvitesRoute: LangrootReelflowInvitesRoute,
   LangrootReelflowNotificationsRoute: LangrootReelflowNotificationsRoute,
+  LangrootReelflowTemplatesRoute: LangrootReelflowTemplatesRoute,
   LangrootReelflowVoiceRoute: LangrootReelflowVoiceRoute,
   LangrootBlogIndexRoute: LangrootBlogIndexRoute,
   LangrootReelflowIndexRoute: LangrootReelflowIndexRoute,

@@ -13,7 +13,7 @@ import {
 import {
   Archive,
   Bell,
-  Clapperboard,
+  ChevronRight,
   Coins,
   CreditCard,
   Film,
@@ -25,12 +25,15 @@ import {
   ListChecks,
   LogOut,
   Mic2,
+  PanelLeftClose,
+  PanelLeftOpen,
   Settings,
   Sparkles,
   Video,
   type LucideIcon,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { BrandMark } from '@/components/brand-mark'
 import { useTranslation } from '@/hooks/use-translation'
 import { toast } from 'sonner'
 
@@ -44,14 +47,55 @@ type CreditSummary = {
   debtBalance: number
 }
 
+type ShellRouteTo =
+  | '/$lang/reelflow'
+  | '/$lang/reelflow/draft'
+  | '/$lang/reelflow/image'
+  | '/$lang/reelflow/voice'
+  | '/$lang/reelflow/jobs'
+  | '/$lang/reelflow/templates'
+  | '/$lang/reelflow/assets'
+  | '/$lang/reelflow/credits'
+  | '/$lang/reelflow/invites'
+  | '/$lang/reelflow/notifications'
+  | '/$lang/pricing'
+
 export function ReelflowShell({ children }: ShellProps) {
   const { t, locale } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const [credits, setCredits] = useState<CreditSummary | null>(null)
   const [claimingInviteCode, setClaimingInviteCode] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [creationExpanded, setCreationExpanded] = useState(true)
   const { data: session } = authClientReact.useSession()
   const user = session?.user
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setSidebarCollapsed(window.localStorage.getItem('reelflow.sidebarCollapsed') === 'true')
+    setCreationExpanded(window.localStorage.getItem('reelflow.creationExpanded') !== 'false')
+  }, [])
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((current) => {
+      const next = !current
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('reelflow.sidebarCollapsed', String(next))
+      }
+      return next
+    })
+  }
+
+  const toggleCreation = () => {
+    setCreationExpanded((current) => {
+      const next = !current
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('reelflow.creationExpanded', String(next))
+      }
+      return next
+    })
+  }
 
   useEffect(() => {
     let alive = true
@@ -120,48 +164,88 @@ export function ReelflowShell({ children }: ShellProps) {
 
   return (
     <div className="reelflow-app min-h-dvh bg-background text-foreground">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[17rem] border-r border-sidebar-border bg-sidebar px-3 py-4 lg:flex lg:flex-col">
-        <Link to="/$lang/reelflow" params={{ lang: locale }} className="mb-6 flex items-center gap-3 px-2">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-foreground text-background">
-            <Clapperboard className="h-5 w-5" />
-          </span>
-          <span>
-            <span className="block text-base font-semibold leading-5">Reelflow</span>
+      <aside
+        className={[
+          'fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border/55 bg-sidebar/88 px-3 py-4 shadow-[12px_0_40px_-36px_oklch(0.28_0.02_265_/_36%)] backdrop-blur-xl transition-[width] duration-200 lg:flex lg:flex-col',
+          sidebarCollapsed ? 'w-20' : 'w-[17rem]',
+        ].join(' ')}
+        data-collapsed={sidebarCollapsed}
+      >
+        <Link
+          to="/$lang/reelflow"
+          params={{ lang: locale }}
+          activeOptions={{ exact: true }}
+          className={[
+            'mb-5 flex items-center gap-3 px-2',
+            sidebarCollapsed ? 'justify-center' : '',
+          ].join(' ')}
+          aria-label="Reelflow"
+          title={sidebarCollapsed ? 'Reelflow' : undefined}
+        >
+          <BrandMark className="h-12 w-12" fallbackIconClassName="h-6 w-6" />
+          <span className={sidebarCollapsed ? 'hidden' : ''}>
+            <span className="reelflow-display block text-[1.15rem] leading-5">Reelflow</span>
             <span className="block text-xs text-sidebar-foreground/55">{shell.workspace}</span>
           </span>
         </Link>
 
+        <button
+          type="button"
+          className={[
+            'mb-5 flex h-9 items-center rounded-md px-2 text-sm text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none',
+            sidebarCollapsed ? 'justify-center' : 'justify-start gap-2',
+          ].join(' ')}
+          onClick={toggleSidebar}
+          aria-label={sidebarCollapsed ? shell.expandSidebar : shell.collapseSidebar}
+          title={sidebarCollapsed ? shell.expandSidebar : shell.collapseSidebar}
+        >
+          {sidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" aria-hidden="true" /> : <PanelLeftClose className="h-4 w-4" aria-hidden="true" />}
+          {!sidebarCollapsed && <span>{shell.collapseSidebar}</span>}
+        </button>
+
         <nav className="reelflow-sidebar-nav flex-1 space-y-5 overflow-y-auto pb-4">
-          <NavGroup label={shell.groups.main}>
-            <ShellLink icon={Home} label={shell.nav.home} href={`/${locale}/reelflow`} active={isActive(pathname, `/${locale}/reelflow`, true)} />
-            <ShellLink icon={Sparkles} label={shell.nav.create} href={`/${locale}/reelflow#creation`} active={false} />
-            <ShellLink icon={ListChecks} label={shell.nav.tasks} href={`/${locale}/reelflow/jobs`} active={pathname.includes('/reelflow/jobs')} />
-            <ShellLink icon={Layers3} label={shell.nav.templates} href={`/${locale}/reelflow#templates`} active={false} />
-            <ShellLink icon={Archive} label={shell.nav.assets} href={`/${locale}/reelflow/assets`} active={pathname.includes('/reelflow/assets')} />
+          <NavGroup collapsed={sidebarCollapsed}>
+            <ShellLink icon={Home} label={shell.nav.home} to="/$lang/reelflow" lang={locale} active={isActive(pathname, `/${locale}/reelflow`, true)} collapsed={sidebarCollapsed} />
+            <ShellDisclosure
+              id="reelflow-creation-nav"
+              icon={Sparkles}
+              label={shell.nav.create}
+              expanded={creationExpanded}
+              onToggle={toggleCreation}
+              collapsed={sidebarCollapsed}
+              active={isCreationActive(pathname)}
+            >
+              <ShellLink icon={Film} label={shell.nav.draft} to="/$lang/reelflow/draft" lang={locale} active={pathname.includes('/reelflow/draft')} collapsed={sidebarCollapsed} child />
+              <ShellLink icon={ImageIcon} label={shell.nav.image} to="/$lang/reelflow/image" lang={locale} active={pathname.includes('/reelflow/image')} collapsed={sidebarCollapsed} child />
+              <ShellLink icon={Video} label={shell.nav.video} to="/$lang/reelflow/draft" lang={locale} active={false} meta={shell.comingSoon} collapsed={sidebarCollapsed} child disabled />
+              <ShellLink icon={Mic2} label={shell.nav.voice} to="/$lang/reelflow/voice" lang={locale} active={false} meta={shell.comingSoon} collapsed={sidebarCollapsed} child disabled />
+            </ShellDisclosure>
+            <ShellLink icon={ListChecks} label={shell.nav.tasks} to="/$lang/reelflow/jobs" lang={locale} active={pathname.includes('/reelflow/jobs')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={Layers3} label={shell.nav.templates} to="/$lang/reelflow/templates" lang={locale} active={pathname.includes('/reelflow/templates')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={Archive} label={shell.nav.assets} to="/$lang/reelflow/assets" lang={locale} active={pathname.includes('/reelflow/assets')} collapsed={sidebarCollapsed} />
           </NavGroup>
 
-          <NavGroup label={shell.groups.create}>
-            <ShellLink icon={Film} label={shell.nav.draft} href={`/${locale}/reelflow#draft`} active={false} />
-            <ShellLink icon={ImageIcon} label={shell.nav.image} href={`/${locale}/reelflow/image`} active={pathname.includes('/reelflow/image')} />
-            <ShellLink icon={Video} label={shell.nav.video} href={`/${locale}/reelflow#video-soon`} active={false} meta={shell.comingSoon} />
-            <ShellLink icon={Mic2} label={shell.nav.voice} href={`/${locale}/reelflow#voice-soon`} active={false} meta={shell.comingSoon} />
-          </NavGroup>
-
-          <NavGroup label={shell.groups.account}>
-            <ShellLink icon={Coins} label={shell.nav.credits} href={`/${locale}/reelflow/credits`} active={pathname.includes('/reelflow/credits')} />
-            <ShellLink icon={CreditCard} label={shell.nav.subscription} href={`/${locale}/pricing`} active={pathname.includes('/pricing')} />
-            <ShellLink icon={Gift} label={shell.nav.invites} href={`/${locale}/reelflow/invites`} active={pathname.includes('/reelflow/invites')} />
-            <ShellLink icon={Bell} label={shell.nav.notifications} href={`/${locale}/reelflow/notifications`} active={pathname.includes('/reelflow/notifications')} />
+          <NavGroup label={shell.groups.account} collapsed={sidebarCollapsed}>
+            <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={CreditCard} label={shell.nav.subscription} to="/$lang/pricing" lang={locale} active={pathname.includes('/pricing')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={Gift} label={shell.nav.invites} to="/$lang/reelflow/invites" lang={locale} active={pathname.includes('/reelflow/invites')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={Bell} label={shell.nav.notifications} to="/$lang/reelflow/notifications" lang={locale} active={pathname.includes('/reelflow/notifications')} collapsed={sidebarCollapsed} />
           </NavGroup>
         </nav>
       </aside>
 
-      <div className="flex min-h-dvh flex-col lg:pl-[17rem]">
-        <header className="sticky top-0 z-30 border-b border-border/80 bg-background/92 backdrop-blur">
+      <div className={['flex min-h-dvh flex-col transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[17rem]'].join(' ')}>
+        <header className="sticky top-0 z-30 border-b border-border/35 bg-background/72 shadow-[0_1px_0_oklch(1_0_0_/_35%)] backdrop-blur-xl">
           <div className="flex h-[3.75rem] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
-              <Link to="/$lang/reelflow" params={{ lang: locale }} className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground text-background lg:hidden">
-                <Clapperboard className="h-[18px] w-[18px]" />
+              <Link
+                to="/$lang/reelflow"
+                params={{ lang: locale }}
+                activeOptions={{ exact: true }}
+                aria-label="Reelflow"
+                className="lg:hidden"
+              >
+                <BrandMark className="h-10 w-10" fallbackIconClassName="h-5 w-5" />
               </Link>
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{shell.workspaceName}</p>
@@ -170,13 +254,24 @@ export function ReelflowShell({ children }: ShellProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              <a
-                href={`/${locale}/reelflow/credits`}
-                className="hidden h-9 items-center gap-2 rounded-md bg-card/80 px-3 text-sm font-medium shadow-xs ring-1 ring-border/50 transition-colors hover:bg-card sm:flex"
+              <Link
+                to="/$lang/reelflow/credits"
+                params={{ lang: locale }}
+                activeOptions={{ exact: true }}
+                className="hidden h-9 items-center gap-2 rounded-full border border-border/60 bg-card/70 px-3 text-sm font-medium shadow-xs backdrop-blur transition-colors hover:border-primary/40 hover:bg-card sm:flex"
               >
-                <Coins className="h-4 w-4" style={{ color: 'var(--reelflow-amber)' }} />
-                {creditLabel}
-              </a>
+                <Coins className="h-4 w-4" style={{ color: 'var(--reelflow-amber)' }} aria-hidden="true" />
+                <span className="reelflow-num">{creditLabel}</span>
+              </Link>
+              <Link
+                to="/$lang/reelflow/notifications"
+                params={{ lang: locale }}
+                activeOptions={{ exact: true }}
+                aria-label={shell.nav.notifications}
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                <Bell className="h-[18px] w-[18px]" aria-hidden="true" />
+              </Link>
               <ThemeToggle />
               {user && (
                 <DropdownMenu>
@@ -197,22 +292,22 @@ export function ReelflowShell({ children }: ShellProps) {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <a href={`/${locale}/dashboard`}>
-                        <Settings className="mr-2 h-4 w-4" />
+                      <Link to="/$lang/dashboard" params={{ lang: locale }}>
+                        <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
                         {shell.nav.settings}
-                      </a>
+                      </Link>
                     </DropdownMenuItem>
                     {user.role === 'admin' && (
                       <DropdownMenuItem asChild>
-                        <a href={`/${locale}/admin/reelflow`}>
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <Link to="/$lang/admin/reelflow" params={{ lang: locale }}>
+                          <LayoutDashboard className="mr-2 h-4 w-4" aria-hidden="true" />
                           {shell.nav.admin}
-                        </a>
+                        </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive" onClick={handleSignOut}>
-                      <LogOut className="mr-2 h-4 w-4" />
+                      <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
                       {shell.signOut}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -228,10 +323,14 @@ export function ReelflowShell({ children }: ShellProps) {
   )
 }
 
-function NavGroup({ label, children }: { label: string; children: ReactNode }) {
+function NavGroup({ label, children, collapsed }: { label?: string; children: ReactNode; collapsed: boolean }) {
   return (
     <div>
-      <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/45">{label}</p>
+      {collapsed && label ? (
+        <div className="mx-auto mb-2 h-px w-8 bg-sidebar-border" aria-hidden="true" />
+      ) : label ? (
+        <p className="mb-2 px-3 text-xs font-medium text-sidebar-foreground/45">{label}</p>
+      ) : null}
       <div className="space-y-1">{children}</div>
     </div>
   )
@@ -240,27 +339,123 @@ function NavGroup({ label, children }: { label: string; children: ReactNode }) {
 function ShellLink({
   icon: Icon,
   label,
-  href,
+  to,
+  lang,
   active,
   meta,
+  collapsed,
+  child = false,
+  disabled = false,
 }: {
   icon: LucideIcon
   label: string
-  href: string
+  to: ShellRouteTo
+  lang: string
   active: boolean
   meta?: string
+  collapsed: boolean
+  child?: boolean
+  disabled?: boolean
+}) {
+  const className = [
+    'reelflow-shell-link',
+    collapsed ? 'justify-center px-0' : '',
+    child && !collapsed ? 'pl-9 text-sidebar-foreground/62' : '',
+    disabled ? 'cursor-not-allowed opacity-55 hover:bg-transparent hover:text-sidebar-foreground/70' : '',
+  ].join(' ')
+
+  const content = (
+    <>
+      <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+      {!collapsed && <span className="min-w-0 flex-1 truncate">{label}</span>}
+      {!collapsed && meta && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">{meta}</span>}
+    </>
+  )
+
+  if (disabled) {
+    return (
+      <span
+        className={className}
+        data-active={active}
+        aria-label={label}
+        aria-disabled="true"
+        title={collapsed ? label : undefined}
+      >
+        {content}
+      </span>
+    )
+  }
+
+  return (
+    <Link
+      to={to}
+      params={{ lang }}
+      activeOptions={{ exact: true }}
+      className={className}
+      data-active={active}
+      aria-label={label}
+      title={collapsed ? label : undefined}
+    >
+      {content}
+    </Link>
+  )
+}
+
+function ShellDisclosure({
+  id,
+  icon: Icon,
+  label,
+  expanded,
+  onToggle,
+  collapsed,
+  active,
+  children,
+}: {
+  id: string
+  icon: LucideIcon
+  label: string
+  expanded: boolean
+  onToggle: () => void
+  collapsed: boolean
+  active: boolean
+  children: ReactNode
 }) {
   return (
-    <a href={href} className="reelflow-shell-link" data-active={active}>
-      <Icon className="h-[18px] w-[18px]" />
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      {meta && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">{meta}</span>}
-    </a>
+    <div>
+      <button
+        type="button"
+        className={['reelflow-shell-link w-full', collapsed ? 'justify-center px-0' : ''].join(' ')}
+        data-active={active && collapsed}
+        data-section-active={active || undefined}
+        onClick={onToggle}
+        aria-expanded={expanded}
+        aria-controls={id}
+        aria-label={label}
+        title={collapsed ? label : undefined}
+      >
+        <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+        {!collapsed && <span className="min-w-0 flex-1 truncate text-left">{label}</span>}
+        {!collapsed && (
+          <span className={['text-sidebar-foreground/45 transition-transform', expanded ? 'rotate-90' : ''].join(' ')}>
+            <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </span>
+        )}
+      </button>
+      {expanded && (
+        <div id={id} className="mt-1 space-y-1">
+          {children}
+        </div>
+      )}
+    </div>
   )
 }
 
 function isActive(pathname: string, href: string, exact = false) {
   return exact ? pathname === href : pathname.startsWith(href)
+}
+
+function isCreationActive(pathname: string) {
+  return pathname.includes('/reelflow/draft') || pathname.includes('/reelflow/image')
 }
 
 function formatNumber(value: number, locale: string) {
