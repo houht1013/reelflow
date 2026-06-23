@@ -94,7 +94,81 @@ test.describe('Reelflow admin MVP', () => {
       await adminContext.close();
     }
   });
+  test('admin can edit pricing, manage template grants, and browse workspaces and invites', async ({ browser }) => {
+    test.skip(!process.env.DATABASE_URL, 'DATABASE_URL is required for Reelflow admin E2E setup.');
+
+    const adminContext = await createAdminContext(browser);
+    const adminPage = await adminContext.newPage();
+
+    try {
+      const overview = await getFullAdminOverview(adminPage);
+      expect(overview.pricing.length, 'At least one pricing item should exist').toBeGreaterThan(0);
+      expect(overview.workspaces.length, 'Admin should have at least one workspace').toBeGreaterThan(0);
+
+      const pricingItem = overview.pricing[0];
+      const originalCredit = pricingItem.creditUnitPrice;
+      const templateId = overview.templates[0].id;
+      const workspaceId = overview.workspaces[0].id;
+
+      await adminPage.goto(ADMIN_REELFLOW, { timeout: TIMEOUTS.navigation });
+      await adminPage.waitForLoadState('networkidle');
+      await expect(adminPage.getByTestId('reelflow-admin-workspaces-section')).toBeVisible();
+      await expect(adminPage.getByTestId('reelflow-admin-invites-section')).toBeVisible();
+
+      // --- Pricing edit through the dialog ---
+      const editKey = `${pricingItem.resourceType}-${pricingItem.provider}`;
+      const newCredit = (Number(originalCredit) + 1).toString();
+      await adminPage.getByTestId(`reelflow-admin-pricing-edit-${editKey}`).click();
+      await expect(adminPage.getByTestId('reelflow-admin-pricing-dialog')).toBeVisible();
+      await adminPage.getByTestId('reelflow-admin-pricing-credit').fill(newCredit);
+      const pricingResponsePromise = adminPage.waitForResponse((response) =>
+        new URL(response.url()).pathname === `/api/admin/reelflow/pricing/${pricingItem.id}` &&
+        response.request().method() === 'PATCH',
+      );
+      await adminPage.getByTestId('reelflow-admin-pricing-save').click();
+      const pricingResponse = await pricingResponsePromise;
+      expect(pricingResponse.ok(), `Pricing edit failed: ${pricingResponse.status()}`).toBeTruthy();
+
+      const afterEdit = await getFullAdminOverview(adminPage);
+      const updatedItem = afterEdit.pricing.find((item) => item.id === pricingItem.id);
+      expect(Number(updatedItem?.creditUnitPrice)).toBe(Number(newCredit));
+
+      // restore original price
+      await adminPage.request.patch(`/api/admin/reelflow/pricing/${pricingItem.id}`, {
+        data: { creditUnitPrice: originalCredit },
+      });
+
+      // --- Template grant contract (POST / GET / DELETE) ---
+      const grantPost = await adminPage.request.post(`/api/admin/reelflow/templates/${templateId}/grants`, {
+        data: { workspaceId },
+      });
+      expect(grantPost.ok(), `Grant failed: ${grantPost.status()} ${await grantPost.text()}`).toBeTruthy();
+      const grantsAfterAdd = (await grantPost.json()).grants as Array<{ workspaceId: string }>;
+      expect(grantsAfterAdd.some((grant) => grant.workspaceId === workspaceId)).toBeTruthy();
+
+      const grantDelete = await adminPage.request.delete(
+        `/api/admin/reelflow/templates/${templateId}/grants?workspaceId=${encodeURIComponent(workspaceId)}`,
+      );
+      expect(grantDelete.ok(), `Revoke failed: ${grantDelete.status()}`).toBeTruthy();
+      const grantsAfterRevoke = (await grantDelete.json()).grants as Array<{ workspaceId: string }>;
+      expect(grantsAfterRevoke.some((grant) => grant.workspaceId === workspaceId)).toBeFalsy();
+    } finally {
+      await adminContext.close();
+    }
+  });
 });
+
+type FullAdminOverview = {
+  templates: Array<{ id: string }>;
+  pricing: Array<{ id: string; resourceType: string; provider: string; creditUnitPrice: string }>;
+  workspaces: Array<{ id: string }>;
+};
+
+async function getFullAdminOverview(page: Page): Promise<FullAdminOverview> {
+  const response = await page.request.get('/api/admin/reelflow/overview');
+  expect(response.ok(), `Admin overview failed: ${response.status()} ${await response.text()}`).toBeTruthy();
+  return response.json();
+}
 
 type AdminOverview = {
   templates: Array<{

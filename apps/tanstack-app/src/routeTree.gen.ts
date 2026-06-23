@@ -108,9 +108,11 @@ import { Route as ApiReelflowJobsIdRerunRouteImport } from './routes/api/reelflo
 import { Route as ApiReelflowJobsIdDownloadDraftRouteImport } from './routes/api/reelflow/jobs/$id/download-draft'
 import { Route as ApiAdminReelflowTemplatesIdRouteImport } from './routes/api/admin/reelflow/templates/$id'
 import { Route as ApiAdminReelflowProvidersIdRouteImport } from './routes/api/admin/reelflow/providers/$id'
+import { Route as ApiAdminReelflowPricingIdRouteImport } from './routes/api/admin/reelflow/pricing/$id'
 import { Route as ApiAdminReelflowJobsIdRouteImport } from './routes/api/admin/reelflow/jobs/$id'
 import { Route as LangAdminReelflowJobsIdRouteImport } from './routes/$lang/admin/reelflow/jobs/$id'
 import { Route as LangrootReelflowJobsIdRouteImport } from './routes/$lang/(root)/reelflow/jobs/$id'
+import { Route as ApiAdminReelflowTemplatesIdGrantsRouteImport } from './routes/api/admin/reelflow/templates/$id/grants'
 import { Route as ApiAdminReelflowProvidersIdHealthRouteImport } from './routes/api/admin/reelflow/providers/$id/health'
 
 const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
@@ -621,6 +623,12 @@ const ApiAdminReelflowProvidersIdRoute =
     path: '/api/admin/reelflow/providers/$id',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminReelflowPricingIdRoute =
+  ApiAdminReelflowPricingIdRouteImport.update({
+    id: '/api/admin/reelflow/pricing/$id',
+    path: '/api/admin/reelflow/pricing/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminReelflowJobsIdRoute = ApiAdminReelflowJobsIdRouteImport.update({
   id: '/api/admin/reelflow/jobs/$id',
   path: '/api/admin/reelflow/jobs/$id',
@@ -636,6 +644,12 @@ const LangrootReelflowJobsIdRoute = LangrootReelflowJobsIdRouteImport.update({
   path: '/reelflow/jobs/$id',
   getParentRoute: () => LangrootRouteRoute,
 } as any)
+const ApiAdminReelflowTemplatesIdGrantsRoute =
+  ApiAdminReelflowTemplatesIdGrantsRouteImport.update({
+    id: '/grants',
+    path: '/grants',
+    getParentRoute: () => ApiAdminReelflowTemplatesIdRoute,
+  } as any)
 const ApiAdminReelflowProvidersIdHealthRoute =
   ApiAdminReelflowProvidersIdHealthRouteImport.update({
     id: '/health',
@@ -733,8 +747,9 @@ export interface FileRoutesByFullPath {
   '/$lang/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
   '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
   '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/pricing/$id': typeof ApiAdminReelflowPricingIdRoute
   '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
-  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRoute
+  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRouteWithChildren
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
@@ -745,6 +760,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/users/delete/': typeof ApiAdminUsersDeleteIndexRoute
   '/api/admin/users/update/': typeof ApiAdminUsersUpdateIndexRoute
   '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
+  '/api/admin/reelflow/templates/$id/grants': typeof ApiAdminReelflowTemplatesIdGrantsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -834,8 +850,9 @@ export interface FileRoutesByTo {
   '/$lang/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
   '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
   '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/pricing/$id': typeof ApiAdminReelflowPricingIdRoute
   '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
-  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRoute
+  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRouteWithChildren
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
@@ -846,6 +863,7 @@ export interface FileRoutesByTo {
   '/api/admin/users/delete': typeof ApiAdminUsersDeleteIndexRoute
   '/api/admin/users/update': typeof ApiAdminUsersUpdateIndexRoute
   '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
+  '/api/admin/reelflow/templates/$id/grants': typeof ApiAdminReelflowTemplatesIdGrantsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -940,8 +958,9 @@ export interface FileRoutesById {
   '/$lang/(root)/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
   '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
   '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
+  '/api/admin/reelflow/pricing/$id': typeof ApiAdminReelflowPricingIdRoute
   '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
-  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRoute
+  '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRouteWithChildren
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
@@ -952,6 +971,7 @@ export interface FileRoutesById {
   '/api/admin/users/delete/': typeof ApiAdminUsersDeleteIndexRoute
   '/api/admin/users/update/': typeof ApiAdminUsersUpdateIndexRoute
   '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
+  '/api/admin/reelflow/templates/$id/grants': typeof ApiAdminReelflowTemplatesIdGrantsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1045,6 +1065,7 @@ export interface FileRouteTypes {
     | '/$lang/reelflow/jobs/$id'
     | '/$lang/admin/reelflow/jobs/$id'
     | '/api/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/pricing/$id'
     | '/api/admin/reelflow/providers/$id'
     | '/api/admin/reelflow/templates/$id'
     | '/api/reelflow/jobs/$id/download-draft'
@@ -1057,6 +1078,7 @@ export interface FileRouteTypes {
     | '/api/admin/users/delete/'
     | '/api/admin/users/update/'
     | '/api/admin/reelflow/providers/$id/health'
+    | '/api/admin/reelflow/templates/$id/grants'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1146,6 +1168,7 @@ export interface FileRouteTypes {
     | '/$lang/reelflow/jobs/$id'
     | '/$lang/admin/reelflow/jobs/$id'
     | '/api/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/pricing/$id'
     | '/api/admin/reelflow/providers/$id'
     | '/api/admin/reelflow/templates/$id'
     | '/api/reelflow/jobs/$id/download-draft'
@@ -1158,6 +1181,7 @@ export interface FileRouteTypes {
     | '/api/admin/users/delete'
     | '/api/admin/users/update'
     | '/api/admin/reelflow/providers/$id/health'
+    | '/api/admin/reelflow/templates/$id/grants'
   id:
     | '__root__'
     | '/'
@@ -1251,6 +1275,7 @@ export interface FileRouteTypes {
     | '/$lang/(root)/reelflow/jobs/$id'
     | '/$lang/admin/reelflow/jobs/$id'
     | '/api/admin/reelflow/jobs/$id'
+    | '/api/admin/reelflow/pricing/$id'
     | '/api/admin/reelflow/providers/$id'
     | '/api/admin/reelflow/templates/$id'
     | '/api/reelflow/jobs/$id/download-draft'
@@ -1263,6 +1288,7 @@ export interface FileRouteTypes {
     | '/api/admin/users/delete/'
     | '/api/admin/users/update/'
     | '/api/admin/reelflow/providers/$id/health'
+    | '/api/admin/reelflow/templates/$id/grants'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1315,8 +1341,9 @@ export interface RootRouteChildren {
   ApiAdminUsersIndexRoute: typeof ApiAdminUsersIndexRoute
   ApiReelflowJobsIndexRoute: typeof ApiReelflowJobsIndexRoute
   ApiAdminReelflowJobsIdRoute: typeof ApiAdminReelflowJobsIdRoute
+  ApiAdminReelflowPricingIdRoute: typeof ApiAdminReelflowPricingIdRoute
   ApiAdminReelflowProvidersIdRoute: typeof ApiAdminReelflowProvidersIdRouteWithChildren
-  ApiAdminReelflowTemplatesIdRoute: typeof ApiAdminReelflowTemplatesIdRoute
+  ApiAdminReelflowTemplatesIdRoute: typeof ApiAdminReelflowTemplatesIdRouteWithChildren
   ApiAdminCreditsTransactionsIndexRoute: typeof ApiAdminCreditsTransactionsIndexRoute
   ApiAdminUsersDeleteIndexRoute: typeof ApiAdminUsersDeleteIndexRoute
   ApiAdminUsersUpdateIndexRoute: typeof ApiAdminUsersUpdateIndexRoute
@@ -2017,6 +2044,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminReelflowProvidersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/reelflow/pricing/$id': {
+      id: '/api/admin/reelflow/pricing/$id'
+      path: '/api/admin/reelflow/pricing/$id'
+      fullPath: '/api/admin/reelflow/pricing/$id'
+      preLoaderRoute: typeof ApiAdminReelflowPricingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/reelflow/jobs/$id': {
       id: '/api/admin/reelflow/jobs/$id'
       path: '/api/admin/reelflow/jobs/$id'
@@ -2037,6 +2071,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$lang/reelflow/jobs/$id'
       preLoaderRoute: typeof LangrootReelflowJobsIdRouteImport
       parentRoute: typeof LangrootRouteRoute
+    }
+    '/api/admin/reelflow/templates/$id/grants': {
+      id: '/api/admin/reelflow/templates/$id/grants'
+      path: '/grants'
+      fullPath: '/api/admin/reelflow/templates/$id/grants'
+      preLoaderRoute: typeof ApiAdminReelflowTemplatesIdGrantsRouteImport
+      parentRoute: typeof ApiAdminReelflowTemplatesIdRoute
     }
     '/api/admin/reelflow/providers/$id/health': {
       id: '/api/admin/reelflow/providers/$id/health'
@@ -2226,6 +2267,21 @@ const ApiAdminReelflowProvidersIdRouteWithChildren =
     ApiAdminReelflowProvidersIdRouteChildren,
   )
 
+interface ApiAdminReelflowTemplatesIdRouteChildren {
+  ApiAdminReelflowTemplatesIdGrantsRoute: typeof ApiAdminReelflowTemplatesIdGrantsRoute
+}
+
+const ApiAdminReelflowTemplatesIdRouteChildren: ApiAdminReelflowTemplatesIdRouteChildren =
+  {
+    ApiAdminReelflowTemplatesIdGrantsRoute:
+      ApiAdminReelflowTemplatesIdGrantsRoute,
+  }
+
+const ApiAdminReelflowTemplatesIdRouteWithChildren =
+  ApiAdminReelflowTemplatesIdRoute._addFileChildren(
+    ApiAdminReelflowTemplatesIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LangRoute: LangRouteWithChildren,
@@ -2276,9 +2332,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUsersIndexRoute: ApiAdminUsersIndexRoute,
   ApiReelflowJobsIndexRoute: ApiReelflowJobsIndexRoute,
   ApiAdminReelflowJobsIdRoute: ApiAdminReelflowJobsIdRoute,
+  ApiAdminReelflowPricingIdRoute: ApiAdminReelflowPricingIdRoute,
   ApiAdminReelflowProvidersIdRoute:
     ApiAdminReelflowProvidersIdRouteWithChildren,
-  ApiAdminReelflowTemplatesIdRoute: ApiAdminReelflowTemplatesIdRoute,
+  ApiAdminReelflowTemplatesIdRoute:
+    ApiAdminReelflowTemplatesIdRouteWithChildren,
   ApiAdminCreditsTransactionsIndexRoute: ApiAdminCreditsTransactionsIndexRoute,
   ApiAdminUsersDeleteIndexRoute: ApiAdminUsersDeleteIndexRoute,
   ApiAdminUsersUpdateIndexRoute: ApiAdminUsersUpdateIndexRoute,

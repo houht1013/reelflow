@@ -5,8 +5,11 @@ function text(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function numberValue(value: unknown) {
-  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+const PROVIDER_CALL_STATUS: Record<string, number> = {
+  invalid_input: 400,
+  insufficient_credits: 402,
+  provider_unconfigured: 503,
+  generation_failed: 500,
 }
 
 export const Route = createFileRoute('/api/reelflow/tools/image')({
@@ -16,7 +19,7 @@ export const Route = createFileRoute('/api/reelflow/tools/image')({
         try {
           const { auth } = await import('@libs/auth')
           const { getDefaultWorkspaceForUser } = await import('@libs/reelflow/workspaces')
-          const { generateReelflowImageAsset } = await import('@libs/reelflow/tools')
+          const { generateReelflowImage } = await import('@libs/reelflow/image-gen')
 
           const session = await auth.api.getSession({ headers: new Headers(request.headers) })
           if (!session?.user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -30,32 +33,24 @@ export const Route = createFileRoute('/api/reelflow/tools/image')({
           }
 
           const record = body as Record<string, unknown>
-          const provider = text(record.provider) || 'qwen'
-          if (!['qwen', 'fal', 'openai', 'gemini'].includes(provider)) {
-            return Response.json({ error: 'Unsupported image provider' }, { status: 400 })
-          }
-
-          const result = await generateReelflowImageAsset({
+          const quality = text(record.quality)
+          const result = await generateReelflowImage({
             workspaceId: workspace.id,
             userId: session.user.id,
             prompt: text(record.prompt),
-            provider: provider as 'qwen' | 'fal' | 'openai' | 'gemini',
-            model: text(record.model) || undefined,
-            negativePrompt: text(record.negativePrompt) || undefined,
             size: text(record.size) || undefined,
-            aspectRatio: text(record.aspectRatio) || undefined,
-            seed: numberValue(record.seed),
-            promptExtend: typeof record.promptExtend === 'boolean' ? record.promptExtend : undefined,
-            watermark: typeof record.watermark === 'boolean' ? record.watermark : undefined,
-            numInferenceSteps: numberValue(record.numInferenceSteps),
-            guidanceScale: numberValue(record.guidanceScale),
+            quality: ['low', 'medium', 'high', 'auto'].includes(quality)
+              ? (quality as 'low' | 'medium' | 'high' | 'auto')
+              : undefined,
+            billing: 'charge',
           })
 
           return Response.json({ success: true, data: result })
         } catch (error) {
-          const { ToolExecutionError } = await import('@libs/reelflow/tools')
-          if (error instanceof ToolExecutionError) {
-            return Response.json({ error: error.code, message: error.message, details: error.details }, { status: error.status })
+          const { ProviderCallError } = await import('@libs/reelflow/provider-runtime')
+          if (error instanceof ProviderCallError) {
+            const status = PROVIDER_CALL_STATUS[error.code] ?? error.status
+            return Response.json({ error: error.code, message: error.message, details: error.details }, { status })
           }
 
           console.error('Error generating Reelflow image asset:', error)

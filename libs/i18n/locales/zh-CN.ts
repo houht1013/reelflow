@@ -464,7 +464,9 @@ export const zhCN: Locale = {
         templates: "模板管理",
         recentJobs: "最近任务",
         providers: "供应商运行时",
-        pricing: "价格清单"
+        pricing: "价格清单",
+        workspaces: "工作区",
+        invites: "邀请记录"
       },
       table: {
         name: "名称",
@@ -488,7 +490,16 @@ export const zhCN: Locale = {
         actual: "实际",
         health: "健康",
         updatedAt: "更新",
-        actions: "操作"
+        actions: "操作",
+        owner: "拥有者",
+        members: "成员",
+        balance: "余额",
+        frozen: "冻结",
+        debt: "欠费",
+        inviteCode: "邀请码",
+        inviter: "邀请人",
+        invitee: "受邀人",
+        reward: "奖励"
       },
       actions: {
         publish: "发布",
@@ -499,12 +510,16 @@ export const zhCN: Locale = {
         disable: "停用",
         checkHealth: "检查",
         openTask: "打开",
-        viewUserPage: "用户页"
+        viewUserPage: "用户页",
+        editPrice: "编辑",
+        manageGrants: "授权"
       },
       messages: {
         templateUpdated: "模板已更新",
         providerUpdated: "供应商已更新",
         providerHealthChecked: "供应商健康检查已完成",
+        pricingUpdated: "价格已更新",
+        grantUpdated: "授权已更新",
         operationFailed: "操作失败"
       },
       status: {
@@ -526,7 +541,32 @@ export const zhCN: Locale = {
         templates: "暂无模板",
         jobs: "暂无任务",
         providers: "暂无供应商",
-        pricing: "暂无价格项"
+        pricing: "暂无价格项",
+        workspaces: "暂无工作区",
+        invites: "暂无邀请记录"
+      },
+      pricingEdit: {
+        title: "编辑价格项",
+        creditUnitPrice: "积分单价",
+        minCreditCost: "最低消耗",
+        minCreditCostHint: "留空表示不设最低消耗",
+        providerCost: "供应商成本单价",
+        enabled: "启用",
+        save: "保存",
+        cancel: "取消"
+      },
+      grants: {
+        title: "私有模板授权",
+        description: "把私有模板授权给指定工作区，授权后该工作区用户即可使用。",
+        selectTemplate: "选择私有模板",
+        workspaceId: "工作区 ID",
+        workspaceIdPlaceholder: "粘贴目标工作区 ID",
+        grant: "授权",
+        revoke: "撤销",
+        granted: "已授权工作区",
+        noPrivateTemplates: "暂无私有模板",
+        empty: "该模板尚未授权任何工作区",
+        granting: "授权中…"
       },
       jobs: {
         loadError: "任务详情加载失败",
@@ -2609,6 +2649,17 @@ export const zhCN: Locale = {
       provider: "生成服务",
       size: "画面比例",
       model: "模型",
+      quality: "清晰度",
+      qualities: {
+        low: "标准",
+        medium: "高清",
+        high: "超清"
+      },
+      sizes: {
+        square: "方形",
+        portrait: "竖屏",
+        landscape: "横屏"
+      },
       advanced: "高级设置",
       negativePrompt: "不想出现",
       negativePromptPlaceholder: "写下你不希望图片里出现的内容…",

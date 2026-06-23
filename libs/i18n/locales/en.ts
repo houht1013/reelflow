@@ -464,7 +464,9 @@ export const en: Locale = {
         templates: "Template management",
         recentJobs: "Recent tasks",
         providers: "Provider runtime",
-        pricing: "Pricing catalog"
+        pricing: "Pricing catalog",
+        workspaces: "Workspaces",
+        invites: "Invite records"
       },
       table: {
         name: "Name",
@@ -488,7 +490,16 @@ export const en: Locale = {
         actual: "Actual",
         health: "Health",
         updatedAt: "Updated",
-        actions: "Actions"
+        actions: "Actions",
+        owner: "Owner",
+        members: "Members",
+        balance: "Balance",
+        frozen: "Frozen",
+        debt: "Debt",
+        inviteCode: "Invite code",
+        inviter: "Inviter",
+        invitee: "Invitee",
+        reward: "Reward"
       },
       actions: {
         publish: "Publish",
@@ -499,12 +510,16 @@ export const en: Locale = {
         disable: "Disable",
         checkHealth: "Check",
         openTask: "Open",
-        viewUserPage: "User page"
+        viewUserPage: "User page",
+        editPrice: "Edit",
+        manageGrants: "Grant"
       },
       messages: {
         templateUpdated: "Template updated",
         providerUpdated: "Provider updated",
         providerHealthChecked: "Provider health checked",
+        pricingUpdated: "Pricing updated",
+        grantUpdated: "Access updated",
         operationFailed: "Operation failed"
       },
       status: {
@@ -526,7 +541,32 @@ export const en: Locale = {
         templates: "No templates yet",
         jobs: "No tasks yet",
         providers: "No providers yet",
-        pricing: "No pricing items yet"
+        pricing: "No pricing items yet",
+        workspaces: "No workspaces yet",
+        invites: "No invite records yet"
+      },
+      pricingEdit: {
+        title: "Edit pricing item",
+        creditUnitPrice: "Credit unit price",
+        minCreditCost: "Minimum cost",
+        minCreditCostHint: "Leave empty for no minimum",
+        providerCost: "Provider unit cost",
+        enabled: "Enabled",
+        save: "Save",
+        cancel: "Cancel"
+      },
+      grants: {
+        title: "Private template access",
+        description: "Grant a private template to a workspace so its users can use it.",
+        selectTemplate: "Select a private template",
+        workspaceId: "Workspace ID",
+        workspaceIdPlaceholder: "Paste the target workspace ID",
+        grant: "Grant",
+        revoke: "Revoke",
+        granted: "Granted workspaces",
+        noPrivateTemplates: "No private templates",
+        empty: "This template is not granted to any workspace yet",
+        granting: "Granting…"
       },
       jobs: {
         loadError: "Failed to load task detail",
@@ -2602,6 +2642,17 @@ export const en: Locale = {
       provider: "Generation service",
       size: "Format",
       model: "Model",
+      quality: "Quality",
+      qualities: {
+        low: "Standard",
+        medium: "High",
+        high: "Ultra"
+      },
+      sizes: {
+        square: "Square",
+        portrait: "Portrait",
+        landscape: "Landscape"
+      },
       advanced: "Advanced settings",
       negativePrompt: "Avoid",
       negativePromptPlaceholder: "Things you do not want in the image…",

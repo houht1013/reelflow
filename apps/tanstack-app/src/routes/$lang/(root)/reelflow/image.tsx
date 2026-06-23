@@ -2,14 +2,11 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { config } from '@config'
-import { getImageSizesForProvider } from '@libs/ai'
-import { AlertCircle, Archive, CheckCircle2, ChevronDown, ChevronUp, ImageIcon, Loader2, RefreshCw, Sparkles } from 'lucide-react'
+import { AlertCircle, Archive, CheckCircle2, ImageIcon, Loader2, Sparkles } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Button } from '@libs/react-shared/ui/button'
-import { Input } from '@libs/react-shared/ui/input'
 import { Label } from '@libs/react-shared/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@libs/react-shared/ui/select'
 import { Textarea } from '@libs/react-shared/ui/textarea'
@@ -19,62 +16,37 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/image')({
   beforeLoad: async ({ params }) => {
     await requireAuth({ params: params as { lang: string } })
   },
-  validateSearch: (search: Record<string, unknown>) => {
-    return search.advanced === true || search.advanced === '1' ? { advanced: true as const } : {}
-  },
   head: ({ params }) => seoHead(params.lang, (t) => t.reelflow.metadata.imageTool),
   component: ReelflowImageToolPage,
 })
 
-type ImageProviderName = 'qwen' | 'fal' | 'openai' | 'gemini'
+const SIZE_OPTIONS = [
+  { value: '1024x1024', labelKey: 'square' as const },
+  { value: '1024x1536', labelKey: 'portrait' as const },
+  { value: '1536x1024', labelKey: 'landscape' as const },
+]
+const QUALITY_OPTIONS = ['low', 'medium', 'high'] as const
 
 type ImageToolResult = {
-  asset: {
-    id: string
-    url: string | null
-    metadata: Record<string, unknown> | null
-    createdAt: string
-  }
-  image: {
-    imageUrl: string
-    width?: number
-    height?: number
-    provider: ImageProviderName
-    model: string
-    seed?: number
-  }
-  credits: {
-    consumed: number
-    balanceAfter: number
-  }
+  asset: { id: string; url: string | null; metadata: Record<string, unknown> | null; createdAt: string }
+  image: { imageUrl: string; width?: number; height?: number; provider: string; model: string }
+  credits: { consumed: number; balanceAfter: number }
 }
 
 function ReelflowImageToolPage() {
   const { t, locale } = useTranslation()
   const navigate = useNavigate()
-  const { advanced } = Route.useSearch()
   const promptRef = useRef<HTMLTextAreaElement>(null)
-  const imageConfig = config.aiImage
-  const [provider] = useState<ImageProviderName>(imageConfig.defaultProvider as ImageProviderName)
-  const [model] = useState<string>(imageConfig.defaultModels[imageConfig.defaultProvider as keyof typeof imageConfig.defaultModels])
   const [prompt, setPrompt] = useState('')
-  const [negativePrompt, setNegativePrompt] = useState('')
-  const [size, setSize] = useState('')
-  const [seed, setSeed] = useState('random')
+  const [size, setSize] = useState('1024x1024')
+  const [quality, setQuality] = useState<(typeof QUALITY_OPTIONS)[number]>('high')
   const [generating, setGenerating] = useState(false)
   const [result, setResult] = useState<ImageToolResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [promptError, setPromptError] = useState<string | null>(null)
-  const showAdvanced = advanced === true
 
-  const availableSizes = getImageSizesForProvider(provider)
-
-  useEffect(() => {
-    if (availableSizes.length > 0) {
-      const defaultSize = availableSizes.find((item: { value: string }) => item.value.includes('1:1') || item.value.includes('1328'))
-      setSize(defaultSize?.value || availableSizes[0].value)
-    }
-  }, [provider])
+  const sizeLabels = t.reelflow.imageTool.sizes as Record<string, string>
+  const qualityLabels = t.reelflow.imageTool.qualities as Record<string, string>
 
   const generate = async () => {
     if (!prompt.trim()) {
@@ -90,17 +62,7 @@ function ReelflowImageToolPage() {
       const response = await fetch('/api/reelflow/tools/image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: prompt.trim(),
-          provider,
-          model,
-          negativePrompt: negativePrompt.trim() || undefined,
-          size,
-          aspectRatio: provider === 'fal' || provider === 'gemini' ? (size || '1:1') : undefined,
-          seed: seed === 'random' ? undefined : Number(seed),
-          promptExtend: provider === 'qwen' ? true : undefined,
-          watermark: provider === 'qwen' ? false : undefined,
-        }),
+        body: JSON.stringify({ prompt: prompt.trim(), size, quality }),
       })
       const payload = await response.json()
       if (!response.ok) {
@@ -129,12 +91,8 @@ function ReelflowImageToolPage() {
     }
   }
 
-  const randomizeSeed = () => setSeed(Math.floor(Math.random() * 2147483647).toString())
-
   const resetImageForm = () => {
     setPrompt('')
-    setNegativePrompt('')
-    setSeed('random')
     setResult(null)
     setError(null)
     setPromptError(null)
@@ -205,62 +163,30 @@ function ReelflowImageToolPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableSizes.map((item: { value: string; label: string }) => (
+                  {SIZE_OPTIONS.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
-                      {item.label}
+                      {sizeLabels[item.labelKey]} · {item.value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="image-quality">{t.reelflow.imageTool.quality}</Label>
+              <Select name="image-quality" value={quality} onValueChange={(value) => setQuality(value as (typeof QUALITY_OPTIONS)[number])}>
+                <SelectTrigger id="image-quality" aria-label={t.reelflow.imageTool.quality}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {QUALITY_OPTIONS.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {qualityLabels[item]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
-
-          <Button variant="ghost" className="w-full justify-between" asChild>
-            <Link
-              to="/$lang/reelflow/image"
-              params={{ lang: locale }}
-              search={showAdvanced ? {} : { advanced: true }}
-              replace
-              aria-expanded={showAdvanced}
-              aria-controls="reelflow-image-advanced"
-            >
-              <span>{t.reelflow.imageTool.advanced}</span>
-              {showAdvanced ? <ChevronUp className="h-4 w-4" aria-hidden="true" /> : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
-            </Link>
-          </Button>
-
-          {showAdvanced && (
-            <div id="reelflow-image-advanced" className="reelflow-soft-tile space-y-4 p-4">
-              <div className="space-y-2">
-                <Label htmlFor="image-negative-prompt">{t.reelflow.imageTool.negativePrompt}</Label>
-                <Textarea
-                  id="image-negative-prompt"
-                  name="image-negative-prompt"
-                  autoComplete="off"
-                  value={negativePrompt}
-                  onChange={(event) => setNegativePrompt(event.target.value)}
-                  placeholder={t.reelflow.imageTool.negativePromptPlaceholder}
-                  className="min-h-20 resize-y"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="image-seed">{t.reelflow.imageTool.seed}</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="image-seed"
-                    name="image-seed"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    value={seed}
-                    onChange={(event) => setSeed(event.target.value)}
-                  />
-                  <Button type="button" variant="outline" size="icon" aria-label={t.reelflow.imageTool.randomSeed} onClick={randomizeSeed}>
-                    <RefreshCw className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
 
           <Button type="button" size="lg" className="w-full" onClick={generate} disabled={generating} data-testid="reelflow-image-generate">
             {generating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />}
@@ -315,7 +241,7 @@ function ReelflowImageToolPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" asChild>
-                  <Link to="/$lang/reelflow/assets" params={{ lang: locale }} search={{ source: 'all', assetType: 'all', query: '' }} data-testid="reelflow-image-view-assets">
+                  <Link to="/$lang/reelflow/assets" params={{ lang: locale }} search={{ source: 'personal', assetType: 'all', query: '' }} data-testid="reelflow-image-view-assets">
                     <Archive className="mr-2 h-4 w-4" aria-hidden="true" />
                     {t.reelflow.imageTool.viewInAssets}
                   </Link>

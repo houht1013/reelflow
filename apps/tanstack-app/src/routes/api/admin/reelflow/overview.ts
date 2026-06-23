@@ -19,6 +19,9 @@ export const Route = createFileRoute('/api/admin/reelflow/overview')({
             providerProfile,
             template,
             workspace,
+            workspaceMember,
+            inviteRecord,
+            user,
           } = await import('@libs/database/schema')
           const { count, desc, eq, inArray, sql } = await import('drizzle-orm')
 
@@ -145,6 +148,41 @@ export const Route = createFileRoute('/api/admin/reelflow/overview')({
             .from(pricingItem)
             .orderBy(pricingItem.resourceType, pricingItem.provider)
 
+          const workspaces = await db
+            .select({
+              id: workspace.id,
+              name: workspace.name,
+              status: workspace.status,
+              ownerName: user.name,
+              ownerEmail: user.email,
+              balance: creditAccount.balance,
+              frozen: creditAccount.frozenBalance,
+              debt: creditAccount.debtBalance,
+              members: sql<number>`(SELECT COUNT(*) FROM ${workspaceMember} WHERE ${workspaceMember.workspaceId} = ${workspace.id})`,
+              createdAt: workspace.createdAt,
+            })
+            .from(workspace)
+            .leftJoin(user, eq(workspace.ownerUserId, user.id))
+            .leftJoin(creditAccount, eq(creditAccount.workspaceId, workspace.id))
+            .orderBy(desc(workspace.createdAt))
+            .limit(50)
+
+          const invites = await db
+            .select({
+              id: inviteRecord.id,
+              status: inviteRecord.status,
+              referrerName: user.name,
+              referrerEmail: user.email,
+              referrerBonusCredits: inviteRecord.referrerBonusCredits,
+              referredBonusCredits: inviteRecord.referredBonusCredits,
+              createdAt: inviteRecord.createdAt,
+              rewardedAt: inviteRecord.rewardedAt,
+            })
+            .from(inviteRecord)
+            .leftJoin(user, eq(inviteRecord.referrerUserId, user.id))
+            .orderBy(desc(inviteRecord.createdAt))
+            .limit(50)
+
           return Response.json({
             stats: {
               templates: {
@@ -173,6 +211,8 @@ export const Route = createFileRoute('/api/admin/reelflow/overview')({
               latestHealth: latestProviderHealth.get(provider.id) ?? null,
             })),
             pricing,
+            workspaces,
+            invites,
           })
         } catch (error) {
           console.error('Error fetching Reelflow admin overview:', error)
