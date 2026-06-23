@@ -31,6 +31,14 @@ export const reelflowConfig = {
       apiKey: process.env.REELFLOW_IMAGE_API_KEY ?? '',
       model: process.env.REELFLOW_IMAGE_MODEL ?? 'gpt-image-2',
       mock: process.env.REELFLOW_IMAGE_MOCK === '1',
+      // Upload generated images to object storage and expose a public http URL
+      // (required so downstream services like capcut-mate can fetch them).
+      host: process.env.REELFLOW_IMAGE_HOST === '1',
+      hostFolder: process.env.REELFLOW_IMAGE_HOST_FOLDER ?? 'reelflow/images',
+      // 'public': use the bucket object URL (requires public-read bucket/CDN).
+      // 'signed': use a presigned GET URL (works with private buckets, expires).
+      urlMode: (process.env.REELFLOW_IMAGE_URL_MODE ?? 'public') as 'public' | 'signed',
+      signedUrlTtl: Number(process.env.REELFLOW_IMAGE_SIGNED_TTL ?? 7 * 24 * 3600),
     },
     // Text-to-speech + caption timeline alignment via the local dubbingx-cli.
     tts: {

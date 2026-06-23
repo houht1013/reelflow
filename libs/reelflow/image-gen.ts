@@ -20,6 +20,12 @@ export type ReelflowImageInput = {
   quality?: 'low' | 'medium' | 'high' | 'auto';
   format?: 'png' | 'jpeg' | 'webp';
   model?: string;
+  /**
+   * Upload the image to object storage and return a public http URL instead of a
+   * data URL. Required for the worker draft flow (capcut-mate rejects data URLs).
+   * Defaults to config `ai.image.host`.
+   */
+  host?: boolean;
   /** Defaults to 'meter-only' (worker/job flow). Use 'charge' for standalone tools. */
   billing?: ProviderBillingMode;
   ledgerType?: string;
@@ -41,7 +47,7 @@ export type ReelflowImageResult = {
     metadata: unknown;
     createdAt: Date;
   };
-  image: { imageUrl: string; width: number; height: number; provider: string; model: string; mock: boolean };
+  image: { imageUrl: string; width: number; height: number; provider: string; model: string; mock: boolean; hosted: boolean; storageKey: string | null };
   credits: { consumed: number; balanceAfter: number } | null;
 };
 
@@ -64,6 +70,30 @@ function mimeFromBase64(b64: string): string {
 
 function estimateBase64FileSize(b64: string): number {
   return Math.round((b64.length * 3) / 4);
+}
+
+// Upload bytes to object storage and return a public (or presigned) http URL.
+async function hostImageBuffer(buffer: Buffer, mimeType: string): Promise<{ url: string; key: string }> {
+  const { storage } = await import('@libs/storage');
+  const ext = (mimeType.split('/')[1] || 'png').replace('jpeg', 'jpg');
+  const fileName = `${crypto.randomUUID()}.${ext}`;
+  const uploaded = await storage.uploadFile({
+    file: buffer,
+    fileName,
+    contentType: mimeType,
+    folder: reelflowConfig.ai.image.hostFolder,
+  });
+  // Public mode: use the bucket object URL (needs a public-read bucket/CDN).
+  if (reelflowConfig.ai.image.urlMode === 'public' && uploaded.url) {
+    return { url: uploaded.url, key: uploaded.key };
+  }
+  // Signed mode (or no public URL available): presigned GET URL for private buckets.
+  const signed = await storage.generateSignedUrl({
+    key: uploaded.key,
+    operation: 'get',
+    expiresIn: reelflowConfig.ai.image.signedUrlTtl,
+  });
+  return { url: signed.url, key: uploaded.key };
 }
 
 async function callImageProvider(input: {
@@ -154,9 +184,23 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
     });
   }
 
+  const shouldHost = (input.host ?? reelflowConfig.ai.image.host);
+
   let generated: { b64: string; mock: boolean };
+  let mimeType: string;
+  let imageUrl: string;
+  let storageKey: string | null = null;
+  let hosted = false;
   try {
     generated = await callImageProvider({ prompt, model, size, quality, format });
+    mimeType = mimeFromBase64(generated.b64);
+    imageUrl = `data:${mimeType};base64,${generated.b64}`;
+    if (shouldHost && !generated.mock) {
+      const uploaded = await hostImageBuffer(Buffer.from(generated.b64, 'base64'), mimeType);
+      imageUrl = uploaded.url;
+      storageKey = uploaded.key;
+      hosted = true;
+    }
   } catch (error) {
     if (charge) {
       await refundCredits({
@@ -174,8 +218,6 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
     );
   }
 
-  const mimeType = mimeFromBase64(generated.b64);
-  const imageUrl = `data:${mimeType};base64,${generated.b64}`;
   const { width, height } = parseSize(size);
 
   const asset = await registerGeneratedAsset({
@@ -183,7 +225,8 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
     userId: input.userId,
     assetType: 'image',
     sourceType: 'ai_generated',
-    storageProvider: provider,
+    storageProvider: hosted ? 'object-storage' : provider,
+    storageKey: storageKey || undefined,
     url: imageUrl,
     mimeType,
     fileSize: estimateBase64FileSize(generated.b64),
@@ -196,6 +239,8 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
       model,
       size,
       quality,
+      hosted,
+      storageKey,
       generatedFrom: 'reelflow_image_capability',
       mock: generated.mock,
       ...input.assetMetadata,
@@ -229,7 +274,7 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
       metadata: asset.metadata,
       createdAt: asset.createdAt,
     },
-    image: { imageUrl, width, height, provider, model, mock: generated.mock },
+    image: { imageUrl, width, height, provider, model, mock: generated.mock, hosted, storageKey },
     credits: charge ? { consumed: pricing.creditCost, balanceAfter: charge.balanceAfter } : null,
   };
 }
