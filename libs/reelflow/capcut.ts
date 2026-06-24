@@ -19,6 +19,7 @@ import { registerGeneratedAsset } from './assets';
 import {
   ProviderCallError,
   chargeCredits,
+  fetchWithRetry,
   meterUsage,
   resolveProviderPricing,
   type ProviderBillingMode,
@@ -44,7 +45,7 @@ async function capcutPost<T>(path: string, body: Record<string, unknown>): Promi
   const url = `${baseUrl}${apiPrefix}${path}`;
   let response: Response;
   try {
-    response = await fetch(url, {
+    response = await fetchWithRetry(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

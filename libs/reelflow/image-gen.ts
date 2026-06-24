@@ -6,6 +6,7 @@ import { registerGeneratedAsset } from './assets';
 import {
   ProviderCallError,
   chargeCredits,
+  fetchWithRetry,
   meterUsage,
   refundCredits,
   resolveProviderPricing,
@@ -113,7 +114,7 @@ async function callImageProvider(input: {
     return { b64: MOCK_PNG, mock: true };
   }
 
-  const response = await fetch(`${baseUrl}/v1/images/generations`, {
+  const response = await fetchWithRetry(`${baseUrl}/v1/images/generations`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

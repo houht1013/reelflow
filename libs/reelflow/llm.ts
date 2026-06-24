@@ -5,6 +5,7 @@ import { reelflowConfig } from '@config';
 import {
   ProviderCallError,
   chargeCredits,
+  fetchWithRetry,
   meterUsage,
   resolveProviderPricing,
   type ProviderBillingMode,
@@ -115,7 +116,7 @@ async function chatCompletion(input: {
   if (typeof input.maxTokens === 'number') body.max_tokens = input.maxTokens;
   if (input.responseFormat === 'json') body.response_format = { type: 'json_object' };
 
-  const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+  const response = await fetchWithRetry(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

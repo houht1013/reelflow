@@ -15,6 +15,26 @@ import type { ResourceType } from './constants';
 
 export type ProviderBillingMode = 'charge' | 'meter-only';
 
+// Retry transient network failures (undici "terminated"/socket resets seen with
+// slow reasoning models on Windows). Only retries thrown network errors, never
+// HTTP error responses.
+export async function fetchWithRetry(url: string, init: RequestInit, attempts = 3): Promise<Response> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fetch(url, init);
+    } catch (error) {
+      lastError = error;
+      const message = error instanceof Error ? error.message : String(error);
+      const cause = error instanceof Error && error.cause instanceof Error ? error.cause.message : '';
+      const transient = /terminated|econnreset|socket|fetch failed|network|timeout|eai_again/i.test(`${message} ${cause}`);
+      if (!transient || attempt === attempts - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
+    }
+  }
+  throw lastError;
+}
+
 export type ProviderCallErrorCode =
   | 'invalid_input'
   | 'insufficient_credits'

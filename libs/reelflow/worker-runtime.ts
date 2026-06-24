@@ -9,6 +9,7 @@ import {
   jobEvent,
   jobQualityIssue,
   jobStage,
+  template,
   usageRecord,
   workspace,
 } from '@libs/database/schema';
@@ -17,6 +18,20 @@ import { renderCloudMp4, type CloudRenderResult } from './cloud-render';
 import { buildDraftPackageMetadata, getDraftPackageStorageKey } from './draft-package';
 import { notifyReelflowJobCompleted, notifyReelflowJobFailed } from './notifications';
 import { canClaimWorkspaceJob, resolveWorkspaceConcurrentJobLimit } from './worker-limits';
+import { getTemplate } from './templates/registry';
+import { createTemplateContext } from './templates/_sdk/context';
+import type { TemplateRunOutput } from './templates/_sdk/types';
+
+// Stabilize outbound fetch for long-running provider calls on Windows/Node 24:
+// don't reuse idle keep-alive sockets (the proxy closes them, surfacing as undici
+// "terminated"), and allow generous timeouts for slow reasoning/image models.
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { setGlobalDispatcher, Agent } = require('undici') as typeof import('undici');
+  setGlobalDispatcher(new Agent({ keepAliveTimeout: 1000, keepAliveMaxTimeout: 1000, headersTimeout: 600_000, bodyTimeout: 600_000 }));
+} catch {
+  // undici not available (e.g. edge runtime) — fall back to the default dispatcher.
+}
 
 export type ClaimedJob = {
   id: string;
@@ -134,6 +149,35 @@ export async function processOneJob(workerId: string): Promise<ProcessOneJobResu
   const claimed = await claimNextJob(workerId);
   if (!claimed) return { processed: false, reason: 'empty_queue' };
 
+  // Resolve the in-repo template. If found, run the real template pipeline;
+  // otherwise fall back to the legacy mock / local_draft trace behavior.
+  const [jobRow] = await db
+    .select({ inputParams: job.inputParams, templateCode: template.code })
+    .from(job)
+    .innerJoin(template, eq(job.templateId, template.id))
+    .where(eq(job.id, claimed.id))
+    .limit(1);
+  const registryTemplate = jobRow ? getTemplate(jobRow.templateCode) : undefined;
+
+  if (registryTemplate) {
+    try {
+      const input = registryTemplate.schema.parse(jobRow!.inputParams);
+      const ctx = createTemplateContext({
+        id: claimed.id,
+        workspaceId: claimed.workspaceId,
+        userId: claimed.createdByUserId,
+        frozenCredits: claimed.frozenCredits,
+        renderMp4Requested: claimed.renderMp4Requested,
+      });
+      const output = await registryTemplate.run(ctx, input);
+      await completeTemplateJob(claimed, output);
+      return { processed: true, jobId: claimed.id, status: 'completed' };
+    } catch (error) {
+      await failClaimedJob(claimed, error);
+      return { processed: true, jobId: claimed.id, status: 'failed' };
+    }
+  }
+
   try {
     const stages = await db
       .select()
@@ -210,6 +254,126 @@ export async function processOneJob(workerId: string): Promise<ProcessOneJobResu
     await failClaimedJob(claimed, error);
     return { processed: true, jobId: claimed.id, status: 'failed' };
   }
+}
+
+// Settle a template-driven job: assets + usage were already recorded by the
+// template via ctx; here we reconcile credits (metered actual vs frozen estimate),
+// close the settlement/notify stages, and finalize the job.
+async function completeTemplateJob(claimed: ClaimedJob, output: TemplateRunOutput): Promise<void> {
+  const frozen = Number(claimed.frozenCredits || 0);
+  let actual = 0;
+
+  await db.transaction(async (tx) => {
+    const [usageTotal] = await tx
+      .select({ total: sql<string>`COALESCE(SUM(CAST(${usageRecord.creditCost} AS DECIMAL)), 0)` })
+      .from(usageRecord)
+      .where(eq(usageRecord.jobId, claimed.id));
+    actual = Math.round(Number(usageTotal?.total || 0) * 100) / 100;
+
+    const consumedFromFrozen = Math.min(actual, frozen);
+    const refund = Math.round(Math.max(0, frozen - consumedFromFrozen) * 100) / 100;
+    const debt = Math.round(Math.max(0, actual - frozen) * 100) / 100;
+    const downloadable = debt <= 0;
+
+    const [updatedAccount] = await tx
+      .update(creditAccount)
+      .set({
+        balance: refund > 0 ? sql`${creditAccount.balance} + ${refund}` : creditAccount.balance,
+        frozenBalance: sql`${creditAccount.frozenBalance} - ${frozen}`,
+        totalConsumed: sql`${creditAccount.totalConsumed} + ${consumedFromFrozen}`,
+        debtBalance: debt > 0 ? sql`${creditAccount.debtBalance} + ${debt}` : creditAccount.debtBalance,
+        updatedAt: new Date(),
+      })
+      .where(eq(creditAccount.workspaceId, claimed.workspaceId))
+      .returning({
+        balance: creditAccount.balance,
+        frozenBalance: creditAccount.frozenBalance,
+        debtBalance: creditAccount.debtBalance,
+      });
+
+    // Close worker-owned stages (settlement, notify) if they were seeded.
+    const now = new Date();
+    for (const code of ['settlement', 'notify'] as const) {
+      await tx
+        .update(jobStage)
+        .set({ status: 'completed', startedAt: now, completedAt: now, updatedAt: now })
+        .where(and(eq(jobStage.jobId, claimed.id), eq(jobStage.stageCode, code), sql`${jobStage.status} <> 'completed'`));
+    }
+
+    await tx
+      .update(jobAttempt)
+      .set({ status: 'completed', endedAt: now })
+      .where(and(eq(jobAttempt.jobId, claimed.id), eq(jobAttempt.attemptNo, claimed.attemptNo)));
+
+    await tx.insert(creditLedger).values({
+      id: crypto.randomUUID(),
+      workspaceId: claimed.workspaceId,
+      userId: claimed.createdByUserId,
+      jobId: claimed.id,
+      type: 'settlement',
+      amount: `-${consumedFromFrozen}`,
+      balanceAfter: updatedAccount?.balance ?? '0',
+      frozenAfter: updatedAccount?.frozenBalance ?? '0',
+      debtAfter: updatedAccount?.debtBalance ?? '0',
+      description: `Settle Reelflow template job ${claimed.id}`,
+      metadata: { mode: 'template', actual, frozen, refund, debt, draftUrl: output.draftUrl },
+      createdAt: now,
+    });
+
+    if (refund > 0) {
+      await tx.insert(creditLedger).values({
+        id: crypto.randomUUID(),
+        workspaceId: claimed.workspaceId,
+        userId: claimed.createdByUserId,
+        jobId: claimed.id,
+        type: 'refund',
+        amount: refund.toString(),
+        balanceAfter: updatedAccount?.balance ?? '0',
+        frozenAfter: updatedAccount?.frozenBalance ?? '0',
+        debtAfter: updatedAccount?.debtBalance ?? '0',
+        description: `Refund unused frozen credits for Reelflow job ${claimed.id}`,
+        metadata: { mode: 'template', actual, frozen },
+        createdAt: now,
+      });
+    }
+
+    await tx
+      .update(job)
+      .set({
+        status: 'completed',
+        artifactStatus: downloadable ? 'downloadable' : 'locked',
+        actualCredits: actual.toString(),
+        frozenCredits: '0',
+        settlementStatus: debt > 0 ? 'debt' : 'settled',
+        debtCredits: debt > 0 ? debt.toString() : '0',
+        lockedBy: null,
+        lockedAt: null,
+        completedAt: now,
+        updatedAt: now,
+      })
+      .where(eq(job.id, claimed.id));
+
+    await tx.insert(jobEvent).values({
+      id: crypto.randomUUID(),
+      jobId: claimed.id,
+      level: 'info',
+      eventType: 'job_completed_template',
+      message: 'Template pipeline completed.',
+      data: { actual, frozen, refund, debt, draftUrl: output.draftUrl, summary: output.summary },
+      createdAt: now,
+    });
+  });
+
+  notifyReelflowJobCompleted({
+    workspaceId: claimed.workspaceId,
+    userId: claimed.createdByUserId,
+    jobId: claimed.id,
+    artifactStatus: actual > frozen ? 'locked' : 'downloadable',
+    actualCredits: actual,
+    downloadable: actual <= frozen,
+  }).catch((error) => {
+    console.error('Failed to create Reelflow template completion notification:', error);
+  });
 }
 
 function getWorkerExecutionMode(): WorkerExecutionMode {

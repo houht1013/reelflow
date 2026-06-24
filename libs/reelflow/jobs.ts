@@ -3,6 +3,11 @@ import { creditAccount, creditLedger, job, jobEvent, jobStage, template } from '
 import { and, eq, sql } from 'drizzle-orm';
 import { REELFLOW_STAGES } from './constants';
 import { assertJobPreflight } from './preflight';
+import { getTemplate } from './templates/registry';
+import { estimateResourcePlanCredits } from './templates/_sdk/estimator';
+
+// Worker-owned stages always appended after a template's content stages.
+const WORKER_STAGES = ['settlement', 'notify'] as const;
 
 export type EstimateJobCreditsInput = {
   templateCode: string;
@@ -43,9 +48,6 @@ export function estimateJobCredits(input: EstimateJobCreditsInput): number {
 }
 
 export async function createReelflowJob(input: CreateReelflowJobInput): Promise<CreateReelflowJobResult> {
-  const estimatedCredits = estimateJobCredits(input);
-  const estimatedCreditsText = estimatedCredits.toString();
-
   const [selectedTemplate] = await db
     .select()
     .from(template)
@@ -55,6 +57,14 @@ export async function createReelflowJob(input: CreateReelflowJobInput): Promise<
   if (!selectedTemplate) {
     throw new Error(`Template is not available: ${input.templateCode}`);
   }
+
+  // Estimate from the in-repo template's resource plan priced by pricing_item, so
+  // the freeze matches the metered actual. Fall back to legacy flat estimate.
+  const registryTemplate = getTemplate(input.templateCode);
+  const estimatedCredits = registryTemplate
+    ? (await estimateResourcePlanCredits(registryTemplate.estimate(input.inputParams as never))).credits
+    : estimateJobCredits(input);
+  const estimatedCreditsText = estimatedCredits.toString();
 
   await assertJobPreflight({
     workspaceId: input.workspaceId,
@@ -100,6 +110,7 @@ export async function createReelflowJob(input: CreateReelflowJobInput): Promise<
         qualityStatus: 'unchecked',
         priority: 0,
         inputParams: input.inputParams,
+        normalizedParams: { _builderVersion: registryTemplate?.version ?? selectedTemplate.builderVersion ?? null },
         estimatedCredits: estimatedCreditsText,
         frozenCredits: estimatedCreditsText,
         actualCredits: '0',
@@ -113,9 +124,20 @@ export async function createReelflowJob(input: CreateReelflowJobInput): Promise<
       })
       .returning({ id: job.id });
 
+    // Seed only the stages this job will actually go through: the template's
+    // declared content stages + worker-owned settlement/notify, in canonical order.
+    // Legacy templates (no registry entry) keep the full fixed stage list.
+    const seededStageCodes = registryTemplate
+      ? new Set<string>([...registryTemplate.stages, ...WORKER_STAGES])
+      : new Set<string>(
+          REELFLOW_STAGES
+            .filter((stage) => input.renderMp4Requested || stage.code !== 'render_mp4')
+            .map((stage) => stage.code),
+        );
+
     await tx.insert(jobStage).values(
       REELFLOW_STAGES
-        .filter((stage) => input.renderMp4Requested || stage.code !== 'render_mp4')
+        .filter((stage) => seededStageCodes.has(stage.code))
         .map((stage, index) => ({
           id: crypto.randomUUID(),
           jobId: createdJob.id,
