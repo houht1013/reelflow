@@ -88,7 +88,7 @@ async function chatCompletion(input: {
   maxTokens?: number;
   responseFormat?: 'text' | 'json';
 }): Promise<{ text: string; usage: ReelflowTextUsage; model: string; mock: boolean }> {
-  const { baseUrl, apiKey, mock } = reelflowConfig.ai.llm;
+  const { baseUrl, apiKey, mock, timeoutMs, maxAttempts } = reelflowConfig.ai.llm;
 
   const combined = input.messages.map((message) => message.content).join('\n');
   if (combined.includes('__reelflow_mock_fail__')) {
@@ -116,14 +116,18 @@ async function chatCompletion(input: {
   if (typeof input.maxTokens === 'number') body.max_tokens = input.maxTokens;
   if (input.responseFormat === 'json') body.response_format = { type: 'json_object' };
 
-  const response = await fetchWithRetry(`${baseUrl}/v1/chat/completions`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
+  const response = await fetchWithRetry(
+    `${baseUrl}/v1/chat/completions`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  });
+    { timeoutMs, attempts: maxAttempts, breakerKey: 'llm' },
+  );
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => '');

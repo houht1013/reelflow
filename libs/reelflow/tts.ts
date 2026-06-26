@@ -17,6 +17,7 @@ import {
   chargeCredits,
   meterUsage,
   resolveProviderPricing,
+  withProviderBreaker,
   type ProviderBillingMode,
 } from './provider-runtime';
 
@@ -59,16 +60,33 @@ export type ReelflowVoiceTrackResult = {
 };
 
 async function runDubbingx(args: string[]): Promise<string> {
-  const { entry, bin } = reelflowConfig.ai.tts;
+  const { entry, bin, timeoutMs, maxAttempts } = reelflowConfig.ai.tts;
   const command = entry ? 'node' : bin;
   const fullArgs = entry ? [entry, ...args] : args;
-  const { stdout } = await execFileAsync(command, fullArgs, {
-    maxBuffer: 1024 * 1024 * 32,
-    windowsHide: true,
-    // .cmd shim on PATH needs a shell; the `node <entry>` path never does.
-    shell: !entry && process.platform === 'win32',
+  const attempts = Math.max(1, Math.floor(maxAttempts ?? 1));
+
+  // Breaker (fail fast on sustained CLI failure) + per-call timeout (kills a hung
+  // dubbingx process) + retry on transient failures.
+  return withProviderBreaker('tts', async () => {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      try {
+        const { stdout } = await execFileAsync(command, fullArgs, {
+          maxBuffer: 1024 * 1024 * 32,
+          windowsHide: true,
+          timeout: timeoutMs,
+          // .cmd shim on PATH needs a shell; the `node <entry>` path never does.
+          shell: !entry && process.platform === 'win32',
+        });
+        return stdout;
+      } catch (error) {
+        lastError = error;
+        if (attempt === attempts - 1) throw error;
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
+    throw lastError;
   });
-  return stdout;
 }
 
 function parseField(stdout: string, label: string): string | null {

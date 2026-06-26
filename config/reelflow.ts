@@ -38,6 +38,9 @@ export const reelflowConfig = {
       apiKey: process.env.REELFLOW_LLM_API_KEY ?? '',
       model: process.env.REELFLOW_LLM_MODEL ?? 'gpt-5.5',
       mock: process.env.REELFLOW_LLM_MOCK === '1',
+      // gpt-5.5 reasoning is ~18-20s; allow generous headroom, abort hangs, retry once.
+      timeoutMs: Number(process.env.REELFLOW_LLM_TIMEOUT_MS ?? 120_000),
+      maxAttempts: Number(process.env.REELFLOW_LLM_MAX_ATTEMPTS ?? 2),
     },
     image: {
       provider: 'openai-compatible',
@@ -77,6 +80,9 @@ export const reelflowConfig = {
       // Run subtitle alignment by default; set REELFLOW_DUBBINGX_ALIGN=0 to skip.
       align: process.env.REELFLOW_DUBBINGX_ALIGN !== '0',
       mock: process.env.REELFLOW_DUBBINGX_MOCK === '1',
+      // Per-call CLI timeout (kills a hung dubbingx process) + retry once.
+      timeoutMs: Number(process.env.REELFLOW_DUBBINGX_TIMEOUT_MS ?? 180_000),
+      maxAttempts: Number(process.env.REELFLOW_DUBBINGX_MAX_ATTEMPTS ?? 2),
     },
   },
   // capcut-mate: local Jianying draft automation API (FastAPI).
@@ -84,6 +90,9 @@ export const reelflowConfig = {
     baseUrl: (process.env.CAPCUT_MATE_BASE_URL ?? 'http://localhost:30000').replace(/\/$/, ''),
     apiPrefix: process.env.CAPCUT_MATE_API_PREFIX ?? '/openapi/capcut-mate/v1',
     mock: process.env.REELFLOW_CAPCUT_MOCK === '1',
+    // Local docker API; fast. Abort a hung call and retry once.
+    timeoutMs: Number(process.env.CAPCUT_MATE_TIMEOUT_MS ?? 60_000),
+    maxAttempts: Number(process.env.CAPCUT_MATE_MAX_ATTEMPTS ?? 2),
   },
   credits: {
     trialGrant: Number(process.env.REELFLOW_TRIAL_CREDITS ?? 100),

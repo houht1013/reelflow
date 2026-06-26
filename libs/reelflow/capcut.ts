@@ -41,15 +41,19 @@ export type CapcutCaptionStyle = {
 };
 
 async function capcutPost<T>(path: string, body: Record<string, unknown>): Promise<T> {
-  const { baseUrl, apiPrefix } = reelflowConfig.capcut;
+  const { baseUrl, apiPrefix, timeoutMs, maxAttempts } = reelflowConfig.capcut;
   const url = `${baseUrl}${apiPrefix}${path}`;
   let response: Response;
   try {
-    response = await fetchWithRetry(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    response = await fetchWithRetry(
+      url,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      },
+      { timeoutMs, attempts: maxAttempts, breakerKey: 'capcut' },
+    );
   } catch (error) {
     throw new ProviderCallError(
       `capcut-mate is unreachable at ${url}: ${error instanceof Error ? error.message : 'network error'}`,

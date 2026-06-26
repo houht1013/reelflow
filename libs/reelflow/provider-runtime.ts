@@ -22,11 +22,82 @@ export type ProviderBillingMode = 'charge' | 'meter-only';
 // success), so retrying a generation is cost-safe.
 const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
 
+// --- Circuit breaker -------------------------------------------------------
+// Per-provider (keyed) breaker that fails fast during a *sustained* outage so we
+// don't keep paying full timeouts against a dead upstream. Counts *consecutive*
+// failures and resets on any success, so an intermittently-flaky provider (the
+// common case) is unaffected — it only trips when a provider is truly down.
+const BREAKER_ENABLED = process.env.REELFLOW_BREAKER !== '0';
+const BREAKER_THRESHOLD = Number(process.env.REELFLOW_BREAKER_THRESHOLD ?? 6);
+const BREAKER_COOLDOWN_MS = Number(process.env.REELFLOW_BREAKER_COOLDOWN_MS ?? 30_000);
+
+type BreakerState = { failures: number; openUntil: number };
+const breakers = new Map<string, BreakerState>();
+
+function breakerFor(key: string): BreakerState {
+  let state = breakers.get(key);
+  if (!state) {
+    state = { failures: 0, openUntil: 0 };
+    breakers.set(key, state);
+  }
+  return state;
+}
+
+/** Throw fast if the breaker for `key` is currently open. */
+export function assertBreakerClosed(key: string): void {
+  if (!BREAKER_ENABLED) return;
+  const state = breakers.get(key);
+  if (state && state.openUntil > Date.now()) {
+    const seconds = Math.ceil((state.openUntil - Date.now()) / 1000);
+    throw new ProviderCallError(
+      `Provider '${key}' is temporarily unavailable (cooling down ~${seconds}s)`,
+      'generation_failed',
+      503,
+      { breaker: key, retryAfterSeconds: seconds },
+    );
+  }
+}
+
+export function recordBreakerSuccess(key: string): void {
+  if (!BREAKER_ENABLED) return;
+  const state = breakers.get(key);
+  if (state) {
+    state.failures = 0;
+    state.openUntil = 0;
+  }
+}
+
+export function recordBreakerFailure(key: string): void {
+  if (!BREAKER_ENABLED) return;
+  const state = breakerFor(key);
+  state.failures += 1;
+  if (state.failures >= BREAKER_THRESHOLD) {
+    state.openUntil = Date.now() + BREAKER_COOLDOWN_MS;
+    state.failures = 0; // start fresh after the cooldown window
+  }
+}
+
+/** Run a non-fetch provider call (e.g. a CLI) under the breaker for `key`. */
+export async function withProviderBreaker<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  assertBreakerClosed(key);
+  try {
+    const result = await fn();
+    recordBreakerSuccess(key);
+    return result;
+  } catch (error) {
+    recordBreakerFailure(key);
+    throw error;
+  }
+}
+
 export type FetchWithRetryOptions = {
   attempts?: number;
   /** Per-attempt timeout in ms. Aborts a slow/hung request and (if attempts
    *  remain) retries. Omit to fall back to the platform default. */
   timeoutMs?: number;
+  /** Circuit-breaker key (e.g. 'image', 'llm', 'capcut'). Enables fail-fast on
+   *  sustained outage. Omit to skip the breaker. */
+  breakerKey?: string;
 };
 
 export async function fetchWithRetry(
@@ -38,6 +109,10 @@ export async function fetchWithRetry(
     typeof optionsOrAttempts === 'number' ? { attempts: optionsOrAttempts } : optionsOrAttempts;
   const attempts = options.attempts ?? 4;
   const timeoutMs = options.timeoutMs;
+  const breakerKey = options.breakerKey;
+
+  // Fail fast if this provider's breaker is open (sustained outage).
+  if (breakerKey) assertBreakerClosed(breakerKey);
 
   let lastError: unknown;
   let lastResponse: Response | undefined;
@@ -53,6 +128,13 @@ export async function fetchWithRetry(
         await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
         continue;
       }
+      // A non-retryable response (2xx/4xx, or exhausted) means the provider is
+      // reachable — reset the breaker. A retryable status that exhausted attempts
+      // counts as a provider failure.
+      if (breakerKey) {
+        if (RETRYABLE_STATUSES.has(response.status)) recordBreakerFailure(breakerKey);
+        else recordBreakerSuccess(breakerKey);
+      }
       return response;
     } catch (error) {
       lastError = error;
@@ -62,10 +144,14 @@ export async function fetchWithRetry(
         /terminated|econnreset|socket|fetch failed|network|timeout|timed out|aborted|eai_again/i.test(
           `${message} ${cause}`,
         );
-      if (!transient || attempt === attempts - 1) throw error;
+      if (!transient || attempt === attempts - 1) {
+        if (breakerKey) recordBreakerFailure(breakerKey);
+        throw error;
+      }
       await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
     }
   }
+  if (breakerKey) recordBreakerFailure(breakerKey);
   if (lastResponse) return lastResponse;
   throw lastError;
 }

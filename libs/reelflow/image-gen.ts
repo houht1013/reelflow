@@ -143,7 +143,7 @@ async function callImageProvider(input: {
         headers: { Authorization: `Bearer ${apiKey}` },
         body: form,
       },
-      { timeoutMs, attempts: maxAttempts },
+      { timeoutMs, attempts: maxAttempts, breakerKey: 'image' },
     );
   } else {
     response = await fetchWithRetry(
@@ -163,7 +163,7 @@ async function callImageProvider(input: {
           format: input.format,
         }),
       },
-      { timeoutMs, attempts: maxAttempts },
+      { timeoutMs, attempts: maxAttempts, breakerKey: 'image' },
     );
   }
 
