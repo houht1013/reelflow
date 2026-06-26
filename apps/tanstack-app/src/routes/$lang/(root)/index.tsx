@@ -12,10 +12,13 @@ import {
   FileText,
   Film,
   Layers3,
+  Mail,
+  MessageCircle,
   Play,
   Sparkles,
   WandSparkles,
 } from 'lucide-react'
+import { BrandMark } from '@/components/brand-mark'
 
 export const Route = createFileRoute('/$lang/(root)/')({
   head: ({ params }) => seoHead(params.lang, (t) => t.reelflow.landing.metadata),
@@ -112,6 +115,7 @@ function CountUp({ value }: { value: string }) {
 function HomePage() {
   const { t, locale } = useTranslation()
   const landing = t.reelflow.landing
+  const footer = landing.footer
   const heroRef = useRef<HTMLElement>(null)
   useScrollReveal()
 
@@ -143,14 +147,10 @@ function HomePage() {
 
         <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-12 px-5 py-16 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)] lg:py-20">
           <div className="max-w-2xl">
-            <span className="landing-hero-eyebrow" data-reveal style={{ '--reveal-delay': '0ms' } as React.CSSProperties}>
-              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-              {landing.hero.eyebrow}
-            </span>
             <h1
-              className="reelflow-display mt-5 text-balance text-5xl leading-[0.98] text-white md:text-6xl lg:text-[4.6rem]"
+              className="reelflow-display text-balance text-5xl leading-[0.98] text-white md:text-6xl lg:text-[4.6rem]"
               data-reveal
-              style={{ '--reveal-delay': '90ms' } as React.CSSProperties}
+              style={{ '--reveal-delay': '0ms' } as React.CSSProperties}
             >
               {landing.hero.title}
             </h1>
@@ -244,33 +244,30 @@ function HomePage() {
       </section>
 
       <section id="cases" className="relative py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 md:px-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
-          <div data-reveal>
-            <SectionHeader title={landing.templates.title} description={landing.templates.description} align="left" />
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {landing.templates.items.map((template: { name: string; description: string; output: string }, index: number) => (
-              <article
-                key={template.name}
-                className="landing-case group"
-                data-reveal
-                style={{ '--reveal-delay': `${index * 110}ms` } as React.CSSProperties}
-              >
-                <div className="landing-case-frame">
-                  <div className={`landing-case-poster landing-case-poster-${index + 1}`}>
-                    <span className="landing-case-tag">
-                      <Clapperboard className="h-3.5 w-3.5 text-white/85" aria-hidden="true" />
-                      {template.output}
-                    </span>
-                    <span className="landing-case-play">
-                      <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
-                    </span>
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <SectionHeader title={landing.templates.title} description={landing.templates.description} />
+        </div>
+        <div className="landing-marquee mt-12">
+          <div className="landing-marquee-track">
+            {[...landing.templates.items, ...landing.templates.items].map(
+              (template: { name: string; description: string; output: string }, index: number) => (
+                <article key={index} className="landing-case landing-marquee-item group" aria-hidden={index >= landing.templates.items.length}>
+                  <div className="landing-case-frame">
+                    <div className={`landing-case-poster landing-case-poster-${(index % landing.templates.items.length) + 1}`}>
+                      <span className="landing-case-tag">
+                        <Clapperboard className="h-3.5 w-3.5 text-white/85" aria-hidden="true" />
+                        {template.output}
+                      </span>
+                      <span className="landing-case-play">
+                        <Play className="h-4 w-4 translate-x-px fill-current" aria-hidden="true" />
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <h3 className="mt-5 text-base font-semibold text-white">{template.name}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/56">{template.description}</p>
-              </article>
-            ))}
+                  <h3 className="mt-5 text-base font-semibold text-white">{template.name}</h3>
+                  <p className="mt-2 text-sm leading-6 text-white/56">{template.description}</p>
+                </article>
+              ),
+            )}
           </div>
         </div>
       </section>
@@ -321,7 +318,77 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      <footer className="relative border-t border-white/[0.08] bg-[#07080c]">
+        <div className="mx-auto max-w-6xl px-5 py-14 md:px-8">
+          <div className="grid gap-10 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
+            <div>
+              <a href={`/${locale}`} className="flex items-center gap-2.5">
+                <BrandMark className="h-9 w-9" variant="dark" fallbackIconClassName="h-5 w-5" />
+                <span className="text-lg font-semibold text-white">Reelflow</span>
+              </a>
+              <p className="mt-4 max-w-xs text-sm leading-6 text-white/50">{footer.tagline}</p>
+              <div className="mt-5 flex items-center gap-2.5">
+                <a href="#" aria-label="X" className="landing-footer-social">
+                  <span className="text-sm font-semibold">X</span>
+                </a>
+                <a href="#" aria-label={footer.contact} className="landing-footer-social">
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                </a>
+                <a href="mailto:hello@reelflow.app" aria-label="Email" className="landing-footer-social">
+                  <Mail className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+
+            <FooterColumn
+              title={footer.productTitle}
+              items={[
+                { label: footer.product, href: `/${locale}#product` },
+                { label: footer.workflow, href: `/${locale}#workflow` },
+                { label: footer.cases, href: `/${locale}#cases` },
+                { label: footer.pricing, href: `/${locale}/pricing` },
+              ]}
+            />
+            <FooterColumn
+              title={footer.resourcesTitle}
+              items={[
+                { label: footer.docs, href: `/${locale}#docs` },
+                { label: footer.contact, href: 'mailto:hello@reelflow.app' },
+              ]}
+            />
+            <FooterColumn
+              title={footer.legalTitle}
+              items={[
+                { label: footer.privacy, href: '#' },
+                { label: footer.terms, href: '#' },
+              ]}
+            />
+          </div>
+
+          <div className="mt-12 border-t border-white/[0.06] pt-6">
+            <p className="text-xs text-white/40">{footer.copyright}</p>
+          </div>
+        </div>
+      </footer>
     </main>
+  )
+}
+
+function FooterColumn({ title, items }: { title: string; items: { label: string; href: string }[] }) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-white/80">{title}</h3>
+      <ul className="mt-4 space-y-3">
+        {items.map((item) => (
+          <li key={item.label}>
+            <a href={item.href} className="text-sm text-white/50 transition-colors hover:text-white">
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 

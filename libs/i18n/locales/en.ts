@@ -2409,9 +2409,9 @@ export const en: Locale = {
         primaryCta: "Start creating",
         secondaryCta: "View plans",
         trust: [
-          "Editable Jianying draft",
-          "Tons of viral templates",
-          "1080P HD export"
+          "Tons of templates",
+          "Creative videos",
+          "Jianying drafts"
         ]
       },
       preview: {
@@ -2534,6 +2534,21 @@ export const en: Locale = {
             description: "Private templates are built by the official team and assigned to selected workspaces."
           }
         ]
+      },
+      footer: {
+        tagline: "Turn proven short-video templates into editable drafts.",
+        productTitle: "Product",
+        resourcesTitle: "Resources",
+        legalTitle: "Legal",
+        product: "Overview",
+        workflow: "Workflow",
+        cases: "Template cases",
+        pricing: "Pricing",
+        docs: "Docs",
+        contact: "Contact us",
+        privacy: "Privacy policy",
+        terms: "Terms of service",
+        copyright: "© 2026 Reelflow. All rights reserved."
       }
     },
     common: {

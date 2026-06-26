@@ -2416,9 +2416,9 @@ export const zhCN: Locale = {
         primaryCta: "开始创作",
         secondaryCta: "查看套餐",
         trust: [
-          "剪映草稿可编辑",
-          "海量爆款模板",
-          "1080P 高清导出"
+          "海量模板",
+          "创意视频",
+          "剪映草稿"
         ]
       },
       preview: {
@@ -2541,6 +2541,21 @@ export const zhCN: Locale = {
             description: "私有模板由官方承接开发，并指定给对应工作区使用。"
           }
         ]
+      },
+      footer: {
+        tagline: "把爆款短视频模板，变成可编辑草稿。",
+        productTitle: "产品",
+        resourcesTitle: "资源",
+        legalTitle: "法律",
+        product: "产品介绍",
+        workflow: "工作流程",
+        cases: "模板案例",
+        pricing: "定价",
+        docs: "文档",
+        contact: "联系我们",
+        privacy: "隐私政策",
+        terms: "服务条款",
+        copyright: "© 2026 Reelflow. 保留所有权利。"
       }
     },
     common: {
