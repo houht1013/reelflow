@@ -92,15 +92,15 @@ function ReelflowHomePage() {
     <main className="min-h-screen" data-testid="reelflow-home-page">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Greeting */}
-        <div className="reelflow-reveal text-center" data-delay="1">
+        <div className="reelflow-reveal pt-6 text-center sm:pt-12" data-delay="1">
           <p className="text-lg font-medium sm:text-xl">
             <span aria-hidden="true">👋</span> {home.greeting}{userName ? ` ${userName}` : ''}
           </p>
-          <h1 className="reelflow-display mt-2 text-[1.7rem] leading-[1.15] sm:text-[2rem]">{home.greetingQuestion}</h1>
+          <h1 className="reelflow-display mt-3 text-[1.7rem] leading-[1.15] sm:text-[2rem]">{home.greetingQuestion}</h1>
         </div>
 
         {/* Entry cards */}
-        <div className="reelflow-reveal mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-delay="2">
+        <div className="reelflow-reveal mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:mt-11" data-delay="2">
           {entries.map((entry) => {
             const copy = entryCopy[entry.key]
             const Icon = entry.icon
