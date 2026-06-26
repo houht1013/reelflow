@@ -179,23 +179,24 @@ export function ReelflowShell({ children }: ShellProps) {
         <div
           className={[
             'mb-5 flex px-1',
-            sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between gap-2',
+            sidebarCollapsed ? 'justify-center' : 'items-center justify-between gap-2',
           ].join(' ')}
         >
-          <Link
-            to="/$lang/reelflow"
-            params={{ lang: locale }}
-            activeOptions={{ exact: true }}
-            className="flex min-w-0 items-center gap-3"
-            aria-label="Reelflow"
-            title={sidebarCollapsed ? 'Reelflow' : undefined}
-          >
-            <BrandMark className="h-11 w-11 shrink-0" fallbackIconClassName="h-6 w-6" />
-            <span className={sidebarCollapsed ? 'hidden' : 'min-w-0'}>
-              <span className="reelflow-display block truncate text-[1.15rem] leading-5">Reelflow</span>
-              <span className="block truncate text-xs text-sidebar-foreground/55">{shell.workspace}</span>
-            </span>
-          </Link>
+          {!sidebarCollapsed && (
+            <Link
+              to="/$lang/reelflow"
+              params={{ lang: locale }}
+              activeOptions={{ exact: true }}
+              className="flex min-w-0 items-center gap-3"
+              aria-label="Reelflow"
+            >
+              <BrandMark className="h-11 w-11 shrink-0" fallbackIconClassName="h-6 w-6" />
+              <span className="min-w-0">
+                <span className="reelflow-display block truncate text-[1.15rem] leading-5">Reelflow</span>
+                <span className="block truncate text-xs text-sidebar-foreground/55">{shell.workspace}</span>
+              </span>
+            </Link>
+          )}
 
           <button
             type="button"
