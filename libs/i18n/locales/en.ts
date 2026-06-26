@@ -2304,6 +2304,15 @@ export const en: Locale = {
       overview: "Workspace overview",
       emptyRecentTitle: "Create your first video",
       templateCredits: "~{n} credits",
+      greeting: "Hi",
+      greetingQuestion: "What do you want to create today?",
+      entries: {
+        templates: { title: "Viral templates", desc: "Generate a short video from a proven structure" },
+        image: { title: "Image generation", desc: "Render visuals and references in one click" },
+        voice: { title: "Voice generation", desc: "Turn text into natural narration" },
+        video: { title: "Video generation", desc: "Describe an idea, get a video" },
+        tasks: { title: "Tasks", desc: "Track progress and outputs" }
+      },
       abilities: {
         draft: {
           title: "Short-video draft",

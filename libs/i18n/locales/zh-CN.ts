@@ -2311,6 +2311,15 @@ export const zhCN: Locale = {
       overview: "工作区概览",
       emptyRecentTitle: "开始你的第一条短视频",
       templateCredits: "约 {n} 积分",
+      greeting: "你好",
+      greetingQuestion: "今天想创作些什么呢？",
+      entries: {
+        templates: { title: "爆款模板", desc: "从爆款结构一键生成短视频" },
+        image: { title: "图像生成", desc: "一键描绘画面与参考图" },
+        voice: { title: "语音生成", desc: "文本转自然旁白配音" },
+        video: { title: "视频生成", desc: "输入灵感，生成视频" },
+        tasks: { title: "任务", desc: "查看进度与产物" }
+      },
       abilities: {
         draft: {
           title: "短视频草稿",

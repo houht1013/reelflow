@@ -14,9 +14,11 @@ import {
   Mic2,
   Snowflake,
   Sparkles,
+  Video,
   type LucideIcon,
 } from 'lucide-react'
 import { StatusPill, StatCard, SkeletonRows, categoryVisual } from '@/components/reelflow-ui'
+import { authClientReact } from '@libs/auth/authClient'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/')({
   beforeLoad: async ({ params }) => {
@@ -48,6 +50,8 @@ type EntryTo =
 
 function ReelflowHomePage() {
   const { t, locale } = useTranslation()
+  const { data: session } = authClientReact.useSession()
+  const userName = session?.user?.name || session?.user?.email?.split('@')[0] || ''
   const [credits, setCredits] = useState<HomeCreditSummary | null>(null)
   const [jobs, setJobs] = useState<ReelflowJobHomeItem[] | null>(null)
 
@@ -90,43 +94,67 @@ function ReelflowHomePage() {
   const recentJobs = (jobs ?? []).slice(0, 4)
   const statusText = (status: string) => (t.reelflow.status as Record<string, string>)[status] || status
   const home = t.reelflow.home
-  const nav = t.reelflow.shell.nav
+  const entryCopy = home.entries as Record<string, { title: string; desc: string }>
 
-  const entries: { icon: LucideIcon; label: string; to: EntryTo; color: string }[] = [
-    { icon: Layers3, label: nav.templates, to: '/$lang/reelflow/templates', color: 'var(--reelflow-coral)' },
-    { icon: ImageIcon, label: nav.image, to: '/$lang/reelflow/image', color: 'var(--reelflow-blue)' },
-    { icon: Mic2, label: nav.voice, to: '/$lang/reelflow/voice', color: 'var(--reelflow-violet)' },
-    { icon: ListChecks, label: nav.tasks, to: '/$lang/reelflow/jobs', color: 'var(--reelflow-amber)' },
+  const entries: { key: string; icon: LucideIcon; to?: EntryTo; color: string; comingSoon?: boolean }[] = [
+    { key: 'templates', icon: Layers3, to: '/$lang/reelflow/templates', color: 'var(--reelflow-coral)' },
+    { key: 'image', icon: ImageIcon, to: '/$lang/reelflow/image', color: 'var(--reelflow-blue)' },
+    { key: 'voice', icon: Mic2, to: '/$lang/reelflow/voice', color: 'var(--reelflow-violet)' },
+    { key: 'video', icon: Video, color: 'var(--reelflow-green)', comingSoon: true },
+    { key: 'tasks', icon: ListChecks, to: '/$lang/reelflow/jobs', color: 'var(--reelflow-amber)' },
   ]
 
   return (
     <main className="min-h-screen" data-testid="reelflow-home-page">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="reelflow-reveal" data-delay="1">
-          <span className="reelflow-eyebrow">{home.eyebrow}</span>
-          <h1 className="reelflow-display mt-3 text-[1.8rem] leading-[1.15] sm:text-[2.1rem]">{home.title}</h1>
+        {/* Greeting */}
+        <div className="reelflow-reveal text-center" data-delay="1">
+          <p className="text-sm text-muted-foreground">
+            <span aria-hidden="true">👋</span> {home.greeting}{userName ? ` ${userName}` : ''}
+          </p>
+          <h1 className="reelflow-display mt-2 text-[1.7rem] leading-[1.15] sm:text-[2rem]">{home.greetingQuestion}</h1>
         </div>
 
         {/* Entry cards */}
-        <div className="reelflow-reveal mt-7 grid grid-cols-2 gap-3 lg:grid-cols-4" data-delay="2">
-          {entries.map((entry) => (
-            <Link
-              key={entry.to}
-              to={entry.to}
-              params={{ lang: locale }}
-              className="reelflow-soft-tile group flex items-center gap-3 p-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              <span
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: `color-mix(in oklch, ${entry.color} 12%, transparent)`, color: entry.color }}
+        <div className="reelflow-reveal mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-delay="2">
+          {entries.map((entry) => {
+            const copy = entryCopy[entry.key]
+            const Icon = entry.icon
+            const inner = (
+              <>
+                <span
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                  style={{ background: `color-mix(in oklch, ${entry.color} 12%, transparent)`, color: entry.color }}
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate text-sm font-semibold">{copy.title}</span>
+                    {entry.comingSoon && (
+                      <span className="reelflow-pill shrink-0" data-tone="neutral">{t.reelflow.shell.comingSoon}</span>
+                    )}
+                  </span>
+                  <span className="mt-1 block truncate text-xs text-muted-foreground">{copy.desc}</span>
+                </span>
+              </>
+            )
+            if (entry.comingSoon || !entry.to) {
+              return (
+                <div key={entry.key} className="reelflow-muted-tile flex items-center gap-3 p-4 opacity-75">{inner}</div>
+              )
+            }
+            return (
+              <Link
+                key={entry.key}
+                to={entry.to}
+                params={{ lang: locale }}
+                className="reelflow-soft-tile group flex items-center gap-3 p-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
               >
-                <entry.icon className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">{entry.label}</span>
-              <ArrowRight className="h-4 w-4 -translate-x-1 text-muted-foreground opacity-0 transition-[transform,opacity] group-hover:translate-x-0 group-hover:opacity-100" aria-hidden="true" />
-            </Link>
-          ))}
+                {inner}
+              </Link>
+            )
+          })}
         </div>
 
         {/* Continue creating */}
