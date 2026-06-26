@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@libs/react-shared/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@libs/react-shared/ui/select'
 import { EmptyState, PageHeader, TonePill } from '@/components/reelflow-ui'
+import { ossThumb } from '@/lib/image-url'
 
 type AssetSourceFilter = 'all' | 'task' | 'personal'
 type StorageProvider = 'oss' | 's3' | 'r2' | 'cos'
@@ -626,7 +627,7 @@ function AssetCard({
     <article className="reelflow-soft-tile flex h-full min-h-[380px] flex-col overflow-hidden" data-testid={`reelflow-asset-card-${asset.assetType}`}>
       <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-muted/35">
         {isImage ? (
-          <img src={asset.url!} alt={displayName} width={1024} height={576} loading="lazy" className="h-full w-full object-cover" />
+          <img src={ossThumb(asset.url, 640)} alt={displayName} width={1024} height={576} loading="lazy" className="h-full w-full object-cover" />
         ) : isAudio ? (
           <div className="flex flex-col items-center gap-3 px-4 text-muted-foreground">
             <FileText className="h-10 w-10" aria-hidden="true" />

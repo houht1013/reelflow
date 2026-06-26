@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@libs/react-shared/ui/textarea'
 import { cn } from '@libs/ui/utils/cn'
 import { PageHeader } from '@/components/reelflow-ui'
+import { ossThumb } from '@/lib/image-url'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/image')({
   beforeLoad: async ({ params }) => {
@@ -280,7 +281,7 @@ function ReelflowImageToolPage() {
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {works.map((work) => (
                   <div key={work.id} className="group relative overflow-hidden rounded-xl shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
-                    <img src={work.url ?? ''} alt="" className="aspect-square w-full object-cover" />
+                    <img src={ossThumb(work.url, 480)} alt="" loading="lazy" className="aspect-square w-full object-cover" />
                     {work.metadata?.prompt && (
                       <button type="button" onClick={() => applyTemplate({ prompt: work.metadata!.prompt! })} className="absolute inset-0 flex items-center justify-center bg-foreground/55 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-xs font-medium text-foreground"><Wand2 className="h-3.5 w-3.5" aria-hidden="true" />{t.reelflow.imageTool.makeSame}</span>
