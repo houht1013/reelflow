@@ -5,8 +5,8 @@ import { useTranslation } from '@/hooks/use-translation'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Button } from '@libs/react-shared/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
-import { Activity, AlertCircle, ArrowRight, CheckCircle2, Clock3, Coins, FileWarning, Film, ListChecks, Loader2, PauseCircle, Plus, RefreshCw } from 'lucide-react'
-import { PageHeader, StatCard, StatusPill, EmptyState, SkeletonRows } from '@/components/reelflow-ui'
+import { Activity, AlertCircle, ArrowRight, CheckCircle2, Clock3, Coins, FileWarning, ListChecks, Loader2, PauseCircle, Plus, RefreshCw } from 'lucide-react'
+import { PageHeader, StatCard, StatusPill, EmptyState, SkeletonRows, categoryVisual } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/jobs/')({
   beforeLoad: async ({ params }) => {
@@ -20,6 +20,7 @@ type ReelflowJobSummary = {
   id: string
   templateCode: string
   templateName: string
+  category?: string | null
   status: string
   qualityStatus: string
   estimatedCredits: string
@@ -231,6 +232,9 @@ function TaskRow({
 }) {
   const hasIssue = job.status === 'failed' || job.qualityStatus === 'needs_fix' || Number(job.debtCredits) > 0
   const progress = taskProgress(job.status)
+  const bar = taskProgressBar(job.status)
+  const visual = categoryVisual(job.category)
+  const CategoryIcon = visual.icon
 
   return (
     <article
@@ -239,8 +243,8 @@ function TaskRow({
     >
       <div className="h-1 bg-muted">
         <div
-          className="h-full rounded-r-full bg-[linear-gradient(90deg,var(--reelflow-coral),var(--reelflow-amber))]"
-          style={{ width: `${progress}%` }}
+          className="h-full rounded-r-full transition-[width] duration-500"
+          style={{ width: `${progress}%`, background: bar }}
           role="progressbar"
           aria-label={t.reelflow.jobs.progress}
           aria-valuemin={0}
@@ -252,12 +256,18 @@ function TaskRow({
       <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.4fr)_auto] lg:items-center">
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,color-mix(in_oklch,var(--reelflow-coral)_16%,transparent),color-mix(in_oklch,var(--reelflow-blue)_12%,transparent))] text-foreground shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
-              <Film className="h-5 w-5" aria-hidden="true" />
+            <span
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]"
+              style={{ background: `color-mix(in oklch, ${visual.color} 12%, transparent)`, color: visual.color }}
+            >
+              <CategoryIcon className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-base font-semibold">{job.templateName}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{job.renderMp4Requested ? t.reelflow.jobs.mp4Requested : t.reelflow.jobs.draftRequested}</p>
+              <p className="mt-1 truncate text-sm text-muted-foreground">
+                {job.category ? `${job.category} · ` : ''}
+                {job.renderMp4Requested ? t.reelflow.jobs.mp4Requested : t.reelflow.jobs.draftRequested}
+              </p>
             </div>
           </div>
         </div>
@@ -303,4 +313,14 @@ function taskProgress(status: string) {
   if (status === 'running') return 62
   if (status === 'queued') return 18
   return 8
+}
+
+// Status-aware progress-bar fill so the colour reads the same as the status pill
+// (green done, red failed, brand gradient while running, muted while queued).
+function taskProgressBar(status: string) {
+  if (status === 'completed') return 'var(--reelflow-green)'
+  if (status === 'failed' || status === 'canceled') return 'var(--destructive)'
+  if (status === 'running') return 'linear-gradient(90deg, var(--reelflow-coral), var(--reelflow-amber))'
+  if (status === 'queued') return 'var(--reelflow-amber)'
+  return 'color-mix(in oklch, var(--foreground) 20%, transparent)'
 }
