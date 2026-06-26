@@ -2,17 +2,7 @@ import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@libs/react-shared/ui/button";
 import { authClientReact } from "@libs/auth/authClient";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@libs/react-shared/ui/dropdown-menu";
-import { ArrowRight, LayoutDashboard, LogOut, Menu, Settings, X } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@libs/react-shared/ui/avatar";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { BrandMark } from "@/components/brand-mark";
 import { toast } from "sonner";
@@ -119,15 +109,12 @@ export default function Header({ className }: HeaderProps) {
             {isMinimal ? null : isPending ? (
               <div className="h-8 w-24 rounded-full bg-white/10" />
             ) : user ? (
-              <>
-                <Button asChild className="rounded-full bg-[#ff6045] px-4 text-white shadow-[0_16px_36px_-24px_#ff6045] hover:bg-[#ff735b]">
-                  <Link to="/$lang/reelflow" params={{ lang: currentLocale }}>
-                    {t.header.navigation.workbench}
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-                <UserMenu user={user} currentLocale={currentLocale} onSignOut={handleSignOut} t={t} />
-              </>
+              <Button asChild className="rounded-full bg-[#ff6045] px-4 text-white shadow-[0_16px_36px_-24px_#ff6045] hover:bg-[#ff735b]">
+                <Link to="/$lang/reelflow" params={{ lang: currentLocale }}>
+                  {t.header.navigation.workbench}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
             ) : (
               <>
                 <Link to="/$lang/signin" params={{ lang: currentLocale }}>
@@ -215,63 +202,3 @@ export default function Header({ className }: HeaderProps) {
   );
 }
 
-function UserMenu({
-  user,
-  currentLocale,
-  onSignOut,
-  t,
-}: {
-  user: { name?: string | null; email?: string | null; image?: string | null; role?: string | null }
-  currentLocale: string
-  onSignOut: () => void
-  t: any
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="flex items-center rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          aria-label={t.header.userMenu.open}
-        >
-          <Avatar className="h-8 w-8 border border-white/15">
-            <AvatarImage src={user.image || ""} alt={user.name || user.email || t.header.userMenu.defaultUser} />
-            <AvatarFallback className="bg-muted text-xs text-muted-foreground">
-              {user.name?.charAt(0) || user.email?.charAt(0) || "U"}
-            </AvatarFallback>
-          </Avatar>
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium text-foreground">{user.name || t.header.userMenu.defaultUser}</p>
-            <p className="text-xs text-muted-foreground">{user.email}</p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link to="/$lang/dashboard" params={{ lang: currentLocale }} className="flex items-center">
-              <Settings className="mr-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-              {t.header.userMenu.personalSettings}
-            </Link>
-          </DropdownMenuItem>
-          {user.role === 'admin' && (
-            <DropdownMenuItem asChild>
-              <Link to="/$lang/admin" params={{ lang: currentLocale }} className="flex items-center">
-                <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                {t.header.userMenu.adminPanel}
-              </Link>
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive" onClick={onSignOut}>
-          <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
-          {t.header.auth.signOut}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
