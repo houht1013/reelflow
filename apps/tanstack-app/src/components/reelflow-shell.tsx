@@ -169,7 +169,7 @@ export function ReelflowShell({ children }: ShellProps) {
       <aside
         className={[
           'fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border/55 bg-sidebar/88 px-3 py-4 shadow-[12px_0_40px_-36px_oklch(0.28_0.02_265_/_36%)] backdrop-blur-xl transition-[width] duration-200 lg:flex lg:flex-col',
-          sidebarCollapsed ? 'w-20' : 'w-[17rem]',
+          sidebarCollapsed ? 'w-20' : 'w-[15.5rem]',
         ].join(' ')}
         data-collapsed={sidebarCollapsed}
       >
@@ -258,7 +258,7 @@ export function ReelflowShell({ children }: ShellProps) {
         )}
       </aside>
 
-      <div className={['flex min-h-dvh flex-col transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[17rem]'].join(' ')}>
+      <div className={['flex min-h-dvh flex-col transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[15.5rem]'].join(' ')}>
         <header className="sticky top-0 z-30 border-b border-border/35 bg-background/72 shadow-[0_1px_0_oklch(1_0_0_/_35%)] backdrop-blur-xl">
           <div className="flex h-[3.75rem] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
