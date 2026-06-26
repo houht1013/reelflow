@@ -292,9 +292,9 @@ export function ReelflowShell({ children }: ShellProps) {
 
       {user && (
         <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <DialogContent className="max-w-3xl gap-0 overflow-hidden p-0">
-            <div className="flex min-h-[440px] flex-col sm:flex-row">
-              <div className="shrink-0 border-b border-border/60 bg-muted/30 p-4 sm:w-52 sm:border-b-0 sm:border-r">
+          <DialogContent className="max-w-4xl gap-0 overflow-hidden p-0 sm:max-w-5xl">
+            <div className="flex min-h-[560px] flex-col sm:flex-row">
+              <div className="shrink-0 border-b border-border/60 bg-muted/30 p-4 sm:w-60 sm:border-b-0 sm:border-r">
                 <DialogTitle className="px-2 pb-3 text-base">{shell.settings.title}</DialogTitle>
                 <nav className="flex gap-1 sm:flex-col">
                   {(
