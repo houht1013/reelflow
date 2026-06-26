@@ -155,7 +155,6 @@ function ReelflowVoiceToolPage() {
         <div className="mx-auto max-w-7xl">
           <PageHeader
             title={t.reelflow.voiceTool.title}
-            description={t.reelflow.voiceTool.description}
             actions={
               <Button variant="outline" asChild>
                 <Link to="/$lang/reelflow/assets" params={{ lang: locale }} search={{ source: 'all', assetType: 'all', query: '' }}>

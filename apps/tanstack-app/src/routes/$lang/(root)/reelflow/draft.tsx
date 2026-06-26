@@ -282,7 +282,6 @@ function ReelflowDraftPage() {
           <PageHeader
             eyebrow={t.reelflow.home.draftAnchorEyebrow}
             title={t.reelflow.home.draftAnchorTitle}
-            description={t.reelflow.home.draftAnchorDescription}
             actions={
               <Button variant="outline" asChild>
                 <Link to="/$lang/reelflow/jobs" params={{ lang: locale }}>

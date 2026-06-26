@@ -116,7 +116,6 @@ function ReelflowJobsPage() {
         <PageHeader
           eyebrow={t.reelflow.jobs.eyebrow}
           title={t.reelflow.jobs.title}
-          description={t.reelflow.jobs.description}
           actions={
             <>
               <Button type="button" variant="outline" onClick={() => void loadJobs()} disabled={loading || refreshing}>

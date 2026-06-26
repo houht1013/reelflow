@@ -90,7 +90,6 @@ function ReelflowTemplatesPage() {
       <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <PageHeader
           title={t.reelflow.templates.title}
-          description={t.reelflow.templates.description}
           actions={
             <Button type="button" variant="outline" onClick={() => void loadTemplates()} disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />}

@@ -131,7 +131,6 @@ function ReelflowNotificationsPage() {
         <PageHeader
           eyebrow={t.reelflow.shell.workspaceName}
           title={t.reelflow.notifications.title}
-          description={t.reelflow.notifications.description}
           actions={
             <>
               <Button type="button" variant="outline" onClick={loadNotifications} disabled={loading}>

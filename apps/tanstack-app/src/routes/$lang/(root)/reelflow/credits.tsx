@@ -109,7 +109,6 @@ function ReelflowCreditsPage() {
       <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         <PageHeader
           title={t.reelflow.credits.title}
-          description={t.reelflow.credits.description}
           actions={
             <>
               <Button type="button" variant="outline" onClick={loadCredits} disabled={loading}>

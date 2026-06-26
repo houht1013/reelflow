@@ -92,9 +92,7 @@ function ReelflowInvitesPage() {
     <main className="min-h-screen" data-testid="reelflow-invites-page">
       <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         <PageHeader
-          eyebrow={t.reelflow.common.productName}
           title={t.reelflow.invites.title}
-          description={t.reelflow.invites.description}
           actions={
             <Button type="button" variant="outline" onClick={loadInvites} disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />}
