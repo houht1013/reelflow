@@ -2318,7 +2318,8 @@ export const zhCN: Locale = {
         },
         voice: {
           title: "语音生成",
-          description: "语音生成会作为独立入口，适合旁白和补配音。"
+          description: "独立的语音生成入口，适合旁白和补配音。",
+          cta: "生成语音"
         }
       },
       gallery: [

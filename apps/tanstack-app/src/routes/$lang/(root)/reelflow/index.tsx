@@ -50,6 +50,7 @@ type HomeRecommendationItem = {
 type ReelflowRouteTo =
   | '/$lang/reelflow/draft'
   | '/$lang/reelflow/image'
+  | '/$lang/reelflow/voice'
   | '/$lang/reelflow/jobs'
   | '/$lang/reelflow/credits'
   | '/$lang/reelflow/templates'
@@ -199,8 +200,8 @@ function ReelflowHomePage() {
             <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
               <AbilityCard icon={Film} title={t.reelflow.home.abilities.draft.title} description={t.reelflow.home.abilities.draft.description} to="/$lang/reelflow/draft" lang={locale} cta={t.reelflow.home.primaryCta} />
               <AbilityCard icon={ImageIcon} title={t.reelflow.home.abilities.image.title} description={t.reelflow.home.abilities.image.description} to="/$lang/reelflow/image" lang={locale} cta={t.reelflow.home.secondaryCta} />
+              <AbilityCard icon={Mic2} title={t.reelflow.home.abilities.voice.title} description={t.reelflow.home.abilities.voice.description} to="/$lang/reelflow/voice" lang={locale} cta={t.reelflow.home.abilities.voice.cta} />
               <AbilityCard icon={Video} title={t.reelflow.home.abilities.video.title} description={t.reelflow.home.abilities.video.description} disabled badge={t.reelflow.shell.comingSoon} />
-              <AbilityCard icon={Mic2} title={t.reelflow.home.abilities.voice.title} description={t.reelflow.home.abilities.voice.description} disabled badge={t.reelflow.shell.comingSoon} />
             </div>
           </section>
 

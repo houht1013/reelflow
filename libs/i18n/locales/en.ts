@@ -2311,7 +2311,8 @@ export const en: Locale = {
         },
         voice: {
           title: "Voice generation",
-          description: "Voice generation has its own entry for narration and replacement audio."
+          description: "A dedicated voice generation entry for narration and replacement audio.",
+          cta: "Generate voice"
         }
       },
       gallery: [
