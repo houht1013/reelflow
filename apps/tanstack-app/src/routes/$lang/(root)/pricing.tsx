@@ -37,7 +37,7 @@ function PricingPage() {
   return (
     <div className="reelflow-app min-h-screen">
       <section className="px-5 pb-20 pt-16 md:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-7xl">
           {/* Hero */}
           <div className="reelflow-reveal mx-auto max-w-2xl text-center">
             <h1 className="reelflow-display text-4xl leading-[1.1] sm:text-5xl">{v.title}</h1>

@@ -79,7 +79,7 @@ export default function Header({ className }: HeaderProps) {
         className
       )}
     >
-      <div className="mx-auto max-w-6xl px-5 md:px-8">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link to="/$lang" params={{ lang: currentLocale }} className="flex items-center gap-2.5">
             <BrandMark className="h-10 w-10" variant={isLandingPage ? 'dark' : 'auto'} fallbackIconClassName="h-5 w-5" />
@@ -149,7 +149,7 @@ export default function Header({ className }: HeaderProps) {
 
       {!isMinimal && isMenuOpen && (
         <div className={cn("border-t md:hidden", isLandingPage ? "border-white/[0.08] bg-[#07080c]" : "border-border bg-background")}>
-          <div className="mx-auto max-w-6xl space-y-2 px-5 py-4">
+          <div className="mx-auto max-w-7xl space-y-2 px-5 py-4">
             {navItems.map((item) => (
               <a
                 key={item.href}

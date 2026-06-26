@@ -63,6 +63,40 @@ function useScrollReveal() {
   }, [])
 }
 
+/**
+ * Scroll-driven flourishes: a top reading-progress bar and a subtle background
+ * parallax on the hero. rAF-throttled and disabled under reduced-motion.
+ */
+function useScrollFX(
+  progressRef: React.RefObject<HTMLDivElement | null>,
+  heroRef: React.RefObject<HTMLElement | null>,
+) {
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const y = window.scrollY
+      const docH = document.documentElement.scrollHeight - window.innerHeight
+      const p = docH > 0 ? Math.min(1, Math.max(0, y / docH)) : 0
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${p})`
+      if (!reduce && heroRef.current) heroRef.current.style.setProperty('--sy', String(y))
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [progressRef, heroRef])
+}
+
 /** Animates a numeric value (with optional suffix) up from 0 when it enters view. */
 function CountUp({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement>(null)
@@ -117,7 +151,9 @@ function HomePage() {
   const landing = t.reelflow.landing
   const footer = landing.footer
   const heroRef = useRef<HTMLElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
   useScrollReveal()
+  useScrollFX(progressRef, heroRef)
 
   const handleHeroMove = (event: React.MouseEvent<HTMLElement>) => {
     const el = heroRef.current
@@ -129,6 +165,7 @@ function HomePage() {
 
   return (
     <main className="reelflow-landing min-h-screen overflow-hidden text-white" data-testid="reelflow-landing-page">
+      <div ref={progressRef} className="landing-scroll-progress" aria-hidden="true" />
       <section
         className="relative"
         onMouseMove={handleHeroMove}
@@ -136,7 +173,7 @@ function HomePage() {
         onMouseLeave={() => heroRef.current?.classList.remove('landing-hero-live')}
         ref={heroRef}
       >
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="landing-hero-bg pointer-events-none absolute inset-0 overflow-hidden">
           <div className="landing-grid" />
           <div className="landing-floor" />
           <div className="landing-glow landing-glow-c" />
@@ -145,7 +182,7 @@ function HomePage() {
           <div className="landing-spotlight" />
         </div>
 
-        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-12 px-5 py-16 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)] lg:py-20">
+        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-12 px-5 py-16 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)] lg:py-20">
           <div className="max-w-2xl">
             <h1
               className="reelflow-display text-balance text-5xl leading-[0.98] text-white md:text-6xl lg:text-[4.6rem]"
@@ -200,7 +237,7 @@ function HomePage() {
       </section>
 
       <section id="product" className="relative border-y border-white/[0.08] bg-white/[0.025] py-16">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
           <div className="grid gap-4 md:grid-cols-4">
             {landing.metrics.map((metric: { value: string; label: string }, index: number) => (
               <div
@@ -218,7 +255,7 @@ function HomePage() {
       </section>
 
       <section id="workflow" className="relative py-24">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
           <SectionHeader title={landing.workflow.title} description={landing.workflow.description} />
           <div className="mt-10 grid gap-4 md:grid-cols-4">
             {landing.workflow.steps.map((step: { title: string; description: string }, index: number) => {
@@ -244,7 +281,7 @@ function HomePage() {
       </section>
 
       <section id="cases" className="relative py-20">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
           <SectionHeader title={landing.templates.title} description={landing.templates.description} />
         </div>
         <div className="landing-marquee mt-12">
@@ -273,7 +310,7 @@ function HomePage() {
       </section>
 
       <section id="docs" className="relative py-20">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
           <div className="grid gap-4 md:grid-cols-3">
             {landing.docs.items.map((item: { title: string; description: string }, index: number) => (
               <div
@@ -296,7 +333,7 @@ function HomePage() {
       </section>
 
       <section id="pricing" className="relative pb-28 pt-4">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
           <div className="landing-subscribe" data-reveal>
             <div>
               <h2 className="reelflow-display max-w-2xl text-3xl leading-tight text-white md:text-4xl">{landing.finalCta.title}</h2>
@@ -320,7 +357,7 @@ function HomePage() {
       </section>
 
       <footer className="relative border-t border-white/[0.08] bg-[#07080c]">
-        <div className="mx-auto max-w-6xl px-5 py-14 md:px-8">
+        <div className="mx-auto max-w-7xl px-5 py-14 md:px-8">
           <div className="grid gap-10 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
             <div>
               <a href={`/${locale}`} className="flex items-center gap-2.5">

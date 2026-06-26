@@ -727,17 +727,43 @@ html:has(.reelflow-landing) {
 
 .reelflow-landing.reveal-ready [data-reveal] {
   opacity: 0;
-  transform: translateY(26px);
+  transform: translateY(30px) scale(0.985);
+  filter: blur(7px);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.85s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  will-change: opacity, transform, filter;
 }
 
 .reelflow-landing.reveal-ready [data-reveal].is-visible {
   opacity: 1;
   transform: none;
+  filter: none;
+}
+
+/* Reading-progress bar (driven by useScrollFX) */
+.landing-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  height: 2px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #ff6045, #ffb84d 52%, #5b8cff);
+  box-shadow: 0 0 12px rgb(255 96 69 / 45%);
+  pointer-events: none;
+}
+
+/* Hero background parallax (slack on top/bottom so no edge gap shows) */
+.landing-hero-bg {
+  top: -12%;
+  bottom: -12%;
+  transform: translateY(calc(var(--sy, 0) * -0.08px));
+  will-change: transform;
 }
 
 /* ---- Drifting aurora glows ---- */
