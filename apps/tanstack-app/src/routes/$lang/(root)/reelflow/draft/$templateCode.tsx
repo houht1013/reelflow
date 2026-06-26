@@ -11,7 +11,8 @@ import { Textarea } from '@libs/react-shared/ui/textarea'
 import { Switch } from '@libs/react-shared/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@libs/react-shared/ui/select'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
-import { AlertCircle, ArrowRight, Coins, ImageIcon, Loader2, PackageOpen, Package, Repeat, Wand2, X } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@libs/react-shared/ui/dialog'
+import { AlertCircle, ArrowRight, Check, Coins, ImageIcon, Loader2, PackageOpen, Package, Repeat, Search, Wand2, X } from 'lucide-react'
 import { categoryVisual } from '@/components/reelflow-ui'
 import { ossThumb } from '@/lib/image-url'
 
@@ -36,6 +37,8 @@ type TemplateInputField = {
   max?: number
 }
 
+type TemplateBadge = 'new' | 'recommended' | 'hot'
+
 type ReelflowTemplate = {
   id: string
   code: string
@@ -43,6 +46,7 @@ type ReelflowTemplate = {
   description: string | null
   category: string | null
   inputSchema: { fields?: TemplateInputField[] } | null
+  metadata?: { badges?: TemplateBadge[]; coverImageUrl?: string | null } | null
   estimatedCredits: number
   estimatedCreditsWithMp4: number
 }
@@ -63,6 +67,9 @@ function ReelflowComposerPage() {
   const { t, locale } = useTranslation()
   const { templateCode } = Route.useParams()
   const [template, setTemplate] = useState<ReelflowTemplate | null>(null)
+  const [allTemplates, setAllTemplates] = useState<ReelflowTemplate[]>([])
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [pickerQuery, setPickerQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [inputParams, setInputParams] = useState<Record<string, unknown>>({})
@@ -85,7 +92,9 @@ function ReelflowComposerPage() {
         const data = await response.json()
         if (!response.ok) throw new Error(data?.error || t.reelflow.generate.loadError)
         if (!alive) return
-        const found = ((data.templates || []) as ReelflowTemplate[]).find((item) => item.code === templateCode)
+        const list = (data.templates || []) as ReelflowTemplate[]
+        setAllTemplates(list)
+        const found = list.find((item) => item.code === templateCode)
         if (!found) {
           setNotFound(true)
           return
@@ -228,6 +237,19 @@ function ReelflowComposerPage() {
   const visual = categoryVisual(template?.category)
   const CtxIcon = visual.icon
 
+  const pickerTemplates = allTemplates.filter((tpl) => {
+    const q = pickerQuery.trim().toLowerCase()
+    if (!q) return true
+    return [tpl.name, tpl.category ?? ''].join(' ').toLowerCase().includes(q)
+  })
+
+  const chooseTemplate = (code: string) => {
+    setPickerOpen(false)
+    setPickerQuery('')
+    if (code === templateCode) return
+    void navigate({ to: '/$lang/reelflow/draft/$templateCode', params: { lang: locale, templateCode: code } })
+  }
+
   return (
     <main className="min-h-screen" data-testid="reelflow-composer-page">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
@@ -263,11 +285,9 @@ function ReelflowComposerPage() {
                 <p className="truncate text-[15px] font-semibold">{template.name}</p>
                 <p className="mt-0.5 truncate text-xs text-muted-foreground">{template.category}</p>
               </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/$lang/reelflow/templates" params={{ lang: locale }}>
-                  <Repeat className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-                  {t.reelflow.generate.switchTemplate}
-                </Link>
+              <Button variant="outline" size="sm" onClick={() => setPickerOpen(true)} data-testid="reelflow-switch-template">
+                <Repeat className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                {t.reelflow.generate.switchTemplate}
               </Button>
             </div>
 
@@ -375,6 +395,44 @@ function ReelflowComposerPage() {
           </>
         )}
       </div>
+
+      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+        <DialogContent className="max-w-2xl" data-testid="reelflow-template-picker">
+          <DialogHeader>
+            <DialogTitle>{t.reelflow.generate.switchTemplate}</DialogTitle>
+          </DialogHeader>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Input value={pickerQuery} onChange={(event) => setPickerQuery(event.target.value)} placeholder={t.reelflow.templates.searchPlaceholder} className="pl-9" />
+          </div>
+          <div className="mt-1 grid max-h-[60vh] gap-2.5 overflow-auto py-1 sm:grid-cols-2">
+            {pickerTemplates.map((tpl) => {
+              const tplVisual = categoryVisual(tpl.category)
+              const TplIcon = tplVisual.icon
+              const cover = tpl.metadata?.coverImageUrl
+              const current = tpl.code === templateCode
+              return (
+                <button
+                  key={tpl.code}
+                  type="button"
+                  data-testid={`reelflow-picker-option-${tpl.code}`}
+                  onClick={() => chooseTemplate(tpl.code)}
+                  className={`reelflow-soft-tile group flex items-center gap-3 p-2.5 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${current ? 'ring-1 ring-primary/40' : ''}`}
+                >
+                  <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg" style={cover ? undefined : { background: `color-mix(in oklch, ${tplVisual.color} 12%, transparent)`, color: tplVisual.color }}>
+                    {cover ? <img src={ossThumb(cover, 120)} alt="" loading="lazy" className="h-full w-full object-cover" /> : <TplIcon className="h-6 w-6" aria-hidden="true" />}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium">{tpl.name}</span>
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">{tpl.category}</span>
+                  </span>
+                  {current && <Check className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />}
+                </button>
+              )
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }
