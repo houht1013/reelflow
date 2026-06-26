@@ -2306,6 +2306,12 @@ export const en: Locale = {
       templateCredits: "~{n} credits",
       greeting: "Hi",
       greetingQuestion: "What do you want to create today?",
+      discover: {
+        title: "Discover",
+        tabs: { templates: "Viral templates", image: "AI image", video: "AI video" },
+        videoComingSoon: "Video generation is coming soon.",
+        emptyTemplates: "No templates yet — try another tool."
+      },
       entries: {
         templates: { title: "Viral templates", desc: "Generate a short video from a proven structure" },
         image: { title: "Image generation", desc: "Render visuals and references in one click" },

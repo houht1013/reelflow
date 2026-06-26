@@ -2313,6 +2313,12 @@ export const zhCN: Locale = {
       templateCredits: "约 {n} 积分",
       greeting: "你好",
       greetingQuestion: "今天想创作些什么呢？",
+      discover: {
+        title: "发现",
+        tabs: { templates: "爆款模板", image: "AI 生图", video: "AI 视频" },
+        videoComingSoon: "视频生成即将开放，敬请期待。",
+        emptyTemplates: "暂无模板，去看看其他创作。"
+      },
       entries: {
         templates: { title: "爆款模板", desc: "从爆款结构一键生成短视频" },
         image: { title: "图像生成", desc: "一键描绘画面与参考图" },
