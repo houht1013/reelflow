@@ -109,7 +109,7 @@ function ReelflowHomePage() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Greeting */}
         <div className="reelflow-reveal text-center" data-delay="1">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-lg font-medium sm:text-xl">
             <span aria-hidden="true">👋</span> {home.greeting}{userName ? ` ${userName}` : ''}
           </p>
           <h1 className="reelflow-display mt-2 text-[1.7rem] leading-[1.15] sm:text-[2rem]">{home.greetingQuestion}</h1>
