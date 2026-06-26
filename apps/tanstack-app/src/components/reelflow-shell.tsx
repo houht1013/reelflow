@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Coins,
   CreditCard,
-  Film,
   Gift,
   Home,
   ImageIcon,
@@ -221,13 +220,12 @@ export function ReelflowShell({ children }: ShellProps) {
               collapsed={sidebarCollapsed}
               active={isCreationActive(pathname)}
             >
-              <ShellLink icon={Film} label={shell.nav.draft} to="/$lang/reelflow/draft" lang={locale} active={pathname.includes('/reelflow/draft')} collapsed={sidebarCollapsed} child />
+              <ShellLink icon={Layers3} label={shell.nav.templates} to="/$lang/reelflow/templates" lang={locale} active={pathname.includes('/reelflow/templates') || pathname.includes('/reelflow/draft')} collapsed={sidebarCollapsed} child />
               <ShellLink icon={ImageIcon} label={shell.nav.image} to="/$lang/reelflow/image" lang={locale} active={pathname.includes('/reelflow/image')} collapsed={sidebarCollapsed} child />
               <ShellLink icon={Video} label={shell.nav.video} to="/$lang/reelflow/draft" lang={locale} active={false} meta={shell.comingSoon} collapsed={sidebarCollapsed} child disabled />
               <ShellLink icon={Mic2} label={shell.nav.voice} to="/$lang/reelflow/voice" lang={locale} active={pathname.includes('/reelflow/voice')} collapsed={sidebarCollapsed} child />
             </ShellDisclosure>
             <ShellLink icon={ListChecks} label={shell.nav.tasks} to="/$lang/reelflow/jobs" lang={locale} active={pathname.includes('/reelflow/jobs')} collapsed={sidebarCollapsed} />
-            <ShellLink icon={Layers3} label={shell.nav.templates} to="/$lang/reelflow/templates" lang={locale} active={pathname.includes('/reelflow/templates')} collapsed={sidebarCollapsed} />
             <ShellLink icon={Archive} label={shell.nav.assets} to="/$lang/reelflow/assets" lang={locale} active={pathname.includes('/reelflow/assets')} collapsed={sidebarCollapsed} />
           </NavGroup>
 
@@ -457,7 +455,12 @@ function isActive(pathname: string, href: string, exact = false) {
 }
 
 function isCreationActive(pathname: string) {
-  return pathname.includes('/reelflow/draft') || pathname.includes('/reelflow/image')
+  return (
+    pathname.includes('/reelflow/templates') ||
+    pathname.includes('/reelflow/draft') ||
+    pathname.includes('/reelflow/image') ||
+    pathname.includes('/reelflow/voice')
+  )
 }
 
 function formatNumber(value: number, locale: string) {
