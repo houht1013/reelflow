@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { defineTemplate, type TemplateField } from '../_sdk/types';
-import type { ReelflowDraftScene, ReelflowDraftAudio, ReelflowDraftCaption } from '../../capcut';
+import { runNarratedStoryboard } from '../_sdk/storyboard';
 
 // Single source of truth for input: validation + inferred run() type.
 const schema = z.object({
@@ -37,8 +37,6 @@ const AUDIENCE_LABEL: Record<Input['audience'], string> = {
 const TONE_LABEL: Record<Input['tone'], string> = { warm: '温暖', sharp: '犀利', healing: '治愈' };
 const VISUAL_STYLE = '极简火柴人风格，单色线条，纯白背景，竖屏构图，干净留白，无文字';
 
-type ScriptScene = { narration: string; visualPrompt: string };
-
 export default defineTemplate({
   code: 'psychology_stickman_001',
   name: '心理学火柴人',
@@ -58,93 +56,25 @@ export default defineTemplate({
   },
 
   async run(ctx, input) {
-    // 1. Script -> structured scenes (narration + visual prompt).
-    const script = await ctx.stage('script', async () => {
-      const data = await ctx.ai.generateJson<{ scenes: ScriptScene[] }>(
-        [
-          `主题：${input.topic}`,
-          `目标人群：${AUDIENCE_LABEL[input.audience]}`,
-          `表达语气：${TONE_LABEL[input.tone]}`,
-          '',
-          `请把它写成一条 ${SCENE_COUNT} 个分镜的短视频脚本。`,
-          '每个分镜包含：narration（一句口语化中文旁白，20-45字）、visualPrompt（该画面的英文生图提示词，描述一个火柴人场景）。',
-          '严格输出 JSON：{"scenes":[{"narration":"...","visualPrompt":"..."}]}',
-        ].join('\n'),
-        { system: '你是一个擅长情绪价值类短视频的导演与文案。只输出 JSON，不要解释。' },
-      );
-      const scenes = (data.scenes ?? []).slice(0, SCENE_COUNT);
-      if (scenes.length === 0) throw new Error('脚本生成为空');
-      return { scenes };
+    return runNarratedStoryboard(ctx, {
+      sceneCount: SCENE_COUNT,
+      scriptSystem: '你是一个擅长情绪价值类短视频的导演与文案。只输出 JSON，不要解释。',
+      scriptPrompt: [
+        `主题：${input.topic}`,
+        `目标人群：${AUDIENCE_LABEL[input.audience]}`,
+        `表达语气：${TONE_LABEL[input.tone]}`,
+        '',
+        `请把它写成一条 ${SCENE_COUNT} 个分镜的短视频脚本。`,
+        '每个分镜包含：narration（一句口语化中文旁白，20-45字）、visualPrompt（该画面的英文生图提示词，描述一个火柴人场景）。',
+        '严格输出 JSON：{"scenes":[{"narration":"...","visualPrompt":"..."}]}',
+      ].join('\n'),
+      visualStyle: VISUAL_STYLE,
+      imageSize: '1024x1536',
+      imageQuality: 'high',
+      draftWidth: 1080,
+      draftHeight: 1920,
+      captionStyle: { fontSize: 14, transformY: 600 },
+      displayName: input.topic,
     });
-
-    // 2. One image per scene (hosted on object storage so capcut can fetch).
-    //    mapItems runs shots in parallel up to ctx.job.imageConcurrency and
-    //    checkpoints each shot, so a mid-loop failure + retry resumes from the
-    //    failed shot instead of regenerating (and re-charging) all.
-    const images = await ctx.stage('image', async () => {
-      const generated = await ctx.mapItems(
-        script.scenes,
-        (scene, i) =>
-          ctx.image.generate(`${scene.visualPrompt}. ${VISUAL_STYLE}`, {
-            size: '1024x1536',
-            quality: 'high',
-            displayName: `镜头 ${i + 1}`,
-            assetMetadata: { sceneIndex: i },
-          }),
-        { concurrency: ctx.job.imageConcurrency, key: (_, i) => `image:${i}` },
-      );
-      return generated.map((img) => ({ url: img.url }));
-    });
-
-    // 3. One voiceover per scene (with subtitle alignment). Same per-item
-    //    checkpointing so a partial failure doesn't re-synthesize prior clips.
-    const voices = await ctx.stage('voice', async () => {
-      const out: { url: string; durationMs: number; segments: { startMs: number; endMs: number; text: string }[] }[] = [];
-      for (const [i, scene] of script.scenes.entries()) {
-        const v = await ctx.item(`voice:${i}`, () =>
-          ctx.tts.speak(scene.narration, { align: true, displayName: `配音 ${i + 1}` }),
-        );
-        const durationMs = v.durationMs ?? 3000;
-        const segments = v.captions?.segments.map((s) => ({ startMs: s.startMs, endMs: s.endMs, text: s.text }))
-          ?? [{ startMs: 0, endMs: durationMs, text: scene.narration }];
-        out.push({ url: v.url, durationMs, segments });
-      }
-      return out;
-    });
-
-    // 4. Lay everything on one global timeline.
-    const timeline = await ctx.stage('caption', async () => {
-      const scenes: ReelflowDraftScene[] = [];
-      const audios: ReelflowDraftAudio[] = [];
-      const captions: ReelflowDraftCaption[] = [];
-      let cursor = 0;
-      script.scenes.forEach((scene, i) => {
-        const dur = voices[i].durationMs;
-        const start = cursor;
-        const end = cursor + dur;
-        scenes.push({ imageUrl: images[i].url, startMs: start, endMs: end });
-        audios.push({ audioUrl: voices[i].url, startMs: start, endMs: end, durationMs: dur });
-        for (const seg of voices[i].segments) {
-          captions.push({ startMs: start + seg.startMs, endMs: start + seg.endMs, text: seg.text });
-        }
-        cursor = end;
-      });
-      return { scenes, audios, captions };
-    });
-
-    // 5. Materialize the CapCut draft.
-    const draft = await ctx.stage('draft_package', async () => {
-      return ctx.capcut.assemble({
-        width: 1080,
-        height: 1920,
-        scenes: timeline.scenes,
-        audios: timeline.audios,
-        captions: timeline.captions,
-        captionStyle: { fontSize: 14, transformY: 600 },
-        displayName: input.topic,
-      });
-    });
-
-    return { draftUrl: draft.draftUrl, summary: { sceneCount: script.scenes.length } };
   },
 });

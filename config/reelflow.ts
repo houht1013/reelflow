@@ -38,8 +38,9 @@ export const reelflowConfig = {
       apiKey: process.env.REELFLOW_LLM_API_KEY ?? '',
       model: process.env.REELFLOW_LLM_MODEL ?? 'gpt-5.5',
       mock: process.env.REELFLOW_LLM_MOCK === '1',
-      // gpt-5.5 reasoning is ~18-20s; allow generous headroom, abort hangs, retry once.
-      timeoutMs: Number(process.env.REELFLOW_LLM_TIMEOUT_MS ?? 120_000),
+      // gpt-5.5 reasoning is ~18-20s but long/structured prompts can run much
+      // longer; allow up to 300s before aborting a hang, then retry once.
+      timeoutMs: Number(process.env.REELFLOW_LLM_TIMEOUT_MS ?? 300_000),
       maxAttempts: Number(process.env.REELFLOW_LLM_MAX_ATTEMPTS ?? 2),
     },
     image: {
