@@ -2534,15 +2534,15 @@ export const en: Locale = {
       unknown: "Unknown"
     },
     credits: {
-      title: "Workspace credits",
+      title: "My credits",
       description: "Check your credit balance and top up when you need to.",
       loadError: "Failed to load workspace credits",
       balance: "Available",
       balanceHint: "Used for short-video drafts, image generation, and future creative tools.",
       frozen: "Frozen",
-      frozenHint: "Estimated credits are frozen while a task runs, then settled by actual usage.",
+      frozenHint: "Frozen while a task runs, settled on completion.",
       debt: "Debt",
-      debtHint: "Debt will not stop completed tasks. Top up to continue downloading and using outputs.",
+      debtHint: "Top up to keep downloading outputs.",
       accountHealthy: "Account healthy",
       debtAttention: "Top-up needed",
       totalGranted: "Granted",
@@ -2559,7 +2559,7 @@ export const en: Locale = {
       buyNow: "Buy now",
       recharge: {
         title: "Top up credits",
-        subtitle: "Credits power short-video drafts, images, voice, and more. They never expire.",
+        subtitle: "Buy as you go — works across every tool.",
         unit: "credits",
         bonusTag: "incl. {n} bonus",
         perCredit: "≈ ${n}/credit",

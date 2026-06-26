@@ -145,7 +145,6 @@ function ReelflowCreditsPage() {
                       {t.reelflow.credits.balance}
                     </div>
                     <p className="reelflow-display reelflow-num mt-3 text-5xl leading-none sm:text-6xl">{formatCredits(account.balance)}</p>
-                    <p className="mt-3 text-sm text-muted-foreground">{t.reelflow.credits.balanceHint}</p>
                   </div>
                   <Badge variant={account.debtBalance > 0 ? 'destructive' : 'secondary'} className="w-fit">
                     {account.debtBalance > 0 ? t.reelflow.credits.debtAttention : t.reelflow.credits.accountHealthy}
@@ -159,8 +158,8 @@ function ReelflowCreditsPage() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <CreditMetric icon={TrendingUp} testId="reelflow-credit-total-granted" title={t.reelflow.credits.totalGranted} value={formatCredits(account.totalGranted)} hint={t.reelflow.credits.totalGrantedHint} tone="green" />
-                <CreditMetric icon={TrendingDown} testId="reelflow-credit-total-consumed" title={t.reelflow.credits.totalConsumed} value={formatCredits(account.totalConsumed)} hint={t.reelflow.credits.totalConsumedHint} tone="blue" />
+                <CreditMetric icon={TrendingUp} testId="reelflow-credit-total-granted" title={t.reelflow.credits.totalGranted} value={formatCredits(account.totalGranted)} tone="green" />
+                <CreditMetric icon={TrendingDown} testId="reelflow-credit-total-consumed" title={t.reelflow.credits.totalConsumed} value={formatCredits(account.totalConsumed)} tone="blue" />
               </div>
             </section>
 

@@ -232,7 +232,7 @@ export function ReelflowShell({ children }: ShellProps) {
 
           <NavGroup label={shell.groups.account} collapsed={sidebarCollapsed}>
             <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} />
-            <ShellLink icon={CreditCard} label={shell.nav.subscription} to="/$lang/pricing" lang={locale} active={pathname.includes('/pricing')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={CreditCard} label={shell.nav.subscription} to="/$lang/pricing" lang={locale} active={false} collapsed={sidebarCollapsed} newTab />
             <ShellLink icon={Gift} label={shell.nav.invites} to="/$lang/reelflow/invites" lang={locale} active={pathname.includes('/reelflow/invites')} collapsed={sidebarCollapsed} />
             <ShellLink icon={Bell} label={shell.nav.notifications} to="/$lang/reelflow/notifications" lang={locale} active={pathname.includes('/reelflow/notifications')} collapsed={sidebarCollapsed} />
           </NavGroup>
@@ -347,6 +347,7 @@ function ShellLink({
   collapsed,
   child = false,
   disabled = false,
+  newTab = false,
 }: {
   icon: LucideIcon
   label: string
@@ -357,13 +358,17 @@ function ShellLink({
   collapsed: boolean
   child?: boolean
   disabled?: boolean
+  newTab?: boolean
 }) {
   const className = [
     'reelflow-shell-link',
     collapsed ? 'justify-center px-0' : '',
-    child && !collapsed ? 'pl-9 text-sidebar-foreground/62' : '',
+    child && !collapsed ? 'text-sidebar-foreground/62' : '',
     disabled ? 'cursor-not-allowed opacity-55 hover:bg-transparent hover:text-sidebar-foreground/70' : '',
   ].join(' ')
+  // Inline style wins over the base .reelflow-shell-link px-3, so the second-level
+  // indent actually applies (utility classes lose to the base class by source order).
+  const indentStyle = child && !collapsed ? { paddingLeft: '2.5rem' } : undefined
 
   const content = (
     <>
@@ -377,6 +382,7 @@ function ShellLink({
     return (
       <span
         className={className}
+        style={indentStyle}
         data-active={active}
         aria-label={label}
         aria-disabled="true"
@@ -387,12 +393,30 @@ function ShellLink({
     )
   }
 
+  if (newTab) {
+    return (
+      <a
+        href={to.replace('$lang', lang)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        style={indentStyle}
+        data-active={active}
+        aria-label={label}
+        title={collapsed ? label : undefined}
+      >
+        {content}
+      </a>
+    )
+  }
+
   return (
     <Link
       to={to}
       params={{ lang }}
       activeOptions={{ exact: true }}
       className={className}
+      style={indentStyle}
       data-active={active}
       aria-label={label}
       title={collapsed ? label : undefined}

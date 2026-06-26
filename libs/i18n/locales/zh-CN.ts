@@ -2541,15 +2541,15 @@ export const zhCN: Locale = {
       unknown: "未知"
     },
     credits: {
-      title: "工作区积分",
+      title: "我的积分",
       description: "查看积分余额，按需充值。",
       loadError: "积分账户加载失败",
       balance: "可用积分",
       balanceHint: "用于生成短视频草稿、图片和后续可开放的创作能力。",
       frozen: "冻结积分",
-      frozenHint: "任务执行中会先冻结预估额度，完成后按实际消耗结算。",
+      frozenHint: "任务进行中临时冻结，完成后结算。",
       debt: "欠费积分",
-      debtHint: "欠费不会中断已完成任务，补足后即可继续下载和使用产物。",
+      debtHint: "补足后即可继续下载产物。",
       accountHealthy: "账户正常",
       debtAttention: "需补足",
       totalGranted: "累计发放",
@@ -2566,7 +2566,7 @@ export const zhCN: Locale = {
       buyNow: "立即购买",
       recharge: {
         title: "积分充值",
-        subtitle: "积分用于生成短视频草稿、图片、语音等创作能力，长期有效。",
+        subtitle: "按需购买，用于全部创作功能。",
         unit: "积分",
         bonusTag: "含 {n} 赠送",
         perCredit: "约 ${n}/积分",
