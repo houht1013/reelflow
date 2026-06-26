@@ -2293,9 +2293,17 @@ export const en: Locale = {
       stats: {
         availableCredits: "Available credits",
         frozenCredits: "Frozen credits",
-        activeTasks: "Active tasks",
+        activeTasks: "In progress",
+        downloadable: "Ready",
         issues: "Need attention"
       },
+      newVideo: "New video",
+      continueCreating: "Continue",
+      startFromTemplate: "Start from a template",
+      viewAllTemplates: "All templates",
+      overview: "Workspace overview",
+      emptyRecentTitle: "Create your first video",
+      templateCredits: "~{n} credits",
       abilities: {
         draft: {
           title: "Short-video draft",

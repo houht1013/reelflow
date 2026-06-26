@@ -2300,9 +2300,17 @@ export const zhCN: Locale = {
       stats: {
         availableCredits: "可用积分",
         frozenCredits: "冻结积分",
-        activeTasks: "进行中任务",
+        activeTasks: "进行中",
+        downloadable: "待下载",
         issues: "待处理"
       },
+      newVideo: "新建短视频",
+      continueCreating: "继续创作",
+      startFromTemplate: "从爆款模板开始",
+      viewAllTemplates: "全部模板",
+      overview: "工作区概览",
+      emptyRecentTitle: "开始你的第一条短视频",
+      templateCredits: "约 {n} 积分",
       abilities: {
         draft: {
           title: "短视频草稿",

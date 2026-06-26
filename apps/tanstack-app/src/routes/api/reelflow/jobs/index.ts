@@ -34,6 +34,7 @@ export const Route = createFileRoute('/api/reelflow/jobs/')({
               id: job.id,
               templateCode: template.code,
               templateName: template.name,
+              category: template.category,
               status: job.status,
               qualityStatus: job.qualityStatus,
               estimatedCredits: job.estimatedCredits,
