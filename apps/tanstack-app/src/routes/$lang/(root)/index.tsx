@@ -275,7 +275,30 @@ function HomePage() {
         </div>
       </section>
 
-      <section id="pricing" className="relative py-20">
+      <section id="docs" className="relative py-20">
+        <div className="mx-auto max-w-6xl px-5 md:px-8">
+          <div className="grid gap-4 md:grid-cols-3">
+            {landing.docs.items.map((item: { title: string; description: string }, index: number) => (
+              <div
+                key={item.title}
+                className="landing-doc group"
+                data-reveal
+                style={{ '--reveal-delay': `${index * 90}ms` } as React.CSSProperties}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] text-[#ffb84d] ring-1 ring-white/[0.1]">
+                    {index === 0 ? <Film className="h-4 w-4" aria-hidden="true" /> : index === 1 ? <FileText className="h-4 w-4" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
+                  </span>
+                  <h2 className="text-base font-semibold text-white">{item.title}</h2>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-white/56">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="relative pb-28 pt-4">
         <div className="mx-auto max-w-6xl px-5 md:px-8">
           <div className="landing-subscribe" data-reveal>
             <div>
@@ -295,29 +318,6 @@ function HomePage() {
                 </a>
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="docs" className="relative pb-24 pt-8">
-        <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <div className="grid gap-4 md:grid-cols-3">
-            {landing.docs.items.map((item: { title: string; description: string }, index: number) => (
-              <div
-                key={item.title}
-                className="landing-doc group"
-                data-reveal
-                style={{ '--reveal-delay': `${index * 90}ms` } as React.CSSProperties}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] text-[#ffb84d] ring-1 ring-white/[0.1]">
-                    {index === 0 ? <Film className="h-4 w-4" aria-hidden="true" /> : index === 1 ? <FileText className="h-4 w-4" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
-                  </span>
-                  <h2 className="text-base font-semibold text-white">{item.title}</h2>
-                </div>
-                <p className="mt-4 text-sm leading-6 text-white/56">{item.description}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

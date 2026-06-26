@@ -2412,7 +2412,7 @@ export const zhCN: Locale = {
       hero: {
         eyebrow: "模板化短视频生产",
         title: "把爆款短视频模板，变成可编辑草稿",
-        subtitle: "Reelflow 用官方模板承接脚本、画面、配音、字幕和草稿打包。你只需要填写主题和少量参数，就能拿到可继续精修的短视频草稿。",
+        subtitle: "选一个爆款模板、填好主题，Reelflow 自动生成脚本、画面、配音和字幕，打包成可直接编辑的剪映草稿。",
         primaryCta: "开始创作",
         secondaryCta: "查看套餐",
         trust: [
@@ -2448,14 +2448,14 @@ export const zhCN: Locale = {
         auditValue: "阶段和产物留痕"
       },
       metrics: [
-        { value: "3", label: "三步生成：选模板 · 填参数 · 生成" },
-        { value: "0", label: "无需任何剪辑经验" },
-        { value: "1080P", label: "可选高清 MP4 导出" },
-        { value: "100%", label: "草稿可继续精修编辑" }
+        { value: "3", label: "步生成草稿" },
+        { value: "0", label: "剪辑门槛" },
+        { value: "1080P", label: "可选 MP4 导出" },
+        { value: "100%", label: "草稿可二次编辑" }
       ],
       workflow: {
-        title: "从模板到草稿，保持一个清晰动作",
-        description: "把选模板、填主题、生成草稿和下载交付物收进一条清晰路径，新手也能直接开始。",
+        title: "四步，从模板到可编辑草稿",
+        description: "选模板、填主题、看生成、下载草稿——路径清晰，新手也能直接上手。",
         steps: [
           {
             title: "选择模板",
@@ -2477,7 +2477,7 @@ export const zhCN: Locale = {
       },
       templates: {
         title: "官方精选案例",
-        description: "先展示可被验证的内容结构，让新用户理解模板可以生成什么样的草稿。",
+        description: "看看官方模板能生成什么样的草稿，挑一个最接近你内容方向的开始。",
         tags: [
           "知识分享",
           "观点表达",

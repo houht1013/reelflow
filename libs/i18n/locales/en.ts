@@ -2405,7 +2405,7 @@ export const en: Locale = {
       hero: {
         eyebrow: "Template-driven short-video production",
         title: "Turn proven short-video templates into editable drafts",
-        subtitle: "Reelflow turns official templates into scripts, visuals, voice, captions, and draft packages. Enter a topic and a few simple inputs, then continue refining the editable result.",
+        subtitle: "Pick a viral template, enter a topic, and Reelflow generates the script, visuals, voice, and captions — packaged into an editable Jianying draft.",
         primaryCta: "Start creating",
         secondaryCta: "View plans",
         trust: [
@@ -2441,14 +2441,14 @@ export const en: Locale = {
         auditValue: "Stages and assets logged"
       },
       metrics: [
-        { value: "3", label: "Steps: pick · fill · generate" },
-        { value: "0", label: "Editing experience needed" },
-        { value: "1080P", label: "Optional HD MP4 export" },
-        { value: "100%", label: "Fully editable draft" }
+        { value: "3", label: "Steps to a draft" },
+        { value: "0", label: "Editing skills needed" },
+        { value: "1080P", label: "Optional MP4 export" },
+        { value: "100%", label: "Editable draft" }
       ],
       workflow: {
-        title: "From template to draft in one clear action",
-        description: "Choose a template, enter a topic, generate a draft, and download the result through one clear path.",
+        title: "Four steps, from template to editable draft",
+        description: "Pick a template, enter a topic, watch it generate, download the draft — a clear path anyone can follow.",
         steps: [
           {
             title: "Choose a template",
@@ -2470,7 +2470,7 @@ export const en: Locale = {
       },
       templates: {
         title: "Official selected cases",
-        description: "Show new users what each template can produce before they enter the workbench.",
+        description: "See what each official template produces, then pick the one closest to your content direction.",
         tags: [
           "Knowledge sharing",
           "Opinion expression",
