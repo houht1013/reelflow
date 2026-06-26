@@ -191,10 +191,7 @@ export function ReelflowShell({ children }: ShellProps) {
               aria-label="Reelflow"
             >
               <BrandMark className="h-11 w-11 shrink-0" fallbackIconClassName="h-6 w-6" />
-              <span className="min-w-0">
-                <span className="reelflow-display block truncate text-[1.15rem] leading-5">Reelflow</span>
-                <span className="block truncate text-xs text-sidebar-foreground/55">{shell.workspace}</span>
-              </span>
+              <span className="reelflow-display min-w-0 truncate text-[1.15rem]">Reelflow</span>
             </Link>
           )}
 
