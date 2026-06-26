@@ -2516,7 +2516,7 @@ export const en: Locale = {
     },
     credits: {
       title: "Workspace credits",
-      description: "Credits are frozen when a workflow starts and settled after generation. Top up here when balance is low or a completed task has debt.",
+      description: "Check your credit balance and top up when you need to.",
       loadError: "Failed to load workspace credits",
       balance: "Available",
       balanceHint: "Used for short-video drafts, image generation, and future creative tools.",
@@ -2727,7 +2727,7 @@ export const en: Locale = {
     voiceTool: {
       badge: "Creation tool",
       title: "Generate voiceover audio",
-      description: "Turn short scripts into reusable voice assets for missing narration, replacement audio, or future workflow inputs.",
+      description: "Turn scripts into voiceover audio, saved to your assets.",
       comingSoonTitle: "Voice generation is coming soon",
       comingSoonDescription: "Voiceover, replacement audio, and narration repair will open as a standalone tool. For now, use short-video draft templates for voiceover workflows, or generate images to fill missing visual assets.",
       backToDraft: "Create short-video draft",
@@ -2917,7 +2917,7 @@ export const en: Locale = {
     jobs: {
       eyebrow: "Task center",
       title: "Tasks",
-      description: "Review generated drafts, in-progress runs, and items that need manual follow-up.",
+      description: "Track draft generation progress and outputs.",
       loading: "Loading tasks…",
       loadError: "Failed to load tasks",
       empty: "No tasks yet",

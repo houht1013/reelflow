@@ -89,7 +89,6 @@ function ReelflowTemplatesPage() {
     <main className="min-h-screen" data-testid="reelflow-templates-page">
       <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <PageHeader
-          eyebrow={t.reelflow.shell.nav.templates}
           title={t.reelflow.templates.title}
           description={t.reelflow.templates.description}
           actions={

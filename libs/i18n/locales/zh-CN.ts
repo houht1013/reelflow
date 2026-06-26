@@ -2523,7 +2523,7 @@ export const zhCN: Locale = {
     },
     credits: {
       title: "工作区积分",
-      description: "工作流开始前冻结积分，生成完成后结算。余额不足或任务产生欠费时，可在这里充值补足。",
+      description: "查看积分余额，按需充值。",
       loadError: "积分账户加载失败",
       balance: "可用积分",
       balanceHint: "用于生成短视频草稿、图片和后续可开放的创作能力。",
@@ -2734,7 +2734,7 @@ export const zhCN: Locale = {
     voiceTool: {
       badge: "创作工具",
       title: "生成配音素材",
-      description: "把短文案生成可复用的旁白音频，用于补配音、替换不满意的声音，或后续工作流输入。",
+      description: "把文案合成旁白音频，自动存入资产库。",
       comingSoonTitle: "语音生成即将开放",
       comingSoonDescription: "旁白、补配音和声音替换会作为独立能力开放。当前可以先使用短视频草稿模板完成配音流程，或用图像生成补齐画面素材。",
       backToDraft: "创建短视频草稿",
@@ -2924,7 +2924,7 @@ export const zhCN: Locale = {
     jobs: {
       eyebrow: "任务中心",
       title: "任务",
-      description: "查看已生成草稿、运行中的任务，以及需要人工补齐的内容。",
+      description: "跟踪草稿生成进度与产物。",
       loading: "正在加载任务…",
       loadError: "任务加载失败",
       empty: "暂无任务",
