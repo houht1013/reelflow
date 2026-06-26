@@ -3,20 +3,20 @@ import { useEffect, useMemo, useState } from 'react'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { Button } from '@libs/react-shared/ui/button'
 import {
   ArrowRight,
   Coins,
   Download,
-  Flame,
+  ImageIcon,
+  Layers3,
+  ListChecks,
   Loader2,
-  Plus,
+  Mic2,
   Snowflake,
   Sparkles,
-  Star,
+  type LucideIcon,
 } from 'lucide-react'
 import { StatusPill, StatCard, SkeletonRows, categoryVisual } from '@/components/reelflow-ui'
-import { ossThumb } from '@/lib/image-url'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/')({
   beforeLoad: async ({ params }) => {
@@ -40,33 +40,24 @@ type ReelflowJobHomeItem = {
   updatedAt: string
 }
 
-type HomeTemplateItem = {
-  id: string
-  code: string
-  name: string
-  category: string | null
-  estimatedCredits?: number
-  metadata?: { badges?: TemplateBadge[]; coverImageUrl?: string | null } | null
-}
-
-type TemplateBadge = 'new' | 'recommended' | 'hot'
-type BadgeOrder = TemplateBadge
-const BADGE_ORDER: BadgeOrder[] = ['hot', 'recommended', 'new']
+type EntryTo =
+  | '/$lang/reelflow/templates'
+  | '/$lang/reelflow/image'
+  | '/$lang/reelflow/voice'
+  | '/$lang/reelflow/jobs'
 
 function ReelflowHomePage() {
   const { t, locale } = useTranslation()
   const [credits, setCredits] = useState<HomeCreditSummary | null>(null)
   const [jobs, setJobs] = useState<ReelflowJobHomeItem[] | null>(null)
-  const [templates, setTemplates] = useState<HomeTemplateItem[] | null>(null)
 
   useEffect(() => {
     let alive = true
     async function load() {
       try {
-        const [creditsRes, jobsRes, templatesRes] = await Promise.all([
+        const [creditsRes, jobsRes] = await Promise.all([
           fetch('/api/reelflow/credits'),
           fetch('/api/reelflow/jobs?limit=50'),
-          fetch('/api/reelflow/templates'),
         ])
         const creditsPayload = await creditsRes.json().catch(() => null)
         if (alive && creditsRes.ok && creditsPayload?.account) {
@@ -77,19 +68,9 @@ function ReelflowHomePage() {
           })
         }
         const jobsPayload = await jobsRes.json().catch(() => null)
-        if (alive && jobsRes.ok && Array.isArray(jobsPayload?.jobs)) {
-          setJobs(jobsPayload.jobs as ReelflowJobHomeItem[])
-        } else if (alive) {
-          setJobs([])
-        }
-        const templatesPayload = await templatesRes.json().catch(() => null)
-        const list: HomeTemplateItem[] = Array.isArray(templatesPayload?.templates) ? templatesPayload.templates : []
-        if (alive) setTemplates(list)
+        if (alive) setJobs(jobsRes.ok && Array.isArray(jobsPayload?.jobs) ? (jobsPayload.jobs as ReelflowJobHomeItem[]) : [])
       } catch {
-        if (alive) {
-          setJobs((current) => current ?? [])
-          setTemplates((current) => current ?? [])
-        }
+        if (alive) setJobs((current) => current ?? [])
       }
     }
     void load()
@@ -107,29 +88,49 @@ function ReelflowHomePage() {
   }, [jobs])
 
   const recentJobs = (jobs ?? []).slice(0, 4)
-  const featuredTemplates = (templates ?? []).slice(0, 3)
   const statusText = (status: string) => (t.reelflow.status as Record<string, string>)[status] || status
   const home = t.reelflow.home
+  const nav = t.reelflow.shell.nav
+
+  const entries: { icon: LucideIcon; label: string; to: EntryTo; color: string }[] = [
+    { icon: Layers3, label: nav.templates, to: '/$lang/reelflow/templates', color: 'var(--reelflow-coral)' },
+    { icon: ImageIcon, label: nav.image, to: '/$lang/reelflow/image', color: 'var(--reelflow-blue)' },
+    { icon: Mic2, label: nav.voice, to: '/$lang/reelflow/voice', color: 'var(--reelflow-violet)' },
+    { icon: ListChecks, label: nav.tasks, to: '/$lang/reelflow/jobs', color: 'var(--reelflow-amber)' },
+  ]
 
   return (
     <main className="min-h-screen" data-testid="reelflow-home-page">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="reelflow-reveal flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between" data-delay="1">
-          <div className="min-w-0">
-            <span className="reelflow-eyebrow">{home.eyebrow}</span>
-            <h1 className="reelflow-display mt-3 text-[1.8rem] leading-[1.15] sm:text-[2.1rem]">{home.title}</h1>
-          </div>
-          <Button size="lg" className="shrink-0" asChild>
-            <Link to="/$lang/reelflow/templates" params={{ lang: locale }}>
-              <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-              {home.newVideo}
+        <div className="reelflow-reveal" data-delay="1">
+          <span className="reelflow-eyebrow">{home.eyebrow}</span>
+          <h1 className="reelflow-display mt-3 text-[1.8rem] leading-[1.15] sm:text-[2.1rem]">{home.title}</h1>
+        </div>
+
+        {/* Entry cards */}
+        <div className="reelflow-reveal mt-7 grid grid-cols-2 gap-3 lg:grid-cols-4" data-delay="2">
+          {entries.map((entry) => (
+            <Link
+              key={entry.to}
+              to={entry.to}
+              params={{ lang: locale }}
+              className="reelflow-soft-tile group flex items-center gap-3 p-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+              <span
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: `color-mix(in oklch, ${entry.color} 12%, transparent)`, color: entry.color }}
+              >
+                <entry.icon className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{entry.label}</span>
+              <ArrowRight className="h-4 w-4 -translate-x-1 text-muted-foreground opacity-0 transition-[transform,opacity] group-hover:translate-x-0 group-hover:opacity-100" aria-hidden="true" />
             </Link>
-          </Button>
+          ))}
         </div>
 
         {/* Continue creating */}
-        <section className="reelflow-reveal mt-9" data-delay="2">
+        <section className="reelflow-reveal mt-10" data-delay="3">
           <div className="flex items-baseline justify-between">
             <h2 className="reelflow-display text-lg">{home.continueCreating}</h2>
             <Link
@@ -169,38 +170,11 @@ function ReelflowHomePage() {
           </div>
         </section>
 
-        {/* Start from a template */}
-        <section className="reelflow-reveal mt-10" data-delay="3">
-          <div className="flex items-baseline justify-between">
-            <h2 className="reelflow-display text-lg">{home.startFromTemplate}</h2>
-            <Link
-              to="/$lang/reelflow/templates"
-              params={{ lang: locale }}
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {home.viewAllTemplates}
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {templates === null
-              ? Array.from({ length: 3 }).map((_, i) => <div key={i} className="reelflow-skeleton h-[200px]" />)
-              : featuredTemplates.map((tpl) => (
-                  <TemplateCard key={tpl.id} template={tpl} locale={locale} t={t} />
-                ))}
-          </div>
-        </section>
-
         {/* Workspace overview */}
         <section className="reelflow-reveal mt-10" data-delay="4">
           <h2 className="reelflow-display text-lg">{home.overview}</h2>
           <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard
-              icon={Coins}
-              label={home.stats.availableCredits}
-              tone="amber"
-              value={credits ? formatNum(credits.balance, locale) : <SkelNum />}
-            />
+            <StatCard icon={Coins} label={home.stats.availableCredits} tone="amber" value={credits ? formatNum(credits.balance, locale) : <SkelNum />} />
             <StatCard icon={Loader2} label={home.stats.activeTasks} tone="blue" value={jobs === null ? <SkelNum /> : formatNum(metrics.active, locale)} />
             <StatCard icon={Download} label={home.stats.downloadable} tone="green" value={jobs === null ? <SkelNum /> : formatNum(metrics.downloadable, locale)} />
             <StatCard icon={Snowflake} label={home.stats.frozenCredits} value={credits ? formatNum(credits.frozenBalance, locale) : <SkelNum />} />
@@ -243,70 +217,6 @@ function RecentTaskRow({
         {relativeTime(job.updatedAt || job.createdAt, locale)}
       </span>
     </Link>
-  )
-}
-
-function TemplateCard({
-  template,
-  locale,
-  t,
-}: {
-  template: HomeTemplateItem
-  locale: string
-  t: ReturnType<typeof useTranslation>['t']
-}) {
-  const visual = categoryVisual(template.category)
-  const Icon = visual.icon
-  const cover = template.metadata?.coverImageUrl
-  const badges = (template.metadata?.badges ?? []).slice().sort((a, b) => BADGE_ORDER.indexOf(a) - BADGE_ORDER.indexOf(b))
-  const badgeLabels = t.reelflow.templates.badges as Record<TemplateBadge, string>
-  const credits = typeof template.estimatedCredits === 'number'
-    ? t.reelflow.home.templateCredits.replace('{n}', formatNum(template.estimatedCredits, locale))
-    : null
-
-  return (
-    <Link
-      to="/$lang/reelflow/templates"
-      params={{ lang: locale }}
-      className="reelflow-soft-tile group flex flex-col overflow-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-    >
-      <div
-        className="relative flex aspect-[16/10] items-center justify-center overflow-hidden"
-        style={cover ? undefined : { background: `color-mix(in oklch, ${visual.color} 10%, var(--background))` }}
-      >
-        {cover ? (
-          <img src={ossThumb(cover, 480)} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
-        ) : (
-          <Icon className="h-9 w-9 transition-transform duration-300 group-hover:scale-110" style={{ color: visual.color }} aria-hidden="true" />
-        )}
-        {badges.length > 0 && (
-          <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
-            {badges.map((badge) => (
-              <BadgePill key={badge} badge={badge} label={badgeLabels[badge]} />
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="flex flex-1 flex-col p-3.5">
-        <h3 className="text-sm font-semibold">{template.name}</h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {template.category}
-          {credits ? <span className="mx-1.5 text-border">·</span> : null}
-          {credits}
-        </p>
-      </div>
-    </Link>
-  )
-}
-
-function BadgePill({ badge, label }: { badge: TemplateBadge; label: string }) {
-  const Icon = badge === 'hot' ? Flame : badge === 'recommended' ? Star : Sparkles
-  const tone = badge === 'hot' ? 'warning' : badge === 'recommended' ? 'brand' : 'info'
-  return (
-    <span className="reelflow-pill backdrop-blur" data-tone={tone}>
-      <Icon aria-hidden="true" />
-      {label}
-    </span>
   )
 }
 
