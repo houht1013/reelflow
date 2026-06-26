@@ -3,14 +3,6 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { authClientReact } from '@libs/auth/authClient'
 import { Avatar, AvatarFallback, AvatarImage } from '@libs/react-shared/ui/avatar'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@libs/react-shared/ui/dropdown-menu'
-import {
   Archive,
   Bell,
   ChevronRight,
@@ -234,6 +226,61 @@ export function ReelflowShell({ children }: ShellProps) {
             <ShellLink icon={Bell} label={shell.nav.notifications} to="/$lang/reelflow/notifications" lang={locale} active={pathname.includes('/reelflow/notifications')} collapsed={sidebarCollapsed} />
           </NavGroup>
         </nav>
+
+        {user && (
+          <div className="group relative mt-2 border-t border-sidebar-border/45 px-1 pt-2">
+            <button
+              type="button"
+              aria-haspopup="true"
+              aria-label={shell.userMenu}
+              className={['reelflow-shell-link w-full', sidebarCollapsed ? 'justify-center px-0' : ''].join(' ')}
+            >
+              <Avatar className="h-8 w-8 shrink-0 border border-sidebar-border/50">
+                <AvatarImage src={user.image || ''} alt={user.name || user.email || 'User'} />
+                <AvatarFallback className="text-xs">{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
+              </Avatar>
+              {!sidebarCollapsed && (
+                <>
+                  <span className="min-w-0 flex-1 truncate text-left">{user.name || user.email}</span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-sidebar-foreground/40" aria-hidden="true" />
+                </>
+              )}
+            </button>
+
+            <div className="invisible absolute bottom-0 left-full z-50 pl-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="w-56 rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-[var(--reelflow-lift-shadow)]">
+                <div className="px-2.5 py-2">
+                  <p className="truncate text-sm font-medium">{user.name || 'User'}</p>
+                  <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                </div>
+                <div className="my-1 h-px bg-border" />
+                <div className="flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm">
+                  <span>{shell.theme}</span>
+                  <ThemeToggle />
+                </div>
+                <Link to="/$lang/dashboard" params={{ lang: locale }} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted">
+                  <Settings className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  {shell.profile}
+                </Link>
+                {user.role === 'admin' && (
+                  <Link to="/$lang/admin/reelflow" params={{ lang: locale }} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted">
+                    <LayoutDashboard className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    {shell.nav.admin}
+                  </Link>
+                )}
+                <div className="my-1 h-px bg-border" />
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-destructive transition-colors hover:bg-destructive/10"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  {shell.signOut}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </aside>
 
       <div className={['flex min-h-dvh flex-col transition-[padding] duration-200', sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-[17rem]'].join(' ')}>
@@ -256,61 +303,11 @@ export function ReelflowShell({ children }: ShellProps) {
                 to="/$lang/reelflow/credits"
                 params={{ lang: locale }}
                 activeOptions={{ exact: true }}
-                className="hidden h-9 items-center gap-2 rounded-full border border-border/60 bg-card/70 px-3 text-sm font-medium shadow-xs backdrop-blur transition-colors hover:border-primary/40 hover:bg-card sm:flex"
+                className="flex h-9 items-center gap-2 rounded-full border border-border/60 bg-card/70 px-3 text-sm font-medium shadow-xs backdrop-blur transition-colors hover:border-primary/40 hover:bg-card"
               >
                 <Coins className="h-4 w-4" style={{ color: 'var(--reelflow-amber)' }} aria-hidden="true" />
                 <span className="reelflow-num">{creditLabel}</span>
               </Link>
-              <Link
-                to="/$lang/reelflow/notifications"
-                params={{ lang: locale }}
-                activeOptions={{ exact: true }}
-                aria-label={shell.nav.notifications}
-                className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-              >
-                <Bell className="h-[18px] w-[18px]" aria-hidden="true" />
-              </Link>
-              <ThemeToggle />
-              {user && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button type="button" aria-label={shell.userMenu} className="flex h-9 items-center gap-2 rounded-md px-1.5 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
-                      <Avatar className="h-8 w-8 border border-border">
-                        <AvatarImage src={user.image || ''} alt={user.name || user.email || 'User'} />
-                        <AvatarFallback className="text-xs">{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
-                      </Avatar>
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium">{user.name || 'User'}</span>
-                        <span className="text-xs text-muted-foreground">{user.email}</span>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/$lang/dashboard" params={{ lang: locale }}>
-                        <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
-                        {shell.nav.settings}
-                      </Link>
-                    </DropdownMenuItem>
-                    {user.role === 'admin' && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/$lang/admin/reelflow" params={{ lang: locale }}>
-                          <LayoutDashboard className="mr-2 h-4 w-4" aria-hidden="true" />
-                          {shell.nav.admin}
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive" onClick={handleSignOut}>
-                      <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
-                      {shell.signOut}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
             </div>
           </div>
         </header>

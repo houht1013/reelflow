@@ -2238,6 +2238,8 @@ export const en: Locale = {
       expandSidebar: "Expand sidebar",
       userMenu: "Open user menu",
       signOut: "Sign out",
+      theme: "Dark mode",
+      profile: "Profile",
       comingSoon: "Soon",
       groups: {
         main: "Workspace",

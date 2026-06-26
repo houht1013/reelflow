@@ -2245,6 +2245,8 @@ export const zhCN: Locale = {
       expandSidebar: "展开侧栏",
       userMenu: "打开用户菜单",
       signOut: "退出登录",
+      theme: "夜间模式",
+      profile: "个人资料",
       comingSoon: "准备中",
       groups: {
         main: "工作台",
