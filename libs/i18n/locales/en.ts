@@ -2240,6 +2240,17 @@ export const en: Locale = {
       signOut: "Sign out",
       theme: "Dark mode",
       profile: "Profile",
+      settings: {
+        title: "Settings",
+        tabs: {
+          profile: "Profile",
+          subscription: "Subscription",
+          general: "General",
+        },
+        planLabel: "Current plan",
+        freePlan: "Free",
+        viewPlans: "View plans",
+      },
       comingSoon: "Soon",
       groups: {
         main: "Workspace",

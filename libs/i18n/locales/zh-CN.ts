@@ -2247,6 +2247,17 @@ export const zhCN: Locale = {
       signOut: "退出登录",
       theme: "夜间模式",
       profile: "个人资料",
+      settings: {
+        title: "设置",
+        tabs: {
+          profile: "个人资料",
+          subscription: "订阅",
+          general: "通用",
+        },
+        planLabel: "当前套餐",
+        freePlan: "免费版",
+        viewPlans: "查看订阅方案",
+      },
       comingSoon: "准备中",
       groups: {
         main: "工作台",

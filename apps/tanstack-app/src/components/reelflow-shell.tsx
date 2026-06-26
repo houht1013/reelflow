@@ -2,6 +2,8 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { authClientReact } from '@libs/auth/authClient'
 import { Avatar, AvatarFallback, AvatarImage } from '@libs/react-shared/ui/avatar'
+import { Dialog, DialogContent, DialogTitle } from '@libs/react-shared/ui/dialog'
+import { Button } from '@libs/react-shared/ui/button'
 import {
   Archive,
   Bell,
@@ -20,6 +22,7 @@ import {
   PanelLeftOpen,
   Settings,
   Sparkles,
+  UserRound,
   Video,
   type LucideIcon,
 } from 'lucide-react'
@@ -59,6 +62,8 @@ export function ReelflowShell({ children }: ShellProps) {
   const [claimingInviteCode, setClaimingInviteCode] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [creationExpanded, setCreationExpanded] = useState(true)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsTab, setSettingsTab] = useState<'profile' | 'subscription' | 'general'>('profile')
   const { data: session } = authClientReact.useSession()
   const user = session?.user
 
@@ -228,10 +233,13 @@ export function ReelflowShell({ children }: ShellProps) {
         </nav>
 
         {user && (
-          <div className="group relative mt-2 border-t border-sidebar-border/45 px-1 pt-2">
+          <div className="mt-2 border-t border-sidebar-border/45 px-1 pt-2">
             <button
               type="button"
-              aria-haspopup="true"
+              onClick={() => {
+                setSettingsTab('profile')
+                setSettingsOpen(true)
+              }}
               aria-label={shell.userMenu}
               className={['reelflow-shell-link w-full', sidebarCollapsed ? 'justify-center px-0' : ''].join(' ')}
             >
@@ -242,43 +250,10 @@ export function ReelflowShell({ children }: ShellProps) {
               {!sidebarCollapsed && (
                 <>
                   <span className="min-w-0 flex-1 truncate text-left">{user.name || user.email}</span>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-sidebar-foreground/40" aria-hidden="true" />
+                  <Settings className="h-4 w-4 shrink-0 text-sidebar-foreground/40" aria-hidden="true" />
                 </>
               )}
             </button>
-
-            <div className="invisible absolute bottom-0 left-full z-50 pl-2 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <div className="w-56 rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-[var(--reelflow-lift-shadow)]">
-                <div className="px-2.5 py-2">
-                  <p className="truncate text-sm font-medium">{user.name || 'User'}</p>
-                  <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-                </div>
-                <div className="my-1 h-px bg-border" />
-                <div className="flex items-center justify-between rounded-md px-2.5 py-1.5 text-sm">
-                  <span>{shell.theme}</span>
-                  <ThemeToggle />
-                </div>
-                <Link to="/$lang/dashboard" params={{ lang: locale }} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted">
-                  <Settings className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                  {shell.profile}
-                </Link>
-                {user.role === 'admin' && (
-                  <Link to="/$lang/admin/reelflow" params={{ lang: locale }} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted">
-                    <LayoutDashboard className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                    {shell.nav.admin}
-                  </Link>
-                )}
-                <div className="my-1 h-px bg-border" />
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-destructive transition-colors hover:bg-destructive/10"
-                >
-                  <LogOut className="h-4 w-4" aria-hidden="true" />
-                  {shell.signOut}
-                </button>
-              </div>
-            </div>
           </div>
         )}
       </aside>
@@ -314,6 +289,108 @@ export function ReelflowShell({ children }: ShellProps) {
 
         <div className="flex-1">{children}</div>
       </div>
+
+      {user && (
+        <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+          <DialogContent className="max-w-3xl gap-0 overflow-hidden p-0">
+            <div className="flex min-h-[440px] flex-col sm:flex-row">
+              <div className="shrink-0 border-b border-border/60 bg-muted/30 p-4 sm:w-52 sm:border-b-0 sm:border-r">
+                <DialogTitle className="px-2 pb-3 text-base">{shell.settings.title}</DialogTitle>
+                <nav className="flex gap-1 sm:flex-col">
+                  {(
+                    [
+                      { key: 'profile', label: shell.settings.tabs.profile, icon: UserRound },
+                      { key: 'subscription', label: shell.settings.tabs.subscription, icon: CreditCard },
+                      { key: 'general', label: shell.settings.tabs.general, icon: Settings },
+                    ] as const
+                  ).map((tab) => {
+                    const TabIcon = tab.icon
+                    const active = settingsTab === tab.key
+                    return (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => setSettingsTab(tab.key)}
+                        className={[
+                          'flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:flex-none',
+                          active
+                            ? 'bg-background text-foreground shadow-xs'
+                            : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
+                        ].join(' ')}
+                      >
+                        <TabIcon className="h-4 w-4" aria-hidden="true" />
+                        {tab.label}
+                      </button>
+                    )
+                  })}
+                </nav>
+              </div>
+
+              <div className="flex-1 p-6">
+                {settingsTab === 'profile' && (
+                  <div className="space-y-3">
+                    <div className="reelflow-muted-tile flex items-center gap-4 p-4">
+                      <Avatar className="h-14 w-14 border border-border">
+                        <AvatarImage src={user.image || ''} alt={user.name || user.email || 'User'} />
+                        <AvatarFallback className="text-base">{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="truncate text-base font-semibold">{user.name || 'User'}</p>
+                        <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="reelflow-muted-tile flex w-full items-center justify-center gap-2 p-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+                    >
+                      <LogOut className="h-4 w-4" aria-hidden="true" />
+                      {shell.signOut}
+                    </button>
+                  </div>
+                )}
+
+                {settingsTab === 'subscription' && (
+                  <div className="reelflow-muted-tile flex items-center justify-between gap-4 p-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{shell.settings.planLabel}</p>
+                      <p className="mt-0.5 text-base font-semibold">{shell.settings.freePlan}</p>
+                    </div>
+                    <Button asChild>
+                      <a href={`/${locale}/pricing`} target="_blank" rel="noopener noreferrer">
+                        {shell.settings.viewPlans}
+                      </a>
+                    </Button>
+                  </div>
+                )}
+
+                {settingsTab === 'general' && (
+                  <div className="space-y-3">
+                    <div className="reelflow-muted-tile flex items-center justify-between p-4">
+                      <span className="text-sm font-medium">{shell.theme}</span>
+                      <ThemeToggle />
+                    </div>
+                    {user.role === 'admin' && (
+                      <Link
+                        to="/$lang/admin/reelflow"
+                        params={{ lang: locale }}
+                        onClick={() => setSettingsOpen(false)}
+                        className="reelflow-muted-tile flex items-center justify-between p-4 text-sm font-medium transition-colors hover:bg-muted"
+                      >
+                        <span className="flex items-center gap-2">
+                          <LayoutDashboard className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                          {shell.nav.admin}
+                        </span>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
