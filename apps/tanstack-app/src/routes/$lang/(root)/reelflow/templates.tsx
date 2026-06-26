@@ -7,8 +7,9 @@ import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert
 import { Button } from '@libs/react-shared/ui/button'
 import { Input } from '@libs/react-shared/ui/input'
 import { cn } from '@libs/ui/utils/cn'
-import { AlertCircle, ArrowRight, Film, Flame, Layers3, LockKeyhole, Loader2, RefreshCw, Search, Sparkles, Star } from 'lucide-react'
-import { EmptyState, PageHeader, TonePill } from '@/components/reelflow-ui'
+import { AlertCircle, ArrowRight, Flame, Layers3, LockKeyhole, Loader2, RefreshCw, Search, Sparkles, Star } from 'lucide-react'
+import { EmptyState, PageHeader, TonePill, categoryVisual } from '@/components/reelflow-ui'
+import { ossThumb } from '@/lib/image-url'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/templates')({
   beforeLoad: async ({ params }) => {
@@ -155,16 +156,23 @@ function ReelflowTemplatesPage() {
               const tags = template.metadata?.tags ?? []
               const cover = template.metadata?.coverImageUrl
               const sample = template.metadata?.sampleVideoUrl
+              const visual = categoryVisual(template.category)
+              const FallbackIcon = visual.icon
               return (
                 <article key={template.id} className="reelflow-soft-tile group flex flex-col overflow-hidden p-0" data-testid={`reelflow-template-card-${template.code}`}>
                   {/* Cover media */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_0%,color-mix(in_oklch,var(--reelflow-coral)_10%,transparent),transparent_45%),color-mix(in_oklch,var(--background)_85%,white)]">
+                  <div
+                    className="relative aspect-[16/10] w-full overflow-hidden"
+                    style={cover || sample ? undefined : { background: `color-mix(in oklch, ${visual.color} 10%, var(--background))` }}
+                  >
                     {sample ? (
-                      <video src={sample} poster={cover ?? undefined} muted loop playsInline className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" onMouseEnter={(e) => void e.currentTarget.play().catch(() => {})} onMouseLeave={(e) => e.currentTarget.pause()} />
+                      <video src={sample} poster={cover ? ossThumb(cover, 640) : undefined} muted loop playsInline className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" onMouseEnter={(e) => void e.currentTarget.play().catch(() => {})} onMouseLeave={(e) => e.currentTarget.pause()} />
                     ) : cover ? (
-                      <img src={cover} alt={template.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                      <img src={ossThumb(cover, 640)} alt={template.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-primary/50"><Film className="h-10 w-10" aria-hidden="true" /></div>
+                      <div className="flex h-full w-full items-center justify-center">
+                        <FallbackIcon className="h-10 w-10 transition-transform duration-300 group-hover:scale-110" style={{ color: visual.color }} aria-hidden="true" />
+                      </div>
                     )}
                     {/* Badges */}
                     {(badges.length > 0 || template.visibility !== 'public') && (
@@ -226,10 +234,10 @@ function TagChip({ active, onClick, children }: { active: boolean; onClick: () =
 function BadgePill({ badge, label }: { badge: TemplateBadge; label: string }) {
   const icon = badge === 'hot' ? Flame : badge === 'recommended' ? Star : Sparkles
   const Icon = icon
-  const tone = badge === 'hot' ? 'warning' : badge === 'recommended' ? 'brand' : 'success'
+  const tone = badge === 'hot' ? 'warning' : badge === 'recommended' ? 'brand' : 'info'
   return (
     <span className="[&_.reelflow-pill]:backdrop-blur">
-      <TonePill tone={tone as 'warning' | 'brand' | 'success'} icon={Icon}>{label}</TonePill>
+      <TonePill tone={tone as 'warning' | 'brand' | 'info'} icon={Icon}>{label}</TonePill>
     </span>
   )
 }

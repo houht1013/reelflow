@@ -8,19 +8,14 @@ import {
   ArrowRight,
   Coins,
   Download,
-  Film,
   Flame,
-  Lightbulb,
   Loader2,
-  MessageSquare,
   Plus,
-  Smile,
   Snowflake,
   Sparkles,
   Star,
-  type LucideIcon,
 } from 'lucide-react'
-import { StatusPill, StatCard, SkeletonRows } from '@/components/reelflow-ui'
+import { StatusPill, StatCard, SkeletonRows, categoryVisual } from '@/components/reelflow-ui'
 import { ossThumb } from '@/lib/image-url'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/')({
@@ -317,19 +312,6 @@ function BadgePill({ badge, label }: { badge: TemplateBadge; label: string }) {
 
 function SkelNum() {
   return <span className="reelflow-skeleton inline-block h-7 w-12 align-middle" />
-}
-
-function categoryVisual(category?: string | null): { color: string; icon: LucideIcon } {
-  switch (category) {
-    case '情绪价值':
-      return { color: 'var(--reelflow-coral)', icon: Smile }
-    case '知识科普':
-      return { color: 'var(--reelflow-blue)', icon: Lightbulb }
-    case '观点口播':
-      return { color: 'var(--reelflow-violet)', icon: MessageSquare }
-    default:
-      return { color: 'var(--reelflow-coral)', icon: Film }
-  }
 }
 
 function formatNum(value: number, locale: string) {

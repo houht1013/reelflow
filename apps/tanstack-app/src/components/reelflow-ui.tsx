@@ -4,12 +4,33 @@ import {
   CheckCircle2,
   CircleDashed,
   Clock3,
+  Film,
+  Lightbulb,
   Loader2,
+  MessageSquare,
   MinusCircle,
+  Smile,
   type LucideIcon,
 } from 'lucide-react'
 
 type Tone = 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'brand'
+
+/**
+ * Maps a template category to a consistent accent colour + icon, used for cover
+ * fallbacks and task-row chips so the same template reads the same everywhere.
+ */
+export function categoryVisual(category?: string | null): { color: string; icon: LucideIcon } {
+  switch (category) {
+    case '情绪价值':
+      return { color: 'var(--reelflow-coral)', icon: Smile }
+    case '知识科普':
+      return { color: 'var(--reelflow-blue)', icon: Lightbulb }
+    case '观点口播':
+      return { color: 'var(--reelflow-violet)', icon: MessageSquare }
+    default:
+      return { color: 'var(--reelflow-coral)', icon: Film }
+  }
+}
 
 /**
  * Maps a Reelflow status/quality/artifact/settlement code to a visual tone
