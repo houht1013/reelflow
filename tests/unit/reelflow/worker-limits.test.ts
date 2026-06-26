@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import {
   canClaimWorkspaceJob,
   resolveWorkspaceConcurrentJobLimit,
+  resolveWorkspaceImageConcurrency,
 } from '@libs/reelflow/worker-limits';
 
 describe('Reelflow worker limits', () => {
@@ -24,6 +25,34 @@ describe('Reelflow worker limits', () => {
     test('keeps the fallback at least one even when configuration is invalid', () => {
       expect(resolveWorkspaceConcurrentJobLimit(null, 0)).toBe(1);
       expect(resolveWorkspaceConcurrentJobLimit({ concurrentJobs: Number.NaN }, -4)).toBe(1);
+    });
+  });
+
+  describe('resolveWorkspaceImageConcurrency', () => {
+    test('uses workspace setting when valid, clamped to [1, max]', () => {
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: 3 }, 1, 5)).toBe(3);
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: 5 }, 1, 5)).toBe(5);
+    });
+
+    test('clamps above max and below 1', () => {
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: 99 }, 1, 5)).toBe(5);
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: 0 }, 1, 5)).toBe(1);
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: -2 }, 1, 5)).toBe(1);
+    });
+
+    test('floors decimals', () => {
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: 2.9 }, 1, 5)).toBe(2);
+    });
+
+    test('falls back to default for missing / non-numeric / null settings', () => {
+      expect(resolveWorkspaceImageConcurrency({}, 2, 5)).toBe(2);
+      expect(resolveWorkspaceImageConcurrency(null, 2, 5)).toBe(2);
+      expect(resolveWorkspaceImageConcurrency({ imageConcurrency: '4' }, 2, 5)).toBe(2);
+    });
+
+    test('clamps the fallback itself into range', () => {
+      expect(resolveWorkspaceImageConcurrency({}, 99, 5)).toBe(5);
+      expect(resolveWorkspaceImageConcurrency({}, 0, 5)).toBe(1);
     });
   });
 
