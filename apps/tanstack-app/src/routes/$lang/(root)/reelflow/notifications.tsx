@@ -242,6 +242,11 @@ function NotificationCard({
 
   const Icon = item.type.includes('credit') ? CircleDollarSign : item.type.includes('job') ? Video : Bell
   const typeText = (t.reelflow.notifications.types as Record<string, string>)[item.type] || item.type
+  // Localize title/body at render time from type + data. The stored title/body
+  // are server-generated (English, and may contain raw provider errors), so we
+  // never render them directly on this user-facing page — only as a last resort
+  // fallback for unknown types.
+  const content = resolveNotificationContent(item, t)
   const emailStatusText = emailDelivery
     ? (t.reelflow.notifications.deliveryStatus as Record<string, string>)[emailDelivery.status] || emailDelivery.status
     : t.reelflow.notifications.noEmailDelivery
@@ -264,8 +269,8 @@ function NotificationCard({
               <TonePill tone="neutral">{typeText}</TonePill>
               <span className="text-sm text-muted-foreground">{formatDate(item.createdAt)}</span>
             </div>
-            <h2 className="mt-3 line-clamp-2 text-lg font-semibold">{item.title}</h2>
-            {item.body && <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{item.body}</p>}
+            <h2 className="mt-3 line-clamp-2 text-lg font-semibold">{content.title}</h2>
+            {content.body && <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{content.body}</p>}
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <TonePill tone={emailTone} icon={Mail}>{emailStatusText}</TonePill>
               {emailDelivery?.recipient && <span className="truncate">{emailDelivery.recipient}</span>}
@@ -286,6 +291,23 @@ function NotificationCard({
       </div>
     </article>
   )
+}
+
+// Build a localized, safe title/body for a notification from its type + data.
+// Falls back to the stored values only for unmapped types.
+function resolveNotificationContent(item: ReelflowNotification, t: any): { title: string; body: string | null } {
+  const messages = t.reelflow.notifications.messages as
+    | (Record<string, { title: string; body: string }> & { fallbackName: string })
+    | undefined
+  const tpl = messages?.[item.type as keyof typeof messages] as { title: string; body: string } | undefined
+  if (!messages || !tpl) {
+    return { title: item.title, body: item.body }
+  }
+  const data = item.data ?? {}
+  const name = typeof data.templateName === 'string' && data.templateName ? data.templateName : messages.fallbackName
+  const amountRaw = data.amount ?? data.debtCredits ?? data.actualCredits ?? ''
+  const fill = (s: string) => s.replace('{name}', String(name)).replace('{amount}', String(amountRaw))
+  return { title: fill(tpl.title), body: fill(tpl.body) }
 }
 
 function deliveryTone(status?: string): 'neutral' | 'success' | 'warning' | 'danger' {

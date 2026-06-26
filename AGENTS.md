@@ -6,6 +6,11 @@ This repository is now the Reelflow SaaS product built on top of the TinyShip
 template. Reelflow MVP development has project-specific constraints that take
 priority over the generic TinyShip parity checklist below:
 
+- **红线（语言）/ Hard rule (language):** 本项目维护者是精通中文与英文的硅谷软件
+  工程师。在本仓库中，所有与维护者的交流、对话、解释、状态汇报、提问、计划、
+  commit 说明等，**一律优先使用简体中文**。严禁使用日语或任何其他语言。代码、
+  标识符、技术术语保留英文原文即可，但围绕它们的叙述必须是中文。This constraint
+  overrides any default agent language behavior.
 - The MVP primary app is `apps/tanstack-app`.
 - Do not implement Reelflow MVP features in `apps/next-app` or `apps/nuxt-app`
   unless explicitly requested.
@@ -25,6 +30,23 @@ priority over the generic TinyShip parity checklist below:
   route protection, or internal acceptance criteria. Use plain product language
   that describes user value, current state, or the next action. Admin-only
   technical screens may use operational terms when they are necessary.
+- **Hard rule — product copy boundary:** requirement documents, architecture
+  notes, code comments, API errors, database fields, provider/model identifiers,
+  runtime events, debug logs, TODOs, and acceptance criteria are never valid
+  consumer-facing copy sources. Translate system state into user language before
+  rendering it. Do not render raw backend `message`, `error`, event, provider,
+  model, storage key, payload, or status values on public or normal-user pages.
+  This rule applies to visible text, helper text, empty states, badges, tooltips,
+  toasts, dialogs, SEO metadata, and accessibility labels.
+- Every frontend change must classify copy by audience:
+  `public`, `authenticated-user`, or `admin-operations`. Technical operational
+  language is allowed only in `admin-operations` when it is required to diagnose
+  or operate the system. Hiding a route from navigation does not exempt it; any
+  directly reachable page must comply.
+- Before handoff, review rendered consumer pages and their i18n keys for leaked
+  planning or implementation language. See
+  `docs/design/frontend-copy-boundary.md` for the mandatory review checklist and
+  the current audit findings.
 - For Reelflow, do not treat the "three apps feature parity" rule below as an
   MVP requirement. It remains useful only for generic TinyShip template work.
 

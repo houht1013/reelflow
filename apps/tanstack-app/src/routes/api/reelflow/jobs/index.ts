@@ -69,6 +69,10 @@ export const Route = createFileRoute('/api/reelflow/jobs/')({
           const { auth } = await import('@libs/auth')
           const { createReelflowJob } = await import('@libs/reelflow/jobs')
           const { getDefaultWorkspaceForUser } = await import('@libs/reelflow/workspaces')
+          const { enqueueReelflowJob, recoverQueuedJobs } = await import('@libs/reelflow/task-queue')
+
+          // First request after a server start re-enqueues any leftover queued jobs.
+          void recoverQueuedJobs()
 
           const session = await auth.api.getSession({ headers: new Headers(request.headers) })
           if (!session?.user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -96,6 +100,9 @@ export const Route = createFileRoute('/api/reelflow/jobs/')({
             inputParams,
             renderMp4Requested: Boolean(body.renderMp4Requested),
           })
+
+          // Hand the freshly-frozen job to the in-process queue (non-blocking).
+          enqueueReelflowJob(result.jobId)
 
           return Response.json(result, { status: 201 })
         } catch (error) {

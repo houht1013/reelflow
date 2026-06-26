@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { useTranslation } from '@/hooks/use-translation'
-import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@libs/react-shared/ui/badge'
@@ -13,6 +12,7 @@ import { Input } from '@libs/react-shared/ui/input'
 import { Label } from '@libs/react-shared/ui/label'
 import { Switch } from '@libs/react-shared/ui/switch'
 import { CheckCircle2, Clock3, CreditCard, Loader2, Pencil, RefreshCw, ServerCog, Sparkles, Video } from 'lucide-react'
+import { PageHeader, StatCard } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/admin/reelflow/')({
   head: ({ params }) => seoHead(params.lang, (t) => t.admin.metadata),
@@ -327,7 +327,7 @@ function ReelflowAdminPage() {
 
   if (loading && !overview) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="reelflow-app flex min-h-screen items-center justify-center">
         <div className="text-center">
           <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">{t.admin.reelflow.loading}</p>
@@ -348,35 +348,36 @@ function ReelflowAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 lg:p-8" data-testid="reelflow-admin-page">
+    <div className="reelflow-app min-h-screen p-6 lg:p-8" data-testid="reelflow-admin-page">
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">{t.admin.reelflow.title}</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{t.admin.reelflow.description}</p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <a href={`/${locale}/reelflow`}>
-                <Sparkles className="mr-2 h-4 w-4" />
-                {t.admin.reelflow.actions.viewUserPage}
-              </a>
-            </Button>
-            <Button variant="outline" onClick={loadOverview} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-              {t.admin.reelflow.refresh}
-            </Button>
-          </div>
+        <PageHeader
+          eyebrow={t.admin.reelflow.eyebrow}
+          title={t.admin.reelflow.title}
+          description={t.admin.reelflow.description}
+          actions={
+            <>
+              <Button variant="outline" asChild>
+                <a href={`/${locale}/reelflow`}>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {t.admin.reelflow.actions.viewUserPage}
+                </a>
+              </Button>
+              <Button variant="outline" onClick={loadOverview} disabled={loading}>
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                {t.admin.reelflow.refresh}
+              </Button>
+            </>
+          }
+        />
+
+        <div className="reelflow-reveal grid gap-4 md:grid-cols-2 xl:grid-cols-4" data-delay="1">
+          <StatCard icon={Video} tone="coral" label={t.admin.reelflow.metrics.templates} value={overview.stats.templates.total} hint={`${t.admin.reelflow.metrics.publishedTemplates}: ${overview.stats.templates.published}`} />
+          <StatCard icon={Clock3} tone="blue" label={t.admin.reelflow.metrics.totalJobs} value={overview.stats.jobs.total} hint={`${t.admin.reelflow.metrics.runningJobs}: ${overview.stats.jobs.running}`} />
+          <StatCard icon={ServerCog} tone="green" label={t.admin.reelflow.metrics.workspaces} value={overview.stats.workspaces.total} hint={`${t.admin.reelflow.metrics.failedJobs}: ${overview.stats.jobs.failed}`} />
+          <StatCard icon={CreditCard} tone="amber" label={t.admin.reelflow.metrics.creditBalance} value={fmtCredits(overview.stats.credits.balance)} hint={`${t.admin.reelflow.metrics.frozenCredits}: ${fmtCredits(overview.stats.credits.frozen)}`} />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard icon={<Video className="h-5 w-5" />} label={t.admin.reelflow.metrics.templates} value={overview.stats.templates.total} detail={`${t.admin.reelflow.metrics.publishedTemplates}: ${overview.stats.templates.published}`} />
-          <MetricCard icon={<Clock3 className="h-5 w-5" />} label={t.admin.reelflow.metrics.totalJobs} value={overview.stats.jobs.total} detail={`${t.admin.reelflow.metrics.runningJobs}: ${overview.stats.jobs.running}`} />
-          <MetricCard icon={<ServerCog className="h-5 w-5" />} label={t.admin.reelflow.metrics.workspaces} value={overview.stats.workspaces.total} detail={`${t.admin.reelflow.metrics.failedJobs}: ${overview.stats.jobs.failed}`} />
-          <MetricCard icon={<CreditCard className="h-5 w-5" />} label={t.admin.reelflow.metrics.creditBalance} value={overview.stats.credits.balance} detail={`${t.admin.reelflow.metrics.frozenCredits}: ${overview.stats.credits.frozen}`} />
-        </div>
-
-        <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-templates-section">
+        <section className="reelflow-panel" data-testid="reelflow-admin-templates-section">
           <SectionHeader title={t.admin.reelflow.sections.templates} />
           <div className="overflow-x-auto">
             <Table>
@@ -448,7 +449,7 @@ function ReelflowAdminPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-recent-jobs-section">
+        <section className="reelflow-panel" data-testid="reelflow-admin-recent-jobs-section">
           <SectionHeader title={t.admin.reelflow.sections.recentJobs} />
           <div className="overflow-x-auto">
             <Table>
@@ -500,7 +501,7 @@ function ReelflowAdminPage() {
         </section>
 
         <div className="grid gap-6 xl:grid-cols-2">
-          <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-providers-section">
+          <section className="reelflow-panel" data-testid="reelflow-admin-providers-section">
             <SectionHeader title={t.admin.reelflow.sections.providers} />
             <div className="overflow-x-auto">
               <Table>
@@ -567,7 +568,7 @@ function ReelflowAdminPage() {
             </div>
           </section>
 
-          <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-pricing-section">
+          <section className="reelflow-panel" data-testid="reelflow-admin-pricing-section">
             <SectionHeader title={t.admin.reelflow.sections.pricing} />
             <div className="overflow-x-auto">
               <Table>
@@ -623,7 +624,7 @@ function ReelflowAdminPage() {
           </section>
         </div>
 
-        <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-workspaces-section">
+        <section className="reelflow-panel" data-testid="reelflow-admin-workspaces-section">
           <SectionHeader title={t.admin.reelflow.sections.workspaces} />
           <div className="overflow-x-auto">
             <Table>
@@ -664,7 +665,7 @@ function ReelflowAdminPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-invites-section">
+        <section className="reelflow-panel" data-testid="reelflow-admin-invites-section">
           <SectionHeader title={t.admin.reelflow.sections.invites} />
           <div className="overflow-x-auto">
             <Table>
@@ -860,23 +861,16 @@ function ProviderHealthCell({
   )
 }
 
-function MetricCard({ icon, label, value, detail }: { icon: ReactNode; label: string; value: string | number; detail: string }) {
-  return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted text-foreground">{icon}</div>
-      </div>
-      <p className="mt-4 text-2xl font-semibold">{value}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{detail}</p>
-    </div>
-  )
+function fmtCredits(value: string | number): string {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return String(value)
+  return (Math.round(n * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })
 }
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="border-b px-5 py-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
+    <div className="border-b border-border/45 px-5 py-4">
+      <h2 className="reelflow-display text-lg">{title}</h2>
     </div>
   )
 }

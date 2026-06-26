@@ -1,3 +1,4 @@
+import './env';
 import { checkWorkerHealth, runWorker } from './runtime';
 
 const once = process.argv.includes('--once');

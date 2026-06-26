@@ -115,7 +115,6 @@ function ReelflowHomePage() {
               <div className="max-w-3xl">
                 <span className="reelflow-eyebrow">{t.reelflow.home.eyebrow}</span>
                 <h1 className="reelflow-display mt-4 max-w-2xl text-[2rem] leading-[1.1] sm:text-[2.6rem]">{t.reelflow.home.title}</h1>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{t.reelflow.home.description}</p>
                 <div className="mt-6 flex flex-wrap gap-2.5">
                   <Button size="lg" asChild>
                     <Link to="/$lang/reelflow/draft" params={{ lang: locale }}>

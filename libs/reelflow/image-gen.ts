@@ -17,6 +17,8 @@ export type ReelflowImageInput = {
   workspaceId: string;
   userId: string;
   prompt: string;
+  /** Optional reference image (base64 / data URL) — switches to image-to-image (edits). */
+  referenceImage?: string;
   size?: string;
   quality?: 'low' | 'medium' | 'high' | 'auto';
   format?: 'png' | 'jpeg' | 'webp';
@@ -97,14 +99,22 @@ async function hostImageBuffer(buffer: Buffer, mimeType: string): Promise<{ url:
   return { url: signed.url, key: uploaded.key };
 }
 
+function decodeBase64Image(value: string): { bytes: Buffer; mime: string } {
+  const match = value.match(/^data:([^;]+);base64,(.*)$/s);
+  const mime = match ? match[1] : 'image/png';
+  const b64 = match ? match[2] : value;
+  return { bytes: Buffer.from(b64, 'base64'), mime };
+}
+
 async function callImageProvider(input: {
   prompt: string;
   model: string;
   size: string;
   quality: string;
   format: string;
+  referenceImage?: string;
 }): Promise<{ b64: string; mock: boolean }> {
-  const { baseUrl, apiKey, mock } = reelflowConfig.ai.image;
+  const { baseUrl, apiKey, mock, timeoutMs, maxAttempts } = reelflowConfig.ai.image;
 
   if (input.prompt.includes('__reelflow_mock_fail__')) {
     throw new Error('Mock image generation failed');
@@ -114,21 +124,48 @@ async function callImageProvider(input: {
     return { b64: MOCK_PNG, mock: true };
   }
 
-  const response = await fetchWithRetry(`${baseUrl}/v1/images/generations`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: input.model,
-      prompt: input.prompt,
-      n: 1,
-      size: input.size,
-      quality: input.quality,
-      format: input.format,
-    }),
-  });
+  let response: Response;
+  if (input.referenceImage) {
+    // Image-to-image: OpenAI-compatible /v1/images/edits (multipart) with the reference.
+    const { bytes, mime } = decodeBase64Image(input.referenceImage);
+    const ext = (mime.split('/')[1] || 'png').replace('jpeg', 'jpg');
+    const form = new FormData();
+    form.append('model', input.model);
+    form.append('prompt', input.prompt);
+    form.append('n', '1');
+    form.append('size', input.size);
+    form.append('quality', input.quality);
+    form.append('image', new Blob([new Uint8Array(bytes)], { type: mime }), `reference.${ext}`);
+    response = await fetchWithRetry(
+      `${baseUrl}/v1/images/edits`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiKey}` },
+        body: form,
+      },
+      { timeoutMs, attempts: maxAttempts },
+    );
+  } else {
+    response = await fetchWithRetry(
+      `${baseUrl}/v1/images/generations`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: input.model,
+          prompt: input.prompt,
+          n: 1,
+          size: input.size,
+          quality: input.quality,
+          format: input.format,
+        }),
+      },
+      { timeoutMs, attempts: maxAttempts },
+    );
+  }
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => '');
@@ -193,7 +230,7 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
   let storageKey: string | null = null;
   let hosted = false;
   try {
-    generated = await callImageProvider({ prompt, model, size, quality, format });
+    generated = await callImageProvider({ prompt, model, size, quality, format, referenceImage: input.referenceImage });
     mimeType = mimeFromBase64(generated.b64);
     imageUrl = `data:${mimeType};base64,${generated.b64}`;
     if (shouldHost && !generated.mock) {

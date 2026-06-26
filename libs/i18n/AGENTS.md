@@ -4,6 +4,26 @@
 
 Centralized internationalization library for the monorepo. Provides shared translations for Next.js, Nuxt.js, and TanStack Start applications with type-safe, framework-specific implementations and unified configuration via `@config`.
 
+## Consumer Copy Boundary
+
+Reelflow translation files are product copy, not a place to publish requirement
+notes or implementation details.
+
+- Never add consumer-facing translations copied from requirements,
+  architecture documents, code comments, TODOs, acceptance criteria, or provider
+  documentation.
+- Public and authenticated-user copy must describe user value, current state,
+  the reason an action is blocked, or the next action.
+- Do not expose raw API errors, event messages, enum values, provider/model
+  identifiers, worker/runtime state, storage keys, payloads, schemas, internal
+  costs, or route/security implementation details.
+- Technical operational wording belongs under admin-only translation namespaces
+  and must only be rendered by admin-protected routes.
+- Review all visible surfaces, including metadata, toasts, dialogs, tooltips,
+  empty states, errors, badges, and accessibility labels.
+- Follow `docs/design/frontend-copy-boundary.md` before adding or reviewing
+  Reelflow UI copy.
+
 ## Setup Commands
 
 ```bash

@@ -67,6 +67,12 @@ export const Route = createFileRoute('/api/reelflow/jobs/$id/download-draft')({
             return Response.json({ error: 'Draft package asset is not available' }, { status: 409 })
           }
 
+          // Template jobs deliver a remote CapCut draft (get_draft URL) — redirect to it
+          // instead of building the legacy local zip package.
+          if (draftAsset.storageProvider === 'capcut-mate' && draftAsset.url) {
+            return Response.redirect(draftAsset.url, 302)
+          }
+
           const stages = await db
             .select({
               stageCode: jobStage.stageCode,

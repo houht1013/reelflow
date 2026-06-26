@@ -216,7 +216,7 @@ function ReelflowAdminJobPage() {
 
   if (loading && !detail) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="reelflow-app flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
@@ -234,7 +234,7 @@ function ReelflowAdminJobPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background p-6 lg:p-8" data-testid="reelflow-admin-job-page">
+    <main className="reelflow-app min-h-screen p-6 lg:p-8" data-testid="reelflow-admin-job-page">
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -244,7 +244,7 @@ function ReelflowAdminJobPage() {
                 {t.admin.reelflow.jobs.back}
               </a>
             </Button>
-            <h1 className="text-3xl font-semibold tracking-tight">{detail.job.templateName}</h1>
+            <h1 className="reelflow-display text-3xl">{detail.job.templateName}</h1>
             <p className="mt-2 break-all text-sm text-muted-foreground">
               {t.admin.reelflow.jobs.jobId}: {detail.job.id}
             </p>
@@ -262,7 +262,7 @@ function ReelflowAdminJobPage() {
           </div>
         </div>
 
-        <section className="rounded-lg border bg-card p-5 shadow-sm">
+        <section className="reelflow-panel p-5">
           <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
             <div>
               <div className="flex flex-wrap gap-2">
@@ -286,7 +286,7 @@ function ReelflowAdminJobPage() {
                 </Alert>
               )}
             </div>
-            <div className="rounded-lg border bg-background p-4">
+            <div className="reelflow-muted-tile p-4">
               <label className="text-sm font-medium">{t.admin.reelflow.jobs.priority}</label>
               <div className="mt-2 flex gap-2">
                 <Input
@@ -313,7 +313,7 @@ function ReelflowAdminJobPage() {
           <MetricCard icon={<TerminalSquare />} label={t.admin.reelflow.jobs.worker} value={detail.job.lockedBy || t.common.notAvailable} />
         </div>
 
-        <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-job-stages-section">
+        <section className="reelflow-panel" data-testid="reelflow-admin-job-stages-section">
           <SectionTitle icon={<Activity />} title={t.admin.reelflow.jobs.sections.stages} />
           <div className="overflow-x-auto">
             <Table>
@@ -353,7 +353,7 @@ function ReelflowAdminJobPage() {
         </section>
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-job-events-section">
+          <section className="reelflow-panel" data-testid="reelflow-admin-job-events-section">
             <SectionTitle icon={<TerminalSquare />} title={t.admin.reelflow.jobs.sections.events} />
             <div className="divide-y">
               {detail.events.length === 0 ? (
@@ -376,7 +376,7 @@ function ReelflowAdminJobPage() {
             </div>
           </section>
 
-          <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-job-quality-section">
+          <section className="reelflow-panel" data-testid="reelflow-admin-job-quality-section">
             <SectionTitle icon={<AlertTriangle />} title={t.admin.reelflow.jobs.sections.quality} />
             <div className="divide-y">
               {detail.qualityIssues.length === 0 ? (
@@ -398,7 +398,7 @@ function ReelflowAdminJobPage() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-2">
-          <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-job-assets-section">
+          <section className="reelflow-panel" data-testid="reelflow-admin-job-assets-section">
             <SectionTitle icon={<Archive />} title={t.admin.reelflow.jobs.sections.assets} />
             <div className="overflow-x-auto">
               <Table>
@@ -432,7 +432,7 @@ function ReelflowAdminJobPage() {
             </div>
           </section>
 
-          <section className="rounded-lg border bg-card shadow-sm" data-testid="reelflow-admin-job-usage-section">
+          <section className="reelflow-panel" data-testid="reelflow-admin-job-usage-section">
             <SectionTitle icon={<Coins />} title={t.admin.reelflow.jobs.sections.usage} />
             <div className="overflow-x-auto">
               <Table>
@@ -472,12 +472,12 @@ function ReelflowAdminJobPage() {
 
 function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) {
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm">
+    <div className="reelflow-panel p-4">
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm text-muted-foreground">{label}</span>
         <span className="text-muted-foreground [&_svg]:h-4 [&_svg]:w-4">{icon}</span>
       </div>
-      <div className="mt-3 text-2xl font-semibold">{value}</div>
+      <div className="mt-3 reelflow-display reelflow-num text-2xl">{value}</div>
     </div>
   )
 }

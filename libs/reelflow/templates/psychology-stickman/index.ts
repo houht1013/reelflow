@@ -45,6 +45,9 @@ export default defineTemplate({
   description: '用极简火柴人节奏讲清心理学、关系和情绪价值类内容。',
   category: '情绪价值',
   version: '1.0.0',
+  tags: ['情绪价值', '心理学', '火柴人', '口播', '治愈'],
+  badges: ['hot', 'recommended'],
+  coverImageUrl: 'https://reelflow.oss-cn-hangzhou.aliyuncs.com/reelflow/images/80b75ebf-30ac-4eed-a58b-c5566737bf27.png',
   capabilityRequirements: ['llm', 'image', 'tts', 'draft'],
   schema,
   fields,
@@ -75,25 +78,32 @@ export default defineTemplate({
     });
 
     // 2. One image per scene (hosted on object storage so capcut can fetch).
+    //    mapItems runs shots in parallel up to ctx.job.imageConcurrency and
+    //    checkpoints each shot, so a mid-loop failure + retry resumes from the
+    //    failed shot instead of regenerating (and re-charging) all.
     const images = await ctx.stage('image', async () => {
-      const out: { url: string }[] = [];
-      for (const [i, scene] of script.scenes.entries()) {
-        const img = await ctx.image.generate(`${scene.visualPrompt}. ${VISUAL_STYLE}`, {
-          size: '1024x1536',
-          quality: 'high',
-          displayName: `镜头 ${i + 1}`,
-          assetMetadata: { sceneIndex: i },
-        });
-        out.push({ url: img.url });
-      }
-      return out;
+      const generated = await ctx.mapItems(
+        script.scenes,
+        (scene, i) =>
+          ctx.image.generate(`${scene.visualPrompt}. ${VISUAL_STYLE}`, {
+            size: '1024x1536',
+            quality: 'high',
+            displayName: `镜头 ${i + 1}`,
+            assetMetadata: { sceneIndex: i },
+          }),
+        { concurrency: ctx.job.imageConcurrency, key: (_, i) => `image:${i}` },
+      );
+      return generated.map((img) => ({ url: img.url }));
     });
 
-    // 3. One voiceover per scene (with subtitle alignment).
+    // 3. One voiceover per scene (with subtitle alignment). Same per-item
+    //    checkpointing so a partial failure doesn't re-synthesize prior clips.
     const voices = await ctx.stage('voice', async () => {
       const out: { url: string; durationMs: number; segments: { startMs: number; endMs: number; text: string }[] }[] = [];
       for (const [i, scene] of script.scenes.entries()) {
-        const v = await ctx.tts.speak(scene.narration, { align: true, displayName: `配音 ${i + 1}` });
+        const v = await ctx.item(`voice:${i}`, () =>
+          ctx.tts.speak(scene.narration, { align: true, displayName: `配音 ${i + 1}` }),
+        );
         const durationMs = v.durationMs ?? 3000;
         const segments = v.captions?.segments.map((s) => ({ startMs: s.startMs, endMs: s.endMs, text: s.text }))
           ?? [{ startMs: 0, endMs: durationMs, text: scene.narration }];

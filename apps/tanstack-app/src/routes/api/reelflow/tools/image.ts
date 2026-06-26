@@ -34,10 +34,14 @@ export const Route = createFileRoute('/api/reelflow/tools/image')({
 
           const record = body as Record<string, unknown>
           const quality = text(record.quality)
+          const referenceImage = typeof record.referenceImage === 'string' && record.referenceImage.startsWith('data:')
+            ? record.referenceImage
+            : undefined
           const result = await generateReelflowImage({
             workspaceId: workspace.id,
             userId: session.user.id,
             prompt: text(record.prompt),
+            referenceImage,
             size: text(record.size) || undefined,
             quality: ['low', 'medium', 'high', 'auto'].includes(quality)
               ? (quality as 'low' | 'medium' | 'high' | 'auto')

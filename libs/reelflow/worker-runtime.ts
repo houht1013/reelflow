@@ -17,7 +17,7 @@ import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import { renderCloudMp4, type CloudRenderResult } from './cloud-render';
 import { buildDraftPackageMetadata, getDraftPackageStorageKey } from './draft-package';
 import { notifyReelflowJobCompleted, notifyReelflowJobFailed } from './notifications';
-import { canClaimWorkspaceJob, resolveWorkspaceConcurrentJobLimit } from './worker-limits';
+import { canClaimWorkspaceJob, resolveWorkspaceConcurrentJobLimit, resolveWorkspaceImageConcurrency } from './worker-limits';
 import { getTemplate } from './templates/registry';
 import { createTemplateContext } from './templates/_sdk/context';
 import type { TemplateRunOutput } from './templates/_sdk/types';
@@ -144,10 +144,89 @@ export async function claimNextJob(workerId: string): Promise<ClaimedJob | null>
   });
 }
 
-export async function processOneJob(workerId: string): Promise<ProcessOneJobResult> {
+// Claim one specific queued job by id (used by the in-process task queue, which
+// already knows which job to run). Atomic queued->running transition with the
+// same per-workspace concurrency guard as the polling claim. Returns null if the
+// job is gone, already taken, or the workspace is at its concurrent limit.
+export async function claimJobById(jobId: string, workerId: string): Promise<ClaimedJob | null> {
+  return db.transaction(async (tx) => {
+    const [candidate] = await tx
+      .select({ id: job.id, workspaceId: job.workspaceId, status: job.status, workspaceSettings: workspace.settings })
+      .from(job)
+      .innerJoin(workspace, eq(job.workspaceId, workspace.id))
+      .where(eq(job.id, jobId))
+      .limit(1);
+
+    if (!candidate || candidate.status !== 'queued') return null;
+
+    const concurrentJobLimit = resolveWorkspaceConcurrentJobLimit(
+      candidate.workspaceSettings,
+      reelflowConfig.worker.workspaceDefaultConcurrentJobs,
+    );
+
+    const [claimed] = await tx
+      .update(job)
+      .set({
+        status: 'running',
+        lockedBy: workerId,
+        lockedAt: new Date(),
+        startedAt: new Date(),
+        attemptCount: sql`${job.attemptCount} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(job.id, jobId),
+          eq(job.status, 'queued'),
+          sql`(
+            select count(*)::int
+            from "job" running_job
+            where running_job.workspace_id = ${candidate.workspaceId}
+              and running_job.status = 'running'
+          ) < ${concurrentJobLimit}`,
+        ),
+      )
+      .returning({
+        id: job.id,
+        workspaceId: job.workspaceId,
+        createdByUserId: job.createdByUserId,
+        templateId: job.templateId,
+        frozenCredits: job.frozenCredits,
+        attemptNo: job.attemptCount,
+        renderMp4Requested: job.renderMp4Requested,
+      });
+
+    if (!claimed) return null;
+
+    await tx.insert(jobAttempt).values({
+      id: crypto.randomUUID(),
+      jobId: claimed.id,
+      attemptNo: claimed.attemptNo,
+      triggerType: claimed.attemptNo === 1 ? 'initial' : 'retry_failed',
+      workerId,
+      status: 'running',
+      metadata: { mode: getWorkerExecutionMode(), concurrentJobLimit, trigger: 'task_queue' },
+      startedAt: new Date(),
+    });
+
+    await tx.insert(jobEvent).values({
+      id: crypto.randomUUID(),
+      jobId: claimed.id,
+      level: 'info',
+      eventType: 'job_claimed',
+      message: `Job claimed by ${workerId}`,
+      data: { workerId, attemptNo: claimed.attemptNo, concurrentJobLimit, trigger: 'task_queue' },
+      createdAt: new Date(),
+    });
+
+    return claimed;
+  });
+}
+
+// Run a job that has already been claimed (status === 'running'). Shared by the
+// polling worker (processOneJob) and the in-process task queue (runReelflowJobById).
+export async function runClaimedJob(claimed: ClaimedJob): Promise<ProcessOneJobResult> {
   const executionMode = getWorkerExecutionMode();
-  const claimed = await claimNextJob(workerId);
-  if (!claimed) return { processed: false, reason: 'empty_queue' };
 
   // Resolve the in-repo template. If found, run the real template pipeline;
   // otherwise fall back to the legacy mock / local_draft trace behavior.
@@ -162,12 +241,23 @@ export async function processOneJob(workerId: string): Promise<ProcessOneJobResu
   if (registryTemplate) {
     try {
       const input = registryTemplate.schema.parse(jobRow!.inputParams);
+      const [ws] = await db
+        .select({ settings: workspace.settings })
+        .from(workspace)
+        .where(eq(workspace.id, claimed.workspaceId))
+        .limit(1);
+      const imageConcurrency = resolveWorkspaceImageConcurrency(
+        ws?.settings,
+        reelflowConfig.imageConcurrency.default,
+        reelflowConfig.imageConcurrency.max,
+      );
       const ctx = createTemplateContext({
         id: claimed.id,
         workspaceId: claimed.workspaceId,
         userId: claimed.createdByUserId,
         frozenCredits: claimed.frozenCredits,
         renderMp4Requested: claimed.renderMp4Requested,
+        imageConcurrency,
       });
       const output = await registryTemplate.run(ctx, input);
       await completeTemplateJob(claimed, output);
@@ -254,6 +344,21 @@ export async function processOneJob(workerId: string): Promise<ProcessOneJobResu
     await failClaimedJob(claimed, error);
     return { processed: true, jobId: claimed.id, status: 'failed' };
   }
+}
+
+// Polling entry point (standalone worker daemon): claim the next queued job and run it.
+export async function processOneJob(workerId: string): Promise<ProcessOneJobResult> {
+  const claimed = await claimNextJob(workerId);
+  if (!claimed) return { processed: false, reason: 'empty_queue' };
+  return runClaimedJob(claimed);
+}
+
+// Direct entry point (in-process task queue): claim a specific job by id and run it.
+// Returns empty_queue if the job was already taken / not claimable.
+export async function runReelflowJobById(jobId: string, workerId: string): Promise<ProcessOneJobResult> {
+  const claimed = await claimJobById(jobId, workerId);
+  if (!claimed) return { processed: false, reason: 'empty_queue' };
+  return runClaimedJob(claimed);
 }
 
 // Settle a template-driven job: assets + usage were already recorded by the

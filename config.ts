@@ -35,7 +35,7 @@ export const config = {
      * Application Name
      * This will be used throughout the application for branding
      */
-    name: 'TinyShip',
+    name: 'Reelflow',
 
     /**
      * Logo Configuration
@@ -47,7 +47,7 @@ export const config = {
        * Recommended size: 40x40px for square icon
        * @example '/logo.svg' or 'https://example.com/logo.png'
        */
-      iconUrl: '/logo.svg',
+      iconUrl: '/reelflow-logo.svg',
 
       /**
        * Full logo image URL (optional, includes icon and text)

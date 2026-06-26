@@ -75,19 +75,19 @@ export const en: Locale = {
   },
   email: {
     verification: {
-      subject: "Verify your TinyShip account",
+      subject: "Verify your Reelflow account",
       title: "Verify your email address",
       greeting: "Hello {{name}},",
-      message: "Thank you for registering with TinyShip. To complete your registration, please click the button below to verify your email address.",
+      message: "Thank you for registering with Reelflow. To complete your registration, please click the button below to verify your email address.",
       button: "Verify Email Address",
       alternativeText: "Or, copy and paste the following link into your browser:",
       expiry: "This link will expire in {{expiry_hours}} hours.",
       disclaimer: "If you didn't request this verification, please ignore this email.",
-      signature: "Happy Shipping, The TinyShip Team",
-    copyright: "© {{year}} TinyShip. All rights reserved."
+      signature: "Happy Shipping, The Reelflow Team",
+    copyright: "© {{year}} Reelflow. All rights reserved."
     },
     resetPassword: {
-      subject: "Reset your TinyShip password",
+      subject: "Reset your Reelflow password",
       title: "Reset your password",
       greeting: "Hello {{name}},",
       message: "We received a request to reset your password. Please click the button below to create a new password. If you didn't make this request, you can safely ignore this email.",
@@ -95,8 +95,8 @@ export const en: Locale = {
       alternativeText: "Or, copy and paste the following link into your browser:",
       expiry: "This link will expire in {{expiry_hours}} hours.",
       disclaimer: "If you didn't request a password reset, no action is required.",
-      signature: "Happy Shipping, The TinyShip Team",
-      copyright: "© {{year}} TinyShip. All rights reserved."
+      signature: "Happy Shipping, The Reelflow Team",
+      copyright: "© {{year}} Reelflow. All rights reserved."
     }
   },
   auth: {
@@ -396,7 +396,7 @@ export const en: Locale = {
   },
   admin: {
     metadata: {
-      title: "TinyShip - Admin Dashboard",
+      title: "Reelflow - Admin Dashboard",
       description: "Comprehensive admin dashboard for managing users, subscriptions, orders, and system analytics in your SaaS application.",
       keywords: "admin, dashboard, management, SaaS, analytics, users, subscriptions, orders"
     },
@@ -444,6 +444,7 @@ export const en: Locale = {
       }
     },
     reelflow: {
+      eyebrow: "Operations",
       title: "Reelflow Operations",
       description: "Manage templates, workflow tasks, providers, and the pricing catalog for the video workflow product.",
       loading: "Loading Reelflow operations...",
@@ -1012,7 +1013,7 @@ export const en: Locale = {
   },
   pricing: {
     metadata: {
-      title: "TinyShip - Pricing Plans",
+      title: "Reelflow - Pricing Plans",
       description: "Choose the perfect plan for your needs. Flexible pricing options including monthly, yearly, and lifetime subscriptions with premium features.",
       keywords: "pricing, plans, subscription, monthly, yearly, lifetime, premium, features"
     },
@@ -1074,73 +1075,62 @@ export const en: Locale = {
       }
     },
     v2: {
-      eyebrow: "Pricing",
-      title: "Choose the plan that fits your pace",
-      subtitle: "Subscribe for steady monthly credits and every template, or top up credits on demand. Upgrade or cancel anytime.",
-      tabs: { subscription: "Subscription", credits: "Credits" },
+      eyebrow: "Upgrade plan",
+      title: "Upgrade your plan",
+      subtitle: "Up to 120x more creation throughput",
+      subtitle2: "Powered by industry-leading models",
       billing: {
         monthly: "Monthly",
         yearly: "Yearly",
         save: "Save {n}%",
         perMonth: "/mo",
-        billedYearlyAs: "Billed ¥{total}/year",
+        billedYearlyAs: "Billed ${total}/year",
         billedMonthly: "Billed monthly, cancel anytime"
       },
       mostPopular: "Most popular",
       monthlyCredits: "{n} credits / month",
-      choosePlan: "Choose plan",
-      subscriptionPlans: [
+      subscribe: "Subscribe",
+      currentFree: "Free plan",
+      includesPrefix: "Everything in {name}, plus",
+      plans: [
         {
-          id: "starter",
-          name: "Starter",
-          tagline: "For trying things out and getting started",
-          monthly: 39,
-          credits: 300,
-          features: ["300 workspace credits / month", "Core official templates", "Standard generation queue", "Editable Jianying draft", "Email support"]
+          id: "free",
+          name: "Free",
+          monthly: 0,
+          credits: 10,
+          free: true,
+          features: ["Daily check-in credits", "Core templates & standard queue", "Editable Jianying draft", "Try selected features"]
         },
         {
-          id: "growth",
-          name: "Growth",
-          tagline: "For creators publishing regularly",
-          monthly: 99,
-          credits: 1200,
-          recommended: true,
-          features: ["1,200 workspace credits / month", "All official templates", "Priority generation queue", "Optional 1080P HD export", "AI image & voice fill", "Priority support"]
+          id: "basic",
+          name: "Basic",
+          monthly: 12,
+          credits: 1300,
+          inheritFrom: "Free",
+          features: ["More monthly credits", "All core templates", "Script editing", "Export audio / video / common formats", "Remove Reelflow branding"]
         },
         {
           id: "pro",
           name: "Pro",
-          tagline: "For teams and high-volume output",
-          monthly: 299,
-          credits: 4000,
-          features: ["4,000 workspace credits / month", "All templates + private template priority", "Highest-priority queue", "Parallel batch tasks", "Dedicated support", "Team collaboration (coming soon)"]
+          monthly: 24,
+          credits: 4050,
+          recommended: true,
+          inheritFrom: "Basic",
+          features: ["Higher monthly credits", "All templates", "Unlock 4K HD images", "Priority generation queue", "AI image & voice fill"]
+        },
+        {
+          id: "max",
+          name: "Max",
+          monthly: 240,
+          credits: 45000,
+          inheritFrom: "Pro",
+          features: ["Massive monthly credits", "Highest-priority queue", "Parallel batch tasks", "Dedicated support", "Early access to new features"]
         }
       ],
-      credits: {
-        title: "Top up credits",
-        subtitle: "Credits power short-video drafts, images, and more. They never expire.",
-        unit: "credits",
-        bonusTag: "incl. {n} bonus",
-        perCredit: "≈ ¥{n}/credit",
-        buy: "Top up",
-        packs: [
-          { id: "c100", credits: 100, amount: 9 },
-          { id: "c550", credits: 500, bonus: 50, amount: 45, recommended: true },
-          { id: "c1200", credits: 1000, bonus: 200, amount: 99 }
-        ],
-        custom: {
-          title: "Custom amount",
-          hint: "Enter the number of credits you need; price is calculated automatically.",
-          label: "Number of credits",
-          minHint: "Minimum {n} credits, in steps of {step}",
-          amountLabel: "Amount due",
-          cta: "Top up custom amount"
-        }
-      },
       trust: [
         { title: "Secure payment", desc: "Payment completes on a dedicated, fully encrypted checkout." },
-        { title: "Flexible billing", desc: "Upgrade or cancel anytime; credits never expire." },
-        { title: "Pay as you go", desc: "Subscription or credits — pick what matches your output." }
+        { title: "Flexible billing", desc: "Upgrade or cancel anytime." },
+        { title: "Top models", desc: "Powered by industry-leading models for stable, high-quality output." }
       ]
     },
     checkout: {
@@ -1178,12 +1168,12 @@ export const en: Locale = {
   payment: {
     metadata: {
       success: {
-        title: "TinyShip - Payment Successful",
+        title: "Reelflow - Payment Successful",
         description: "Your payment has been processed successfully. Thank you for your subscription and welcome to our premium features.",
         keywords: "payment, success, subscription, confirmation, premium"
       },
       cancel: {
-        title: "TinyShip - Payment Cancelled",
+        title: "Reelflow - Payment Cancelled",
         description: "Your payment was cancelled. You can retry the payment or contact our support team for assistance.",
         keywords: "payment, cancelled, retry, support, subscription"
       }
@@ -1222,7 +1212,7 @@ export const en: Locale = {
   },
   subscription: {
     metadata: {
-      title: "TinyShip - My Subscription",
+      title: "Reelflow - My Subscription",
       description: "Manage your subscription plan, view billing history, and update payment methods in your subscription dashboard.",
       keywords: "subscription, billing, payment, plan, management, dashboard"
     },
@@ -1251,7 +1241,7 @@ export const en: Locale = {
   },
   dashboard: {
     metadata: {
-      title: "TinyShip - Dashboard",
+      title: "Reelflow - Dashboard",
       description: "Manage your account, subscriptions, and profile settings in your personalized dashboard.",
       keywords: "dashboard, account, profile, subscription, settings, management"
     },
@@ -1508,7 +1498,7 @@ export const en: Locale = {
   },
   home: {
     metadata: {
-      title: "TinyShip - Modern Full-Stack SaaS Development Starter",
+      title: "Reelflow - Modern Full-Stack SaaS Development Starter",
       description: "A modern, full-featured monorepo starter kit for building SaaS applications with support for both domestic (China) and international markets. Built with Next.js/Nuxt.js, TypeScript, and comprehensive authentication.",
       keywords: "SaaS, monorepo, starter kit, Next.js, Nuxt.js, TypeScript, authentication, i18n, China market, international"
     },
@@ -1529,7 +1519,7 @@ export const en: Locale = {
     },
     features: {
       title: "Full-Stack SaaS Development Platform",
-      subtitle: "From triple-framework support to AI integration, from globalization to localization, TinyShip provides complete modern technology solutions for your business projects.",
+      subtitle: "From triple-framework support to AI integration, from globalization to localization, Reelflow provides complete modern technology solutions for your business projects.",
       items: [
         {
           title: "Triple Framework Support",
@@ -1587,7 +1577,7 @@ export const en: Locale = {
     },
     applicationFeatures: {
       title: "Core Application Features",
-      subtitle: "From dual-system support for domestic and international markets to AI integration, TinyShip provides complete technical solutions for your business projects.",
+      subtitle: "From dual-system support for domestic and international markets to AI integration, Reelflow provides complete technical solutions for your business projects.",
       items: [
         {
           title: "Dual System Support",
@@ -1686,15 +1676,15 @@ export const en: Locale = {
     },
     finalCta: {
       title: "Ready to start your voyage?",
-      subtitle: "Join thousands of users and use TinyShip to quickly build your next business project. Though it's a small boat, it's enough to take you to the shore of success. Early bird pricing only for first 100 users!",
+      subtitle: "Join thousands of users and use Reelflow to quickly build your next business project. Though it's a small boat, it's enough to take you to the shore of success. Early bird pricing only for first 100 users!",
       buttons: {
         purchase: "Buy Now ¥299",
         demo: "View Details"
       }
     },
     footer: {
-      copyright: "© {year} TinyShip. All rights reserved.",
-      description: "TinyShip"
+      copyright: "© {year} Reelflow. All rights reserved.",
+      description: "Reelflow"
     },
     common: {
       demoInterface: "Feature Entry",
@@ -1704,7 +1694,7 @@ export const en: Locale = {
   },
   ai: {
     metadata: {
-      title: "TinyShip - AI Assistant",
+      title: "Reelflow - AI Assistant",
       description: "Interact with powerful AI models including GPT-4, Qwen, and DeepSeek. Get AI assistance for coding, writing, and problem-solving.",
       keywords: "AI, assistant, chatbot, GPT-4, artificial intelligence, machine learning, conversation"
     },
@@ -1763,7 +1753,7 @@ export const en: Locale = {
     },
     image: {
       metadata: {
-        title: "TinyShip - AI Image Generation",
+        title: "Reelflow - AI Image Generation",
         description: "Generate stunning images using AI. Powered by Qwen-Image, fal.ai Flux, OpenAI DALL-E, and Google Gemini.",
         keywords: "AI, image generation, DALL-E, Flux, Qwen, Gemini, text to image, art, creative"
       },
@@ -1841,7 +1831,7 @@ export const en: Locale = {
     },
     video: {
       metadata: {
-        title: "TinyShip - AI Video Generation",
+        title: "Reelflow - AI Video Generation",
         description: "Generate stunning videos using AI. Powered by fal.ai, Volcengine Seedance, and Aliyun Wanxiang.",
         keywords: "AI, video generation, text to video, Seedance, Wanxiang, Luma, creative"
       },
@@ -1933,7 +1923,7 @@ export const en: Locale = {
   },
   premiumFeatures: {
     metadata: {
-      title: "TinyShip - Premium Features",
+      title: "Reelflow - Premium Features",
       description: "Explore all the premium features available with your subscription. Access advanced tools, AI assistance, and enhanced functionality.",
       keywords: "premium, features, advanced, tools, subscription, benefits, enhanced"
     },
@@ -2126,7 +2116,7 @@ export const en: Locale = {
   },
   docs: {
     home: {
-      title: "TinyShip Docs",
+      title: "Reelflow Docs",
       subtitle: "Built with Fumadocs",
       description: "A static site project based on Fumadocs, perfect for documentation, blogs, and static pages.",
       cta: {
@@ -2140,7 +2130,7 @@ export const en: Locale = {
     },
     blog: {
       title: "Blog",
-      description: "Latest articles and updates from the TinyShip team",
+      description: "Latest articles and updates from the Reelflow team",
       allPosts: "All Posts",
       previousPage: "← Previous",
       nextPage: "Next →",
@@ -2262,7 +2252,7 @@ export const en: Locale = {
         video: "Video generation",
         voice: "Voice generation",
         tasks: "Tasks",
-        templates: "Templates",
+        templates: "Viral templates",
         assets: "Assets",
         credits: "Credits",
         subscription: "Subscription",
@@ -2357,8 +2347,13 @@ export const en: Locale = {
       ]
     },
     templates: {
-      title: "Template library",
-      description: "Browse official and private templates available to the current workspace. Choose a template to create a short-video draft."
+      title: "Viral templates",
+      description: "Pick a proven viral structure, fill a few fields, and get an editable Jianying draft.",
+      searchPlaceholder: "Search templates, tags…",
+      allTag: "All",
+      noResults: "No matching templates",
+      noResultsHint: "Try another keyword or tag.",
+      badges: { new: "New", recommended: "Pick", hot: "Hot" }
     },
     landing: {
       metadata: {
@@ -2370,12 +2365,12 @@ export const en: Locale = {
         eyebrow: "Template-driven short-video production",
         title: "Turn proven short-video templates into editable drafts",
         subtitle: "Reelflow turns official templates into scripts, visuals, voice, captions, and draft packages. Enter a topic and a few simple inputs, then continue refining the editable result.",
-        primaryCta: "Start creating free",
+        primaryCta: "Start creating",
         secondaryCta: "View plans",
         trust: [
           "Editable Jianying draft",
-          "Official selected templates",
-          "Optional 1080P MP4"
+          "Tons of viral templates",
+          "1080P HD export"
         ]
       },
       preview: {
@@ -2480,7 +2475,7 @@ export const en: Locale = {
       finalCta: {
         title: "Generate your first short-video draft now",
         description: "Sign up free to try the official templates. Start from a single topic and get an editable draft you can keep refining.",
-        primaryCta: "Start creating free",
+        primaryCta: "Start creating",
         secondaryCta: "View plans"
       },
       docs: {
@@ -2534,6 +2529,27 @@ export const en: Locale = {
       noExpiry: "No expiry",
       recommended: "Recommended",
       buyNow: "Buy now",
+      recharge: {
+        title: "Top up credits",
+        subtitle: "Credits power short-video drafts, images, voice, and more. They never expire.",
+        unit: "credits",
+        bonusTag: "incl. {n} bonus",
+        perCredit: "≈ ${n}/credit",
+        buy: "Top up",
+        packs: [
+          { id: "c100", credits: 100, amount: 9 },
+          { id: "c550", credits: 500, bonus: 50, amount: 39, recommended: true },
+          { id: "c1200", credits: 1000, bonus: 200, amount: 69 }
+        ],
+        custom: {
+          title: "Custom amount",
+          hint: "Enter the number of credits you need; price is calculated automatically.",
+          label: "Number of credits",
+          minHint: "Minimum {n} credits, in steps of {step}",
+          amountLabel: "Amount due",
+          cta: "Top up custom amount"
+        }
+      },
       purchaseSuccess: "Credits added",
       purchaseFailed: "Credit purchase failed",
       ledgerTitle: "Credit ledger",
@@ -2633,12 +2649,15 @@ export const en: Locale = {
     },
     imageTool: {
       badge: "Creation tool",
-      title: "Generate a replacement image",
+      title: "AI image",
       description: "Create covers, storyboard frames, and references for drafts.",
       openAssets: "Open assets",
       prompt: "Image prompt",
-      promptPlaceholder: "Describe the image you need, for example: a simple stickman showing anxiety before sleep, white background, clean lines…",
+      promptPlaceholder: "Describe the image you want to generate",
       promptHint: "Do not enter passwords, private data, or sensitive content.",
+      referenceImage: "Reference",
+      referenceImageHint: "Upload an image as a reference for image-to-image",
+      removeReference: "Remove reference",
       provider: "Generation service",
       size: "Format",
       model: "Model",
@@ -2661,6 +2680,8 @@ export const en: Locale = {
       generate: "Generate image",
       generating: "Generating…",
       generatingHint: "Generating and saving the image to your asset library.",
+      generatingSlow: "High demand right now — the model is speeding up your image, hang tight…",
+      cancel: "Cancel",
       result: "Result",
       resultHint: "Saved to assets automatically.",
       emptyResult: "Generated images will appear here.",
@@ -2670,6 +2691,18 @@ export const en: Locale = {
       newImage: "New image",
       creditConsumed: "Credits used",
       balanceAfter: "Balance after",
+      tabs: { myWorks: "My works", promptTemplates: "Prompt templates" },
+      makeSame: "Use this",
+      myWorksEmpty: "No works yet — generate one to get started",
+      promptTemplatesHint: "Click \"Use this\" to load the prompt and settings",
+      promptTemplates: [
+        { title: "Vintage wall-chart", ratio: "16:9", prompt: "A vintage educational wall-chart, cream background, detailed hand-drawn illustrations with labels, rigorous layout. Topic: comparison of the solar system planets" },
+        { title: "B&W 4-panel manga", ratio: "1:1", prompt: "Black-and-white 4-panel manga, screentone style, exaggerated expressions and onomatopoeia, a short story of a programmer debugging late at night until tests finally pass" },
+        { title: "Fashion magazine cover", ratio: "3:4", prompt: "High-end fashion magazine cover, minimal layout, large title type, model close-up, cool tones, clear masthead and issue text" },
+        { title: "Portrait 6-panel comic", ratio: "2:3", prompt: "Portrait 6-panel American comic page, rainy-night urban hero theme, strong chiaroscuro and onomatopoeia FX, cinematic composition" },
+        { title: "Chalkboard cafe menu", ratio: "3:4", prompt: "Cafe chalkboard menu, chalk lettering and small illustrations, sections listing drinks and desserts with prices, warm handcrafted texture" },
+        { title: "Minimal type poster", ratio: "1:1", prompt: "Minimalist typographic poster, lots of whitespace, oversized sans-serif title, paper-craft texture. Theme: less is more" }
+      ],
       providers: {
         qwen: "Qwen",
         fal: "fal.ai",
@@ -2701,6 +2734,8 @@ export const en: Locale = {
       generate: "Generate voice",
       generating: "Generating…",
       generatingHint: "Generating audio and saving it to your asset library.",
+      generatingSlow: "High demand right now — speeding up synthesis, hang tight…",
+      cancel: "Cancel",
       result: "Voice result",
       resultHint: "Generated audio is stored as a personal asset.",
       emptyResult: "Paste narration text and generate a voice asset. The result will be playable here.",
@@ -2750,6 +2785,15 @@ export const en: Locale = {
         credits_debt: "Credit debt",
         asset_ready: "Asset ready",
         invite_bonus: "Invite bonus"
+      },
+      messages: {
+        fallbackName: "Your task",
+        job_completed: { title: "Task completed", body: "“{name}” is ready — open the task to review and download." },
+        job_failed: { title: "Task couldn’t finish", body: "Something went wrong while generating. Please try again, or contact us if it keeps failing." },
+        credits_granted: { title: "Credits added", body: "{amount} credits were added to your workspace." },
+        credits_debt: { title: "Task has unpaid credits", body: "The task finished with {amount} unpaid credits. Top up to unlock downloads." },
+        asset_ready: { title: "Asset ready", body: "A new asset was saved to your library." },
+        invite_bonus: { title: "Invite reward added", body: "{amount} invite reward credits were added." }
       },
       deliveryStatus: {
         pending: "Email pending",
@@ -3027,9 +3071,9 @@ export const en: Locale = {
   },
   blog: {
     metadata: {
-      title: "TinyShip - Blog",
-      description: "Read the latest articles and updates from the TinyShip team.",
-      keywords: "blog, articles, updates, TinyShip, SaaS"
+      title: "Reelflow - Blog",
+      description: "Read the latest articles and updates from the Reelflow team.",
+      keywords: "blog, articles, updates, Reelflow, SaaS"
     },
     title: "Blog",
     subtitle: "Latest articles and updates",

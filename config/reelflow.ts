@@ -10,6 +10,20 @@ export const reelflowConfig = {
     workspaceDefaultConcurrentJobs: Number(process.env.REELFLOW_WORKSPACE_CONCURRENT_JOBS ?? 1),
     workspaceDefaultQueueLimit: Number(process.env.REELFLOW_WORKSPACE_QUEUE_LIMIT ?? 20),
   },
+  // In-process async task queue (MVP default execution path — runs jobs inside
+  // the web server process instead of the standalone worker daemon).
+  taskQueue: {
+    // How many jobs the in-process queue runs concurrently.
+    concurrency: Number(process.env.REELFLOW_TASK_QUEUE_CONCURRENCY ?? 2),
+    // Re-scan and re-enqueue queued/stale jobs when the server process starts.
+    recoverOnStart: process.env.REELFLOW_TASK_QUEUE_RECOVER !== '0',
+  },
+  // Per-job storyboard image generation parallelism. Default 1 (sequential);
+  // clamped to [1, max]. Raised per-workspace as a membership benefit later.
+  imageConcurrency: {
+    default: Number(process.env.REELFLOW_IMAGE_CONCURRENCY ?? 1),
+    max: Number(process.env.REELFLOW_IMAGE_CONCURRENCY_MAX ?? 5),
+  },
   cloudRender: {
     provider: process.env.REELFLOW_CLOUD_RENDER_PROVIDER ?? 'cloud-render',
     model: process.env.REELFLOW_CLOUD_RENDER_MODEL ?? 'mp4-1080p',
@@ -39,6 +53,15 @@ export const reelflowConfig = {
       // 'signed': use a presigned GET URL (works with private buckets, expires).
       urlMode: (process.env.REELFLOW_IMAGE_URL_MODE ?? 'public') as 'public' | 'signed',
       signedUrlTtl: Number(process.env.REELFLOW_IMAGE_SIGNED_TTL ?? 7 * 24 * 3600),
+      // Per-attempt timeout for a single gpt-image-2 call. A successful generation
+      // measures ~36-60s; the upstream proxy intermittently *hangs* (no response).
+      // 120s gives real generations ample headroom while aborting a hung request
+      // ~2.5x sooner than the old 300s, so the retry fires quickly.
+      timeoutMs: Number(process.env.REELFLOW_IMAGE_TIMEOUT_MS ?? 120_000),
+      // Total attempts per generation = 1 initial try + 1 retry. Keeps the worst
+      // case bounded (≈ timeoutMs × maxAttempts) instead of multiplying over many
+      // retries against a degraded provider.
+      maxAttempts: Number(process.env.REELFLOW_IMAGE_MAX_ATTEMPTS ?? 2),
     },
     // Text-to-speech + caption timeline alignment via the local dubbingx-cli.
     tts: {

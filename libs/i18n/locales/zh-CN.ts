@@ -75,19 +75,19 @@ export const zhCN: Locale = {
   },
   email: {
     verification: {
-      subject: "验证您的 TinyShip 账号",
+      subject: "验证您的 Reelflow 账号",
       title: "请验证您的邮箱地址",
       greeting: "您好 {{name}}，",
-      message: "感谢您注册 TinyShip。要完成注册，请点击下方按钮验证您的电子邮箱地址。",
+      message: "感谢您注册 Reelflow。要完成注册，请点击下方按钮验证您的电子邮箱地址。",
       button: "验证邮箱地址",
       alternativeText: "或者，您可以复制并粘贴以下链接到浏览器中：",
       expiry: "此链接将在 {{expiry_hours}} 小时后过期。",
       disclaimer: "如果您没有请求此验证，请忽略此邮件。",
-      signature: "祝您使用愉快，TinyShip 团队",
-      copyright: "© {{year}} TinyShip. 保留所有权利。"
+      signature: "祝您使用愉快，Reelflow 团队",
+      copyright: "© {{year}} Reelflow. 保留所有权利。"
     },
     resetPassword: {
-      subject: "重置您的 TinyShip 密码",
+      subject: "重置您的 Reelflow 密码",
       title: "重置您的密码",
       greeting: "您好 {{name}}，",
       message: "我们收到了重置您密码的请求。请点击下方按钮创建新密码。如果您没有提出此请求，可以安全地忽略此邮件。",
@@ -95,8 +95,8 @@ export const zhCN: Locale = {
       alternativeText: "或者，您可以复制并粘贴以下链接到浏览器中：",
       expiry: "此链接将在 {{expiry_hours}} 小时后过期。",
       disclaimer: "如果您没有请求重置密码，无需进行任何操作。",
-      signature: "祝您使用愉快，TinyShip 团队",
-      copyright: "© {{year}} TinyShip. 保留所有权利。"
+      signature: "祝您使用愉快，Reelflow 团队",
+      copyright: "© {{year}} Reelflow. 保留所有权利。"
     }
   },
   auth: {
@@ -396,7 +396,7 @@ export const zhCN: Locale = {
   },
   admin: {
     metadata: {
-      title: "TinyShip - 管理后台",
+      title: "Reelflow - 管理后台",
       description: "全面的管理仪表板，用于管理用户、订阅、订单和系统分析，为您的SaaS应用提供强大的管理功能。",
       keywords: "管理后台, 仪表板, 管理, SaaS, 分析, 用户, 订阅, 订单"
     },
@@ -444,6 +444,7 @@ export const zhCN: Locale = {
       }
     },
     reelflow: {
+      eyebrow: "运营管理",
       title: "Reelflow 运营管理",
       description: "管理视频工作流产品的模板、任务、供应商和价格清单。",
       loading: "正在加载 Reelflow 运营数据...",
@@ -1019,7 +1020,7 @@ export const zhCN: Locale = {
   },
   pricing: {
     metadata: {
-      title: "TinyShip - 定价方案",
+      title: "Reelflow - 定价方案",
       description: "选择最适合您需求的完美方案。灵活的定价选项包括月度、年度和终身订阅，享受高级功能。",
               keywords: "定价, 方案, 订阅, 月度, 年度, 终身, 高级, 功能"
     },
@@ -1081,73 +1082,62 @@ export const zhCN: Locale = {
       }
     },
     v2: {
-      eyebrow: "定价方案",
-      title: "选择适合你的创作节奏",
-      subtitle: "订阅获得稳定的每月积分与全部模板，或按需充值积分。随时升级，随时取消。",
-      tabs: { subscription: "订阅套餐", credits: "积分充值" },
+      eyebrow: "升级订阅方案",
+      title: "升级订阅方案",
+      subtitle: "创作效率提升 120 倍",
+      subtitle2: "由业界顶尖模型驱动",
       billing: {
         monthly: "按月",
         yearly: "按年",
         save: "省 {n}%",
         perMonth: "/月",
-        billedYearlyAs: "按年计费 ¥{total}",
+        billedYearlyAs: "按年付费 ${total}/年",
         billedMonthly: "按月计费，可随时取消"
       },
       mostPopular: "最受欢迎",
-      monthlyCredits: "每月 {n} 积分",
-      choosePlan: "选择套餐",
-      subscriptionPlans: [
+      monthlyCredits: "{n} 积分 / 月",
+      subscribe: "订阅",
+      currentFree: "免费版",
+      includesPrefix: "{name} 的所有权益，加上",
+      plans: [
         {
-          id: "starter",
-          name: "入门",
-          tagline: "适合个人试用和起号",
-          monthly: 39,
-          credits: 300,
-          features: ["每月 300 工作区积分", "基础官方模板", "标准生成队列", "可编辑剪映草稿", "邮件支持"]
+          id: "free",
+          name: "Free",
+          monthly: 0,
+          credits: 10,
+          free: true,
+          features: ["每日签到赠送积分", "基础模板与标准生成队列", "可编辑剪映草稿", "部分功能可体验"]
         },
         {
-          id: "growth",
-          name: "成长",
-          tagline: "适合稳定更新的创作者",
-          monthly: 99,
-          credits: 1200,
-          recommended: true,
-          features: ["每月 1200 工作区积分", "全部官方模板", "优先生成队列", "可选 1080P 高清导出", "AI 补图与补语音", "优先支持"]
+          id: "basic",
+          name: "Basic",
+          monthly: 12,
+          credits: 1300,
+          inheritFrom: "Free",
+          features: ["更多月度积分", "全部基础模板", "脚本编辑", "导出音频 / 视频 / 常用格式", "移除 Reelflow 品牌元素"]
         },
         {
           id: "pro",
-          name: "专业",
-          tagline: "适合团队和高频产出",
-          monthly: 299,
-          credits: 4000,
-          features: ["每月 4000 工作区积分", "全部模板 + 私有模板优先", "最高优先级队列", "批量任务并行", "专属客户支持", "团队协作（即将开放）"]
+          name: "Pro",
+          monthly: 24,
+          credits: 4050,
+          recommended: true,
+          inheritFrom: "Basic",
+          features: ["更高月度积分", "全部模板", "解锁 4K 高清生图", "优先生成队列", "AI 补图与补语音"]
+        },
+        {
+          id: "max",
+          name: "Max",
+          monthly: 240,
+          credits: 45000,
+          inheritFrom: "Pro",
+          features: ["海量月度积分", "最高优先级队列", "批量任务并行", "专属客户支持", "抢先体验新功能"]
         }
       ],
-      credits: {
-        title: "积分充值",
-        subtitle: "积分用于生成短视频草稿、图片等创作能力，长期有效。",
-        unit: "积分",
-        bonusTag: "含 {n} 赠送",
-        perCredit: "约 ¥{n}/积分",
-        buy: "立即充值",
-        packs: [
-          { id: "c100", credits: 100, amount: 9 },
-          { id: "c550", credits: 500, bonus: 50, amount: 45, recommended: true },
-          { id: "c1200", credits: 1000, bonus: 200, amount: 99 }
-        ],
-        custom: {
-          title: "自定义额度",
-          hint: "输入需要的积分数量，价格按标准单价自动计算。",
-          label: "积分数量",
-          minHint: "最少 {n} 积分，{step} 递增",
-          amountLabel: "应付金额",
-          cta: "充值自定义额度"
-        }
-      },
       trust: [
         { title: "安全支付", desc: "支付在独立的安全收银台完成，全程加密。" },
-        { title: "灵活计费", desc: "订阅可随时升级或取消，积分长期有效。" },
-        { title: "按需付费", desc: "订阅与积分两种模式，按你的产出节奏选择。" }
+        { title: "灵活计费", desc: "订阅可随时升级或取消。" },
+        { title: "顶尖模型", desc: "由业界顶尖模型驱动，稳定高质量产出。" }
       ]
     },
     checkout: {
@@ -1185,12 +1175,12 @@ export const zhCN: Locale = {
   payment: {
     metadata: {
       success: {
-        title: "TinyShip - 支付成功",
+        title: "Reelflow - 支付成功",
         description: "您的支付已成功处理。感谢您的订阅，欢迎使用我们的高级功能。",
         keywords: "支付, 成功, 订阅, 确认, 高级功能"
       },
       cancel: {
-        title: "TinyShip - 支付已取消",
+        title: "Reelflow - 支付已取消",
         description: "您的支付已被取消。您可以重新尝试支付或联系我们的客服团队获取帮助。",
         keywords: "支付, 取消, 重试, 客服, 订阅"
       }
@@ -1229,7 +1219,7 @@ export const zhCN: Locale = {
   },
   subscription: {
     metadata: {
-      title: "TinyShip - 我的订阅",
+      title: "Reelflow - 我的订阅",
       description: "在您的订阅仪表板中管理订阅计划、查看账单历史和更新付款方式。",
               keywords: "订阅, 账单, 支付, 计划, 管理, 仪表板"
     },
@@ -1258,7 +1248,7 @@ export const zhCN: Locale = {
   },
   dashboard: {
     metadata: {
-      title: "TinyShip - 仪表盘",
+      title: "Reelflow - 仪表盘",
       description: "在您的个性化仪表盘中管理账户、订阅和个人资料设置。",
               keywords: "仪表盘, 账户, 个人资料, 订阅, 设置, 管理"
     },
@@ -1515,7 +1505,7 @@ export const zhCN: Locale = {
   },
   premiumFeatures: {
     metadata: {
-      title: "TinyShip - 高级功能",
+      title: "Reelflow - 高级功能",
       description: "探索您的订阅包含的所有高级功能。访问高级工具、AI 助手和增强功能。",
       keywords: "高级功能, 功能, 高级, 工具, 订阅, 权益, 增强"
     },
@@ -1564,7 +1554,7 @@ export const zhCN: Locale = {
   },
   ai: {
     metadata: {
-      title: "TinyShip - AI 助手",
+      title: "Reelflow - AI 助手",
       description: "与强大的 AI 模型互动，包括 GPT-4、通义千问和 DeepSeek。获得编程、写作和问题解决的 AI 帮助。",
               keywords: "AI, 助手, 聊天机器人, GPT-4, 人工智能, 机器学习, 对话"
     },
@@ -1623,7 +1613,7 @@ export const zhCN: Locale = {
     },
     image: {
       metadata: {
-        title: "TinyShip - AI 图像生成",
+        title: "Reelflow - AI 图像生成",
         description: "使用 AI 生成精美图像。支持通义千问图像、fal.ai Flux、OpenAI DALL-E 和 Google Gemini。",
         keywords: "AI, 图像生成, DALL-E, Flux, 通义千问, Gemini, 文生图, 艺术, 创意"
       },
@@ -1701,7 +1691,7 @@ export const zhCN: Locale = {
     },
     video: {
       metadata: {
-        title: "TinyShip - AI 视频生成",
+        title: "Reelflow - AI 视频生成",
         description: "使用 AI 生成精彩视频。支持 fal.ai、火山引擎 Seedance 和阿里云万象。",
         keywords: "AI, 视频生成, 文生视频, Seedance, 万象, Luma, 创意"
       },
@@ -1793,7 +1783,7 @@ export const zhCN: Locale = {
   },
   home: {
     metadata: {
-      title: "TinyShip - 现代化全栈 SaaS 开发启动器",
+      title: "Reelflow - 现代化全栈 SaaS 开发启动器",
       description: "现代化、功能齐全的 monorepo 启动套件，用于构建支持国内外双市场的 SaaS 应用程序。基于 Next.js/Nuxt.js、TypeScript 和完整认证系统构建。",
       keywords: "SaaS, monorepo, 启动套件, Next.js, Nuxt.js, TypeScript, 认证, 国际化, 中国市场, 国际市场"
     },
@@ -1814,7 +1804,7 @@ export const zhCN: Locale = {
     },
     features: {
       title: "全栈 SaaS 开发平台",
-      subtitle: "从三框架支持到 AI 集成，从全球化到本土化，TinyShip 为你的商业项目提供完整的现代化技术解决方案。",
+      subtitle: "从三框架支持到 AI 集成，从全球化到本土化，Reelflow 为你的商业项目提供完整的现代化技术解决方案。",
       items: [
         {
           title: "三框架支持",
@@ -1872,7 +1862,7 @@ export const zhCN: Locale = {
     },
     applicationFeatures: {
       title: "核心应用特性",
-      subtitle: "从国内外双体系支持到 AI 集成，TinyShip 为你的商业项目提供完整的技术解决方案。",
+      subtitle: "从国内外双体系支持到 AI 集成，Reelflow 为你的商业项目提供完整的技术解决方案。",
       items: [
         {
           title: "国内外双体系支持",
@@ -1971,15 +1961,15 @@ export const zhCN: Locale = {
     },
     finalCta: {
       title: "准备好开始你的远航了吗？",
-      subtitle: "加入数千名用户的行列，用 TinyShip 快速构建你的下一个商业项目。虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！",
+      subtitle: "加入数千名用户的行列，用 Reelflow 快速构建你的下一个商业项目。虽然是小船，但足以载你驶向成功的彼岸。早鸟价仅限前 100 名用户！",
       buttons: {
         purchase: "立即抢购 ¥299",
         demo: "查看详情"
       }
     },
     footer: {
-      copyright: "© {year} TinyShip. All rights reserved.",
-      description: "TinyShip"
+      copyright: "© {year} Reelflow. All rights reserved.",
+      description: "Reelflow"
     },
     common: {
       demoInterface: "功能入口",
@@ -2133,7 +2123,7 @@ export const zhCN: Locale = {
   },
   docs: {
     home: {
-      title: "TinyShip Docs",
+      title: "Reelflow Docs",
       subtitle: "基于 Fumadocs 构建",
       description: "基于 Fumadocs 的静态站点项目，适用于文档、博客和静态页面。",
       cta: {
@@ -2147,7 +2137,7 @@ export const zhCN: Locale = {
     },
     blog: {
       title: "博客",
-      description: "来自 TinyShip 团队的最新文章和动态",
+      description: "来自 Reelflow 团队的最新文章和动态",
       allPosts: "所有文章",
       previousPage: "← 上一页",
       nextPage: "下一页 →",
@@ -2269,7 +2259,7 @@ export const zhCN: Locale = {
         video: "视频生成",
         voice: "语音生成",
         tasks: "任务",
-        templates: "模板",
+        templates: "爆款模板",
         assets: "资产",
         credits: "积分",
         subscription: "订阅",
@@ -2364,8 +2354,13 @@ export const zhCN: Locale = {
       ]
     },
     templates: {
-      title: "模板库",
-      description: "浏览当前工作区可用的官方模板和私有模板。选择模板后进入短视频草稿创建。"
+      title: "爆款模板",
+      description: "挑一个经过验证的爆款结构，填几个参数就能生成可编辑剪映草稿。",
+      searchPlaceholder: "搜索模板、标签…",
+      allTag: "全部",
+      noResults: "没有匹配的模板",
+      noResultsHint: "换个关键词或标签试试。",
+      badges: { new: "最新", recommended: "推荐", hot: "火爆" }
     },
     landing: {
       metadata: {
@@ -2377,12 +2372,12 @@ export const zhCN: Locale = {
         eyebrow: "模板化短视频生产",
         title: "把爆款短视频模板，变成可编辑草稿",
         subtitle: "Reelflow 用官方模板承接脚本、画面、配音、字幕和草稿打包。你只需要填写主题和少量参数，就能拿到可继续精修的短视频草稿。",
-        primaryCta: "免费开始创作",
+        primaryCta: "开始创作",
         secondaryCta: "查看套餐",
         trust: [
-          "可编辑剪映草稿",
-          "官方精选模板",
-          "可选 1080P MP4"
+          "剪映草稿可编辑",
+          "海量爆款模板",
+          "1080P 高清导出"
         ]
       },
       preview: {
@@ -2487,7 +2482,7 @@ export const zhCN: Locale = {
       finalCta: {
         title: "现在就生成你的第一个短视频草稿",
         description: "免费注册即可体验官方模板，从一个主题开始，拿到可继续精修的可编辑草稿。",
-        primaryCta: "免费开始创作",
+        primaryCta: "开始创作",
         secondaryCta: "查看套餐"
       },
       docs: {
@@ -2541,6 +2536,27 @@ export const zhCN: Locale = {
       noExpiry: "长期有效",
       recommended: "推荐",
       buyNow: "立即购买",
+      recharge: {
+        title: "积分充值",
+        subtitle: "积分用于生成短视频草稿、图片、语音等创作能力，长期有效。",
+        unit: "积分",
+        bonusTag: "含 {n} 赠送",
+        perCredit: "约 ${n}/积分",
+        buy: "充值",
+        packs: [
+          { id: "c100", credits: 100, amount: 9 },
+          { id: "c550", credits: 500, bonus: 50, amount: 39, recommended: true },
+          { id: "c1200", credits: 1000, bonus: 200, amount: 69 }
+        ],
+        custom: {
+          title: "自定义额度",
+          hint: "输入需要的积分数量，价格按标准单价自动计算。",
+          label: "积分数量",
+          minHint: "最少 {n} 积分，{step} 递增",
+          amountLabel: "应付金额",
+          cta: "充值自定义额度"
+        }
+      },
       purchaseSuccess: "积分已到账",
       purchaseFailed: "积分购买失败",
       ledgerTitle: "积分流水",
@@ -2640,18 +2656,21 @@ export const zhCN: Locale = {
     },
     imageTool: {
       badge: "创作工具",
-      title: "生成补图素材",
+      title: "AI生图",
       description: "为草稿补齐封面、分镜和参考图。",
       openAssets: "打开资产库",
       prompt: "图片描述",
-      promptPlaceholder: "描述你需要的画面，例如：一个表现睡前焦虑的简笔火柴人，白色背景，线条干净…",
+      promptPlaceholder: "输入你想生成的画面",
       promptHint: "不要填写账号密码、隐私信息或敏感内容。",
+      referenceImage: "参考图",
+      referenceImageHint: "上传一张图作为参考，进行图生图",
+      removeReference: "移除参考图",
       provider: "生成服务",
       size: "画面比例",
       model: "模型",
       quality: "清晰度",
       qualities: {
-        low: "标准",
+        low: "标清",
         medium: "高清",
         high: "超清"
       },
@@ -2668,6 +2687,8 @@ export const zhCN: Locale = {
       generate: "生成图片",
       generating: "生成中…",
       generatingHint: "正在生成图片，并保存到你的资产库。",
+      generatingSlow: "排队较多，模型正在加速出图，请再稍候…",
+      cancel: "取消",
       result: "生成结果",
       resultHint: "自动保存到资产库。",
       emptyResult: "生成结果会显示在这里。",
@@ -2677,6 +2698,18 @@ export const zhCN: Locale = {
       newImage: "继续生成",
       creditConsumed: "消耗积分",
       balanceAfter: "剩余积分",
+      tabs: { myWorks: "我的作品", promptTemplates: "提示词模板" },
+      makeSame: "做同款",
+      myWorksEmpty: "还没有作品，先生成一张试试",
+      promptTemplatesHint: "点击「做同款」自动带入提示词与参数",
+      promptTemplates: [
+        { title: "复古教育挂图", ratio: "16:9", prompt: "一张复古风格的教育科普挂图，米黄底色，细致的手绘插画与标注说明，排版严谨，主题：太阳系行星对比" },
+        { title: "黑白四格漫画", ratio: "1:1", prompt: "黑白四格漫画，日系网点风格，夸张表情与拟声词，讲述一个程序员深夜调试代码终于通过的小故事" },
+        { title: "时尚杂志封面", ratio: "3:4", prompt: "高级时尚杂志封面，极简排版，大字号标题，模特特写，冷色调，刊名与期号文字清晰" },
+        { title: "竖版六格漫画", ratio: "2:3", prompt: "竖版六格美式漫画分镜，雨夜都市英雄题材，强烈明暗对比与拟声特效字，电影感构图" },
+        { title: "手写黑板菜单", ratio: "3:4", prompt: "咖啡馆手写黑板菜单，粉笔字与小插画，分区列出饮品与甜点及价格，温暖手作质感" },
+        { title: "极简文字海报", ratio: "1:1", prompt: "极简主义文字海报，大面积留白，超大无衬线标题，纸艺质感，主题：少即是多" }
+      ],
       providers: {
         qwen: "通义千问",
         fal: "fal.ai",
@@ -2708,6 +2741,8 @@ export const zhCN: Locale = {
       generate: "生成语音",
       generating: "生成中…",
       generatingHint: "正在生成音频，并保存到你的资产库。",
+      generatingSlow: "排队较多，正在加速合成，请再稍候…",
+      cancel: "取消",
       result: "生成结果",
       resultHint: "生成后的音频会作为个人资产保存。",
       emptyResult: "先粘贴旁白文案，再生成语音素材。结果会在这里试听。",
@@ -2757,6 +2792,15 @@ export const zhCN: Locale = {
         credits_debt: "积分欠费",
         asset_ready: "资产可用",
         invite_bonus: "邀请奖励"
+      },
+      messages: {
+        fallbackName: "你的任务",
+        job_completed: { title: "任务已完成", body: "「{name}」已处理完成，可在任务详情查看与下载。" },
+        job_failed: { title: "任务未能完成", body: "生成过程中遇到问题，请稍后重试，多次失败可联系我们。" },
+        credits_granted: { title: "积分已到账", body: "已为你的工作区增加 {amount} 积分。" },
+        credits_debt: { title: "任务有欠费积分", body: "任务完成但有 {amount} 积分欠费，充值后即可解锁下载。" },
+        asset_ready: { title: "素材已就绪", body: "新素材已保存到你的资产库。" },
+        invite_bonus: { title: "邀请奖励已到账", body: "邀请奖励 {amount} 积分已到账。" }
       },
       deliveryStatus: {
         pending: "邮件待发送",
@@ -3034,9 +3078,9 @@ export const zhCN: Locale = {
   },
   blog: {
     metadata: {
-      title: "TinyShip - 博客",
-      description: "阅读 TinyShip 团队的最新文章和动态。",
-      keywords: "博客, 文章, 动态, TinyShip, SaaS"
+      title: "Reelflow - 博客",
+      description: "阅读 Reelflow 团队的最新文章和动态。",
+      keywords: "博客, 文章, 动态, Reelflow, SaaS"
     },
     title: "博客",
     subtitle: "最新文章和动态",

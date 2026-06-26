@@ -30,7 +30,14 @@ export type ResourcePlan = {
 };
 
 export type TemplateContext = {
-  job: { id: string; workspaceId: string; userId: string; renderMp4Requested: boolean };
+  job: {
+    id: string;
+    workspaceId: string;
+    userId: string;
+    renderMp4Requested: boolean;
+    /** Per-job parallelism for storyboard image generation (1–5, default 1). */
+    imageConcurrency: number;
+  };
 
   ai: {
     generateText(prompt: string, opts?: { system?: string; temperature?: number; maxTokens?: number; model?: string }): Promise<string>;
@@ -75,6 +82,27 @@ export type TemplateContext = {
   /** Run a tracked content stage. Completed stages are skipped on retry (checkpoint). */
   stage<T>(code: ReelflowStageCode, fn: () => Promise<T>): Promise<T>;
 
+  /**
+   * Item-level checkpoint inside a stage. Memoizes each item's result to the
+   * stage's output snapshot, so when a multi-item stage (e.g. one image per
+   * shot) fails partway and is retried, already-completed items are returned
+   * from cache instead of being regenerated and re-metered. Must be called
+   * inside a `stage()` callback. `key` must be unique within the stage.
+   */
+  item<T>(key: string, fn: () => Promise<T>): Promise<T>;
+
+  /**
+   * Run `fn` over `items` with bounded parallelism, checkpointing each result
+   * (via `item`) so a partial failure + retry only reprocesses missing items.
+   * Use for storyboard image/voice loops: pass `{ concurrency: ctx.job.imageConcurrency }`.
+   * Results preserve input order. Default concurrency is 1 (sequential).
+   */
+  mapItems<T, R>(
+    items: readonly T[],
+    fn: (item: T, index: number) => Promise<R>,
+    opts?: { concurrency?: number; key?: (item: T, index: number) => string },
+  ): Promise<R[]>;
+
   /** Append a log line to the job timeline (job_event). */
   log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>): Promise<void>;
 };
@@ -84,12 +112,22 @@ export type TemplateRunOutput = {
   summary?: Record<string, unknown>;
 };
 
+export type TemplateBadge = 'new' | 'recommended' | 'hot';
+
 export type ReelflowTemplate<TInput = unknown> = {
   code: string;
   name: string;
   description: string;
   category: string;
   version: string;
+  /** Free-form tags for filtering + fuzzy search (e.g. ['情绪价值','口播']). */
+  tags?: string[];
+  /** Markers shown on the card: new / recommended / hot. */
+  badges?: TemplateBadge[];
+  /** Cover image URL (http) shown on the card. */
+  coverImageUrl?: string;
+  /** Optional sample video URL (http) — card shows a video preview when present. */
+  sampleVideoUrl?: string;
   capabilityRequirements?: string[];
   /** Single source of truth for input: validation + inferred run() type. */
   schema: z.ZodType<TInput>;

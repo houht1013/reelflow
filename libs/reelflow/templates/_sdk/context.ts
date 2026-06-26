@@ -21,6 +21,8 @@ export type TemplateJob = {
   userId: string;
   frozenCredits: string;
   renderMp4Requested: boolean;
+  /** Per-job storyboard image parallelism (1–5). Defaults to 1 if omitted. */
+  imageConcurrency?: number;
 };
 
 export function createTemplateContext(job: TemplateJob): TemplateContext {
@@ -47,6 +49,69 @@ export function createTemplateContext(job: TemplateJob): TemplateContext {
         { spent, frozen },
       );
     }
+  }
+
+  // Item-level checkpoint: memoize a single item's result into the current
+  // stage's outputSnapshot under __items[key]. A stage failure leaves the
+  // snapshot intact, so on retry already-completed items short-circuit here
+  // instead of being regenerated and re-metered (prevents duplicate cost ->
+  // actual>frozen -> debt/lock).
+  async function item<T>(key: string, fn: () => Promise<T>): Promise<T> {
+    if (!currentStageId) {
+      throw new ProviderCallError('ctx.item() must be called inside ctx.stage()', 'invalid_input', 400);
+    }
+    const stageId = currentStageId;
+
+    const [row] = await db
+      .select({ outputSnapshot: jobStage.outputSnapshot })
+      .from(jobStage)
+      .where(eq(jobStage.id, stageId))
+      .limit(1);
+    const snapshot = (row?.outputSnapshot as { __items?: Record<string, unknown> } | null) ?? {};
+    const items = snapshot.__items ?? {};
+    if (Object.prototype.hasOwnProperty.call(items, key)) {
+      return items[key] as T;
+    }
+
+    const result = await fn();
+
+    // Persist this item with an atomic JSONB write to a single path
+    // (output_snapshot.__items[key]). Postgres serializes concurrent UPDATEs on
+    // the same row, so parallel items (mapItems) each land without clobbering
+    // siblings — unlike a read-modify-write of the whole snapshot.
+    await db.execute(sql`
+      update job_stage
+      set output_snapshot = jsonb_set(
+            coalesce(output_snapshot, '{}'::jsonb),
+            array['__items', ${key}],
+            ${JSON.stringify(result ?? null)}::jsonb,
+            true
+          ),
+          updated_at = now()
+      where id = ${stageId}
+    `);
+    return result;
+  }
+
+  async function mapItems<T, R>(
+    items: readonly T[],
+    fn: (item: T, index: number) => Promise<R>,
+    opts?: { concurrency?: number; key?: (item: T, index: number) => string },
+  ): Promise<R[]> {
+    const concurrency = Math.max(1, Math.floor(opts?.concurrency ?? 1));
+    const keyOf = opts?.key ?? ((_: T, i: number) => String(i));
+    const results = new Array<R>(items.length);
+    let cursor = 0;
+    async function runner() {
+      while (true) {
+        const i = cursor++;
+        if (i >= items.length) return;
+        results[i] = await item(keyOf(items[i], i), () => fn(items[i], i));
+      }
+    }
+    const lanes = Math.min(concurrency, items.length);
+    await Promise.all(Array.from({ length: lanes }, () => runner()));
+    return results;
   }
 
   async function log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>): Promise<void> {
@@ -120,7 +185,13 @@ export function createTemplateContext(job: TemplateJob): TemplateContext {
   }
 
   const ctx: TemplateContext = {
-    job: { id: job.id, workspaceId: job.workspaceId, userId: job.userId, renderMp4Requested: job.renderMp4Requested },
+    job: {
+      id: job.id,
+      workspaceId: job.workspaceId,
+      userId: job.userId,
+      renderMp4Requested: job.renderMp4Requested,
+      imageConcurrency: Math.max(1, Math.floor(job.imageConcurrency ?? 1)),
+    },
 
     ai: {
       async generateText(prompt, opts) {
@@ -169,6 +240,8 @@ export function createTemplateContext(job: TemplateJob): TemplateContext {
     },
 
     stage,
+    item,
+    mapItems,
     log,
   };
 

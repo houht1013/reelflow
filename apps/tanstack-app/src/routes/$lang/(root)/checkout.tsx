@@ -7,7 +7,6 @@ import { Button } from '@libs/react-shared/ui/button'
 import { cn } from '@libs/ui/utils/cn'
 import { ArrowLeft, Check, CreditCard, Globe, Lock, PackageOpen, QrCode } from 'lucide-react'
 
-// Mirrors the placeholder maths used on the pricing page.
 const YEARLY_MULTIPLIER = 10
 const CUSTOM_RATE = 0.09
 const CUSTOM_MIN = 100
@@ -48,7 +47,7 @@ function CheckoutPage() {
   const search = Route.useSearch()
   const [method, setMethod] = useState<string>('wechat')
 
-  const order = resolveOrder(search, v, c)
+  const order = resolveOrder(search, v, c, t.reelflow.credits.recharge)
 
   const methods = [
     { id: 'wechat', label: c.methods.wechat, desc: c.methods.wechatDesc, icon: QrCode },
@@ -154,7 +153,7 @@ function CheckoutPage() {
 
                 <div className="mt-5 flex items-end justify-between">
                   <span className="text-sm text-muted-foreground">{c.total}</span>
-                  <span className="reelflow-display reelflow-num text-3xl">¥{order.amount}</span>
+                  <span className="reelflow-display reelflow-num text-3xl">${order.amount}</span>
                 </div>
 
                 <Button size="lg" className="mt-5 w-full" onClick={handleConfirm}>
@@ -170,10 +169,10 @@ function CheckoutPage() {
   )
 }
 
-function resolveOrder(search: CheckoutSearch, v: any, c: any): Order | null {
+function resolveOrder(search: CheckoutSearch, v: any, c: any, r: any): Order | null {
   if (search.type === 'subscription' && search.plan) {
-    const plan = (v.subscriptionPlans as any[]).find((p) => p.id === search.plan)
-    if (!plan) return null
+    const plan = (v.plans as any[]).find((p) => p.id === search.plan)
+    if (!plan || plan.free) return null
     const yearly = search.billing === 'yearly'
     const amount = yearly ? plan.monthly * YEARLY_MULTIPLIER : plan.monthly
     return {
@@ -185,7 +184,7 @@ function resolveOrder(search: CheckoutSearch, v: any, c: any): Order | null {
 
   if (search.type === 'credits') {
     if (search.pack) {
-      const pack = (v.credits.packs as any[]).find((p) => p.id === search.pack)
+      const pack = (r.packs as any[]).find((p) => p.id === search.pack)
       if (!pack) return null
       const total = pack.credits + (pack.bonus || 0)
       return {

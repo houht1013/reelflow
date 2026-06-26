@@ -9,6 +9,7 @@ export const Route = createFileRoute('/api/reelflow/jobs/$id/rerun')({
           const { auth } = await import('@libs/auth')
           const { rerunReelflowJob } = await import('@libs/reelflow/jobs')
           const { getDefaultWorkspaceForUser } = await import('@libs/reelflow/workspaces')
+          const { enqueueReelflowJob } = await import('@libs/reelflow/task-queue')
 
           const session = await auth.api.getSession({ headers: new Headers(request.headers) })
           if (!session?.user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -21,6 +22,8 @@ export const Route = createFileRoute('/api/reelflow/jobs/$id/rerun')({
             userId: session.user.id,
             jobId: params.id,
           })
+
+          enqueueReelflowJob(result.jobId)
 
           return Response.json(result, { status: 201 })
         } catch (error) {

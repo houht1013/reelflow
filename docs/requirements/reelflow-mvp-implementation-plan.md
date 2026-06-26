@@ -1,14 +1,77 @@
 # Reelflow MVP 实施计划
 
-> 版本：v0.2（重新基线）
+> 版本：v0.3（重新基线）
 > 状态：实施中
-> 基线日期：2026-06-23
-> 上一版：v0.1（2026-06-19，见文末附录）
+> 基线日期：2026-06-26
+> 历史版本：v0.2（2026-06-23）、v0.1（2026-06-19）——见文末附录与 §0/§1
 > 依赖文档：
 > - `docs/requirements/reelflow-mvp-product-and-architecture.md`
 > - `docs/requirements/reelflow-mvp-data-model.md`
 > - `docs/requirements/reelflow-mvp-worker-runtime.md`
 > - `docs/prd/reelflow-api-access.md`（新增范围）
+
+---
+
+## v0.3 后续迭代与优化规划（2026-06-26）
+
+### 为什么有 v0.3
+
+v0.2 把工程骨架横向铺完并接入真实 provider（P1–P3 + 模板系统全部落地）。随后进入**全链路实数据验证**，已完成 PA（模板/草稿交付/worker 守护）与 PC（AI 工具 + 资产库）。验证过程暴露了几个只有真跑才能发现的问题，v0.3 把"剩余验证 + 健壮性补强 + 扩量"重组为三个阶段，并把已发现缺陷显式登记为待办。
+
+**本轮已发现并处理的问题（记录在案）：**
+- 🟢 已修：表头积分扣费后不刷新 → 引入 `reelflow:credits-changed` 事件驱动刷新。
+- 🟢 已调：gpt-image-2 间歇 502 / 慢（60s+）→ `fetchWithRetry` 支持每次尝试超时（默认 300s）+ 重试归类瞬时错误；生图重试策略改为「初次 + 1 次重试」（`ai.image.maxAttempts=2`）。
+- 🔴 待修（阶段一 1.1）：worker stage 级重试会重跑整段多图循环 → 重复计量 → `actual>frozen` → 任务欠费锁定。需条目级断点。
+
+### 架构调整（2026-06-26）：MVP 改用进程内异步任务队列
+
+MVP 阶段**不再依赖独立 worker 守护进程**（独立进程显著提升部署与运维复杂度）。改为
+**进程内异步任务队列**：
+
+- `libs/reelflow/task-queue.ts`：进程内队列 + 全局并发（默认 2，`REELFLOW_TASK_QUEUE_CONCURRENCY`）+ 去重 + 启动恢复（`recoverQueuedJobs` 重新入队残留 `queued`）。
+- `worker-runtime.ts` 抽出 `runReelflowJobById(jobId)` / `claimJobById`，与轮询 `processOneJob` 共用 `runClaimedJob`。
+- 任务创建 / retry / rerun API 在冻结后 `enqueueReelflowJob(jobId)`（fire-and-forget，不阻塞响应）。
+- `apps/execution-worker` 代码**保留为可选后台**（DB 级原子领取避免双跑），将来需独立进程扩容时可直接启用。
+
+**并行分镜生图**：单任务多图支持并行生成，并发 1–5、默认 1，作为会员权益按 workspace 控制。
+
+- `ctx.item` 断点持久化改为原子 `jsonb_set`（并发安全，避免读-改-写互相覆盖）。
+- 新增 `ctx.mapItems(items, fn, { concurrency })`：有界并行 + 复用条目级断点，结果保序。
+- `resolveWorkspaceImageConcurrency(settings, default, max)`（钳 1–5）→ 注入 `ctx.job.imageConcurrency`；模板生图循环改用 `ctx.mapItems`。
+
+### 阶段一 · 收尾 MVP 闭环（最高优先）
+
+| # | 事项 | 说明 |
+|---|---|---|
+| 1.1 | **Worker 条目级断点（item-level checkpoint）** | 🔴 计费正确性缺陷。多图/多段 stage 部分失败后整段重跑导致重复计量、欠费锁定。改为按 shot/段落记录已完成条目，重试只补失败项。 |
+| 1.2 | **长任务前端反馈** | 生图等长耗时操作补进度 / 已用时长 / "provider 繁忙重试中"提示 + 可取消，替代当前的"按钮禁用静等"。 |
+| 1.3 | **PB 全链路实数据复验** | worker 守护 + 模板任务从建到剪映草稿，确认结算 actual≈frozen。 |
+| 1.4 | **PD 积分 / 订阅(模拟) / 邀请 / 通知 验证** | 逐项真数据走通。 |
+| 1.5 | **PE 管理端操作验证** | 价格编辑、模板授权、provider 启停、优先级提权。 |
+| 1.6 | **PF 质量门禁** | typecheck + 单测 + e2e 全绿；补 `provider-runtime`（超时/重试/maxAttempts）与模板系统单测；统一提交。 |
+
+### 阶段二 · 健壮性与打磨
+
+| # | 事项 | 说明 |
+|---|---|---|
+| 2.1 | **Provider 韧性** | 健康感知路由 + 熔断 + 可选 fallback；超时/重试策略推广到 LLM/TTS/capcut。 |
+| 2.2 | **官方模板扩到 3 个** | 目前仅 `psychology-stickman`；补 2 个（知识科普 / 观点口播），含 spec.md + 封面。 |
+| 2.3 | **资产库性能** | OSS 原图过大；生成缩略图 / 按需 resize，网格用缩略图。 |
+| 2.4 | **视频生成工具** | 侧栏"视频生成"目前置灰；补能力或明确暂缓策略。 |
+| 2.5 | **测试覆盖补齐** | 模板执行、断点恢复、计费结算边界。 |
+
+### 阶段三 · 增长与商业化
+
+| # | 事项 | 说明 |
+|---|---|---|
+| 3.1 | **P4 API 接入板块** | 按 `docs/prd/reelflow-api-access.md`：API Key + `/api/v1` 公开 REST + 内置文档。 |
+| 3.2 | **真实支付接入** | 当前 checkout 为 RESERVED 模拟，接真实支付回调发放积分/订阅。 |
+| 3.3 | **M9 云端 MP4 渲染** | 暂缓；接口/字段已保留，有交付需求时恢复。 |
+| 3.4 | **可观测性 / 运营指标** | 任务成功率、provider 延迟、积分消耗看板。 |
+
+### 执行顺序
+
+阶段一优先，且 **1.1 条目级断点**为第一优先（唯一会导致计费错误的已知缺陷，已实测复现）。1.3–1.6 为低成本验证，顺手收尾即可上线。
 
 ---
 

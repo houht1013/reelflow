@@ -33,8 +33,15 @@ async function main() {
       updatedAt: new Date(),
     };
 
+    const presentation = {
+      tags: t.tags ?? [],
+      badges: t.badges ?? [],
+      coverImageUrl: t.coverImageUrl ?? null,
+      sampleVideoUrl: t.sampleVideoUrl ?? null,
+    };
+
     if (existing) {
-      const metadata = { ...(existing.metadata as Record<string, unknown> | null), source: 'registry' };
+      const metadata = { ...(existing.metadata as Record<string, unknown> | null), source: 'registry', ...presentation };
       await db.update(template).set({ ...definitional, metadata }).where(eq(template.id, existing.id));
       console.log(`updated  ${t.code} (v${t.version})`);
     } else {
@@ -45,7 +52,7 @@ async function main() {
         visibility: 'public',
         status: 'draft',
         recommended: false,
-        metadata: { source: 'registry' },
+        metadata: { source: 'registry', ...presentation },
         createdAt: new Date(),
       });
       console.log(`inserted ${t.code} (v${t.version})  [status=draft]`);

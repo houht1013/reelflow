@@ -15,23 +15,58 @@ import type { ResourceType } from './constants';
 
 export type ProviderBillingMode = 'charge' | 'meter-only';
 
-// Retry transient network failures (undici "terminated"/socket resets seen with
-// slow reasoning models on Windows). Only retries thrown network errors, never
-// HTTP error responses.
-export async function fetchWithRetry(url: string, init: RequestInit, attempts = 3): Promise<Response> {
+// Retry transient failures from upstream provider proxies: thrown network errors
+// (undici "terminated"/socket resets, common with slow reasoning/image models on
+// Windows) AND retryable HTTP statuses (429/5xx gateway errors, e.g. 502 from the
+// image proxy under load). Failed attempts aren't metered (metering happens after
+// success), so retrying a generation is cost-safe.
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
+
+export type FetchWithRetryOptions = {
+  attempts?: number;
+  /** Per-attempt timeout in ms. Aborts a slow/hung request and (if attempts
+   *  remain) retries. Omit to fall back to the platform default. */
+  timeoutMs?: number;
+};
+
+export async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  optionsOrAttempts: number | FetchWithRetryOptions = {},
+): Promise<Response> {
+  const options: FetchWithRetryOptions =
+    typeof optionsOrAttempts === 'number' ? { attempts: optionsOrAttempts } : optionsOrAttempts;
+  const attempts = options.attempts ?? 4;
+  const timeoutMs = options.timeoutMs;
+
   let lastError: unknown;
+  let lastResponse: Response | undefined;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
+    // Each attempt gets its own abort timer so a hung connection is cut loose
+    // instead of blocking forever. The caller's own signal is respected too.
+    const timer = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
+    const signal = timer ?? init.signal ?? undefined;
     try {
-      return await fetch(url, init);
+      const response = await fetch(url, { ...init, signal });
+      if (RETRYABLE_STATUSES.has(response.status) && attempt < attempts - 1) {
+        lastResponse = response;
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+        continue;
+      }
+      return response;
     } catch (error) {
       lastError = error;
       const message = error instanceof Error ? error.message : String(error);
       const cause = error instanceof Error && error.cause instanceof Error ? error.cause.message : '';
-      const transient = /terminated|econnreset|socket|fetch failed|network|timeout|eai_again/i.test(`${message} ${cause}`);
+      const transient =
+        /terminated|econnreset|socket|fetch failed|network|timeout|timed out|aborted|eai_again/i.test(
+          `${message} ${cause}`,
+        );
       if (!transient || attempt === attempts - 1) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
     }
   }
+  if (lastResponse) return lastResponse;
   throw lastError;
 }
 

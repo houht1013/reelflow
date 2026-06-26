@@ -5,7 +5,9 @@ import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Button } from '@libs/react-shared/ui/button'
-import { AlertCircle, ArrowRight, Coins, Film, Layers3, Loader2, LockKeyhole, RefreshCw, Sparkles } from 'lucide-react'
+import { Input } from '@libs/react-shared/ui/input'
+import { cn } from '@libs/ui/utils/cn'
+import { AlertCircle, ArrowRight, Film, Flame, Layers3, LockKeyhole, Loader2, RefreshCw, Search, Sparkles, Star } from 'lucide-react'
 import { EmptyState, PageHeader, TonePill } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/templates')({
@@ -16,6 +18,8 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/templates')({
   component: ReelflowTemplatesPage,
 })
 
+type TemplateBadge = 'new' | 'recommended' | 'hot'
+
 type ReelflowTemplate = {
   id: string
   code: string
@@ -24,16 +28,23 @@ type ReelflowTemplate = {
   category: string | null
   visibility: string
   recommended: boolean
-  capabilityRequirements: string[] | null
-  estimatedCredits: number
-  estimatedCreditsWithMp4: number
+  metadata: {
+    tags?: string[]
+    badges?: TemplateBadge[]
+    coverImageUrl?: string | null
+    sampleVideoUrl?: string | null
+  } | null
 }
+
+const BADGE_ORDER: TemplateBadge[] = ['hot', 'recommended', 'new']
 
 function ReelflowTemplatesPage() {
   const { t, locale } = useTranslation()
   const [templates, setTemplates] = useState<ReelflowTemplate[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
+  const [activeTag, setActiveTag] = useState<string>('')
 
   const loadTemplates = async () => {
     setLoading(true)
@@ -54,9 +65,24 @@ function ReelflowTemplatesPage() {
     void loadTemplates()
   }, [])
 
-  const recommended = useMemo(() => templates.filter((item) => item.recommended), [templates])
-  const regular = useMemo(() => templates.filter((item) => !item.recommended), [templates])
-  const visibleTemplates = recommended.length > 0 ? [...recommended, ...regular] : templates
+  const badgeLabels = t.reelflow.templates.badges as Record<TemplateBadge, string>
+
+  const allTags = useMemo(() => {
+    const set = new Set<string>()
+    for (const tpl of templates) for (const tag of tpl.metadata?.tags ?? []) set.add(tag)
+    return Array.from(set)
+  }, [templates])
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return templates.filter((tpl) => {
+      const tags = tpl.metadata?.tags ?? []
+      if (activeTag && !tags.includes(activeTag)) return false
+      if (!q) return true
+      const haystack = [tpl.name, tpl.description ?? '', tpl.category ?? '', ...tags].join(' ').toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [templates, query, activeTag])
 
   return (
     <main className="min-h-screen" data-testid="reelflow-templates-page">
@@ -66,24 +92,34 @@ function ReelflowTemplatesPage() {
           title={t.reelflow.templates.title}
           description={t.reelflow.templates.description}
           actions={
-            <>
-              <Button type="button" variant="outline" onClick={() => void loadTemplates()} disabled={loading}>
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
-                )}
-                {t.reelflow.common.refresh}
-              </Button>
-              <Button asChild>
-                <Link to="/$lang/reelflow/draft" params={{ lang: locale }}>
-                  <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-                  {t.reelflow.home.primaryCta}
-                </Link>
-              </Button>
-            </>
+            <Button type="button" variant="outline" onClick={() => void loadTemplates()} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />}
+              {t.reelflow.common.refresh}
+            </Button>
           }
         />
+
+        {/* Search + tag filters */}
+        <div className="mt-6 space-y-4">
+          <div className="relative max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t.reelflow.templates.searchPlaceholder}
+              className="pl-9"
+              data-testid="reelflow-template-search"
+            />
+          </div>
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <TagChip active={activeTag === ''} onClick={() => setActiveTag('')}>{t.reelflow.templates.allTag}</TagChip>
+              {allTags.map((tag) => (
+                <TagChip key={tag} active={activeTag === tag} onClick={() => setActiveTag(activeTag === tag ? '' : tag)}>{tag}</TagChip>
+              ))}
+            </div>
+          )}
+        </div>
 
         {error ? (
           <Alert variant="destructive" className="mt-7">
@@ -92,12 +128,10 @@ function ReelflowTemplatesPage() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         ) : loading ? (
-          <section className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {[0, 1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="reelflow-skeleton h-56" />
-            ))}
+          <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {[0, 1, 2, 3, 4, 5].map((item) => <div key={item} className="reelflow-skeleton h-72" />)}
           </section>
-        ) : visibleTemplates.length === 0 ? (
+        ) : templates.length === 0 ? (
           <div className="mt-7">
             <EmptyState
               icon={Layers3}
@@ -110,49 +144,92 @@ function ReelflowTemplatesPage() {
               }
             />
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="mt-7">
+            <EmptyState icon={Search} title={t.reelflow.templates.noResults} description={t.reelflow.templates.noResultsHint} />
+          </div>
         ) : (
-          <section className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {visibleTemplates.map((template) => (
-              <article key={template.id} className="reelflow-soft-tile group flex min-h-64 flex-col p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
-                    <Film className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <div className="flex flex-wrap justify-end gap-1.5">
-                    {template.recommended && <TonePill tone="brand" icon={Sparkles}>{t.reelflow.generate.recommended}</TonePill>}
-                    {template.visibility !== 'public' && (
-                      <TonePill tone="neutral" icon={LockKeyhole}>{t.reelflow.generate.privateTemplate}</TonePill>
+          <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((template) => {
+              const badges = (template.metadata?.badges ?? []).slice().sort((a, b) => BADGE_ORDER.indexOf(a) - BADGE_ORDER.indexOf(b))
+              const tags = template.metadata?.tags ?? []
+              const cover = template.metadata?.coverImageUrl
+              const sample = template.metadata?.sampleVideoUrl
+              return (
+                <article key={template.id} className="reelflow-soft-tile group flex flex-col overflow-hidden p-0" data-testid={`reelflow-template-card-${template.code}`}>
+                  {/* Cover media */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_0%,color-mix(in_oklch,var(--reelflow-coral)_10%,transparent),transparent_45%),color-mix(in_oklch,var(--background)_85%,white)]">
+                    {sample ? (
+                      <video src={sample} poster={cover ?? undefined} muted loop playsInline className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" onMouseEnter={(e) => void e.currentTarget.play().catch(() => {})} onMouseLeave={(e) => e.currentTarget.pause()} />
+                    ) : cover ? (
+                      <img src={cover} alt={template.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-primary/50"><Film className="h-10 w-10" aria-hidden="true" /></div>
+                    )}
+                    {/* Badges */}
+                    {(badges.length > 0 || template.visibility !== 'public') && (
+                      <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
+                        {badges.map((badge) => <BadgePill key={badge} badge={badge} label={badgeLabels[badge]} />)}
+                        {template.visibility !== 'public' && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-background/85 px-2 py-0.5 text-[11px] font-medium text-muted-foreground backdrop-blur">
+                            <LockKeyhole className="h-3 w-3" aria-hidden="true" />{t.reelflow.generate.privateTemplate}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
 
-                <div className="mt-5 min-w-0 flex-1">
-                  {template.category && <p className="text-xs font-medium text-muted-foreground">{template.category}</p>}
-                  <h2 className="reelflow-display mt-2 text-xl leading-tight">{template.name}</h2>
-                  {template.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{template.description}</p>}
-                </div>
-
-                <div className="reelflow-muted-tile mt-5 flex items-center justify-between gap-3 p-3">
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t.reelflow.generate.estimate}</p>
-                    <p className="mt-1 flex items-center gap-1.5 whitespace-nowrap text-sm text-muted-foreground">
-                      <Coins className="h-4 w-4" style={{ color: 'var(--reelflow-amber)' }} aria-hidden="true" />
-                      <span className="reelflow-num font-semibold text-foreground">{template.estimatedCredits}</span>
-                      <span>{t.reelflow.common.credits}</span>
-                    </p>
+                  {/* Body */}
+                  <div className="flex flex-1 flex-col p-5">
+                    {template.category && <p className="text-xs font-medium text-muted-foreground">{template.category}</p>}
+                    <h2 className="reelflow-display mt-1.5 text-lg leading-tight">{template.name}</h2>
+                    {template.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{template.description}</p>}
+                    {tags.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {tags.slice(0, 4).map((tag) => (
+                          <span key={tag} className="rounded-md bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                    <Button className="mt-5 w-full" asChild>
+                      <Link to="/$lang/reelflow/draft" params={{ lang: locale }} search={{ template: template.code }} data-testid={`reelflow-template-use-${template.code}`}>
+                        {t.reelflow.generate.createFromTemplate}
+                        <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                      </Link>
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="shrink-0" asChild>
-                    <Link to="/$lang/reelflow/draft" params={{ lang: locale }} search={{ template: template.code }}>
-                      {t.reelflow.generate.createFromTemplate}
-                      <ArrowRight className="ml-1 h-4 w-4" aria-hidden="true" />
-                    </Link>
-                  </Button>
-                </div>
-              </article>
-            ))}
+                </article>
+              )
+            })}
           </section>
         )}
       </div>
     </main>
+  )
+}
+
+function TagChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'rounded-full border px-3 py-1 text-sm transition-colors',
+        active ? 'border-primary/50 bg-primary text-primary-foreground' : 'border-border/60 bg-card/60 text-muted-foreground hover:border-primary/30 hover:text-foreground',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+function BadgePill({ badge, label }: { badge: TemplateBadge; label: string }) {
+  const icon = badge === 'hot' ? Flame : badge === 'recommended' ? Star : Sparkles
+  const Icon = icon
+  const tone = badge === 'hot' ? 'warning' : badge === 'recommended' ? 'brand' : 'success'
+  return (
+    <span className="[&_.reelflow-pill]:backdrop-blur">
+      <TonePill tone={tone as 'warning' | 'brand' | 'success'} icon={Icon}>{label}</TonePill>
+    </span>
   )
 }

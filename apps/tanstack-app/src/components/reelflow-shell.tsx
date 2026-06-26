@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { authClientReact } from '@libs/auth/authClient'
 import { Avatar, AvatarFallback, AvatarImage } from '@libs/react-shared/ui/avatar'
 import {
@@ -97,29 +97,35 @@ export function ReelflowShell({ children }: ShellProps) {
     })
   }
 
-  useEffect(() => {
-    let alive = true
-    async function loadCredits() {
-      try {
-        const response = await fetch('/api/reelflow/credits')
-        const payload = await response.json()
-        if (!response.ok) return
-        if (alive && payload?.account) {
-          setCredits({
-            balance: Number(payload.account.balance || 0),
-            frozenBalance: Number(payload.account.frozenBalance || 0),
-            debtBalance: Number(payload.account.debtBalance || 0),
-          })
-        }
-      } catch {
-        // Header credits are a convenience; page-level errors handle recovery.
+  const loadCredits = useCallback(async () => {
+    try {
+      const response = await fetch('/api/reelflow/credits')
+      const payload = await response.json()
+      if (!response.ok) return
+      if (payload?.account) {
+        setCredits({
+          balance: Number(payload.account.balance || 0),
+          frozenBalance: Number(payload.account.frozenBalance || 0),
+          debtBalance: Number(payload.account.debtBalance || 0),
+        })
       }
-    }
-    void loadCredits()
-    return () => {
-      alive = false
+    } catch {
+      // Header credits are a convenience; page-level errors handle recovery.
     }
   }, [])
+
+  // Refresh the header balance on mount, on navigation, and whenever a tool
+  // reports a credit change via the shared `reelflow:credits-changed` event.
+  useEffect(() => {
+    void loadCredits()
+  }, [loadCredits, location.pathname])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const handler = () => void loadCredits()
+    window.addEventListener('reelflow:credits-changed', handler)
+    return () => window.removeEventListener('reelflow:credits-changed', handler)
+  }, [loadCredits])
 
   useEffect(() => {
     if (!user || claimingInviteCode || typeof window === 'undefined') return
@@ -171,37 +177,37 @@ export function ReelflowShell({ children }: ShellProps) {
         ].join(' ')}
         data-collapsed={sidebarCollapsed}
       >
-        <Link
-          to="/$lang/reelflow"
-          params={{ lang: locale }}
-          activeOptions={{ exact: true }}
+        <div
           className={[
-            'mb-5 flex items-center gap-3 px-2',
-            sidebarCollapsed ? 'justify-center' : '',
+            'mb-5 flex px-1',
+            sidebarCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between gap-2',
           ].join(' ')}
-          aria-label="Reelflow"
-          title={sidebarCollapsed ? 'Reelflow' : undefined}
         >
-          <BrandMark className="h-12 w-12" fallbackIconClassName="h-6 w-6" />
-          <span className={sidebarCollapsed ? 'hidden' : ''}>
-            <span className="reelflow-display block text-[1.15rem] leading-5">Reelflow</span>
-            <span className="block text-xs text-sidebar-foreground/55">{shell.workspace}</span>
-          </span>
-        </Link>
+          <Link
+            to="/$lang/reelflow"
+            params={{ lang: locale }}
+            activeOptions={{ exact: true }}
+            className="flex min-w-0 items-center gap-3"
+            aria-label="Reelflow"
+            title={sidebarCollapsed ? 'Reelflow' : undefined}
+          >
+            <BrandMark className="h-11 w-11 shrink-0" fallbackIconClassName="h-6 w-6" />
+            <span className={sidebarCollapsed ? 'hidden' : 'min-w-0'}>
+              <span className="reelflow-display block truncate text-[1.15rem] leading-5">Reelflow</span>
+              <span className="block truncate text-xs text-sidebar-foreground/55">{shell.workspace}</span>
+            </span>
+          </Link>
 
-        <button
-          type="button"
-          className={[
-            'mb-5 flex h-9 items-center rounded-md px-2 text-sm text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none',
-            sidebarCollapsed ? 'justify-center' : 'justify-start gap-2',
-          ].join(' ')}
-          onClick={toggleSidebar}
-          aria-label={sidebarCollapsed ? shell.expandSidebar : shell.collapseSidebar}
-          title={sidebarCollapsed ? shell.expandSidebar : shell.collapseSidebar}
-        >
-          {sidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" aria-hidden="true" /> : <PanelLeftClose className="h-4 w-4" aria-hidden="true" />}
-          {!sidebarCollapsed && <span>{shell.collapseSidebar}</span>}
-        </button>
+          <button
+            type="button"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/55 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none"
+            onClick={toggleSidebar}
+            aria-label={sidebarCollapsed ? shell.expandSidebar : shell.collapseSidebar}
+            title={sidebarCollapsed ? shell.expandSidebar : shell.collapseSidebar}
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" aria-hidden="true" /> : <PanelLeftClose className="h-4 w-4" aria-hidden="true" />}
+          </button>
+        </div>
 
         <nav className="reelflow-sidebar-nav flex-1 space-y-5 overflow-y-auto pb-4">
           <NavGroup collapsed={sidebarCollapsed}>
@@ -247,10 +253,6 @@ export function ReelflowShell({ children }: ShellProps) {
               >
                 <BrandMark className="h-10 w-10" fallbackIconClassName="h-5 w-5" />
               </Link>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{shell.workspaceName}</p>
-                <p className="hidden text-xs text-muted-foreground sm:block">{shell.workspaceHint}</p>
-              </div>
             </div>
 
             <div className="flex items-center gap-2">

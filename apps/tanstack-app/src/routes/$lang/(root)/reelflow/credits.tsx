@@ -2,15 +2,15 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import QRCode from 'qrcode'
-import { AlertTriangle, ArrowRight, CheckCircle2, Coins, CreditCard, History, Loader2, LockKeyhole, RefreshCw, ShieldCheck, TrendingDown, TrendingUp, WalletCards } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { AlertTriangle, ArrowRight, Coins, Crown, History, LockKeyhole, RefreshCw, ShieldCheck, TrendingDown, TrendingUp, WalletCards } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Badge } from '@libs/react-shared/ui/badge'
 import { Button } from '@libs/react-shared/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@libs/react-shared/ui/dialog'
+import { Input } from '@libs/react-shared/ui/input'
+import { Label } from '@libs/react-shared/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@libs/react-shared/ui/table'
+import { cn } from '@libs/ui/utils/cn'
 import { PageHeader, SkeletonRows } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/credits')({
@@ -21,6 +21,14 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/credits')({
   component: ReelflowCreditsPage,
 })
 
+// Placeholder custom-amount maths (mirrors the checkout page). Easy to tune later.
+const CUSTOM_RATE = 0.09 // $ per credit
+const CUSTOM_MIN = 100
+const CUSTOM_STEP = 50
+const CUSTOM_DEFAULT = 300
+
+type CreditPack = { id: string; credits: number; bonus?: number; amount: number; recommended?: boolean }
+
 type WorkspaceCreditAccount = {
   balance: number
   frozenBalance: number
@@ -28,16 +36,6 @@ type WorkspaceCreditAccount = {
   totalGranted: number
   totalConsumed: number
   updatedAt: string
-}
-
-type WorkspaceCreditPlan = {
-  id: string
-  provider: string
-  amount: number
-  currency: string
-  credits: number
-  recommended: boolean
-  i18n?: Record<string, { name: string; description: string; duration: string; features?: string[] }>
 }
 
 type WorkspaceCreditLedger = {
@@ -56,19 +54,16 @@ type WorkspaceCreditLedger = {
 type CreditsResponse = {
   workspace: { id: string; name: string }
   account: WorkspaceCreditAccount
-  plans: WorkspaceCreditPlan[]
   ledger: WorkspaceCreditLedger[]
 }
 
 function ReelflowCreditsPage() {
   const { t, locale } = useTranslation()
+  const r = t.reelflow.credits.recharge
   const [data, setData] = useState<CreditsResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [buyingPlanId, setBuyingPlanId] = useState<string | null>(null)
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
-  const [qrOrderId, setQrOrderId] = useState<string | null>(null)
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null)
+  const [customCredits, setCustomCredits] = useState(CUSTOM_DEFAULT)
 
   const loadCredits = async () => {
     setLoading(true)
@@ -87,112 +82,38 @@ function ReelflowCreditsPage() {
 
   useEffect(() => {
     void loadCredits()
-    return () => {
-      if (pollingInterval) clearInterval(pollingInterval)
-    }
   }, [])
 
-  const formatCredits = (value: number) => {
-    return new Intl.NumberFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', { maximumFractionDigits: 2 }).format(value)
-  }
+  const formatCredits = (value: number) =>
+    new Intl.NumberFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', { maximumFractionDigits: 2 }).format(value)
 
-  const formatMoney = (amount: number, currency: string) => {
-    return new Intl.NumberFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
-      style: 'currency',
-      currency,
-    }).format(amount)
-  }
-
-  const formatDate = (value: string) => {
-    return new Intl.DateTimeFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
+  const formatDate = (value: string) =>
+    new Intl.DateTimeFormat(locale === 'zh-CN' ? 'zh-CN' : 'en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     }).format(new Date(value))
-  }
 
-  const startWechatPolling = (orderId: string) => {
-    if (pollingInterval) clearInterval(pollingInterval)
-
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/payment/query?orderId=${orderId}&provider=wechat`)
-        const payload = await response.json()
-
-        if (payload.status === 'paid') {
-          clearInterval(interval)
-          setPollingInterval(null)
-          setQrCodeUrl(null)
-          setQrOrderId(null)
-          toast.success(t.reelflow.credits.purchaseSuccess)
-          void loadCredits()
-        } else if (payload.status === 'failed') {
-          clearInterval(interval)
-          setPollingInterval(null)
-          toast.error(t.reelflow.credits.purchaseFailed)
-          setQrCodeUrl(null)
-          setQrOrderId(null)
-        }
-      } catch (err) {
-        console.error('Reelflow credit payment polling failed:', err)
-      }
-    }, 3000)
-
-    setPollingInterval(interval)
-  }
-
-  const closeQrDialog = () => {
-    if (pollingInterval) clearInterval(pollingInterval)
-    setPollingInterval(null)
-    setQrCodeUrl(null)
-    setQrOrderId(null)
-  }
-
-  const buyPlan = async (plan: WorkspaceCreditPlan) => {
-    setBuyingPlanId(plan.id)
-    try {
-      const response = await fetch('/api/payment/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: plan.id, provider: plan.provider }),
-      })
-      const payload = await response.json()
-      if (!response.ok) throw new Error(payload?.error || t.reelflow.credits.purchaseFailed)
-
-      if (plan.provider === 'wechat') {
-        const qrDataUrl = await QRCode.toDataURL(payload.paymentUrl)
-        setQrCodeUrl(qrDataUrl)
-        setQrOrderId(payload.providerOrderId)
-        startWechatPolling(payload.providerOrderId)
-      } else if (payload.paymentUrl) {
-        window.location.href = payload.paymentUrl
-      } else {
-        throw new Error(t.reelflow.credits.purchaseFailed)
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : t.reelflow.credits.purchaseFailed
-      toast.error(t.reelflow.credits.purchaseFailed, { description: message })
-    } finally {
-      setBuyingPlanId(null)
-    }
-  }
+  const customAmount = useMemo(() => {
+    const credits = Math.max(CUSTOM_MIN, Number(customCredits) || 0)
+    return Math.round(credits * CUSTOM_RATE)
+  }, [customCredits])
 
   const account = data?.account
   const ledgerTypeText = (type: string) => (t.reelflow.credits.ledgerTypes as Record<string, string>)[type] || type
-  const providerText = (provider: string) => (t.reelflow.credits.providers as Record<string, string>)[provider] || provider
+  const packs = r.packs as CreditPack[]
 
   return (
     <main className="min-h-screen" data-testid="reelflow-credits-page">
       <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         <PageHeader
-          eyebrow={t.reelflow.shell.workspaceName}
           title={t.reelflow.credits.title}
           description={t.reelflow.credits.description}
           actions={
             <>
               <Button type="button" variant="outline" onClick={loadCredits} disabled={loading}>
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />}
+                <RefreshCw className={cn('mr-2 h-4 w-4', loading && 'animate-spin')} aria-hidden="true" />
                 {t.reelflow.common.refresh}
               </Button>
               <Button variant="outline" asChild>
@@ -215,6 +136,7 @@ function ReelflowCreditsPage() {
           <SkeletonRows count={4} className="h-28" />
         ) : data && account ? (
           <>
+            {/* Balance + account metrics */}
             <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
               <div className="reelflow-hero-panel p-6" data-testid="reelflow-credit-balance">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -223,9 +145,7 @@ function ReelflowCreditsPage() {
                       <WalletCards className="h-4 w-4" aria-hidden="true" />
                       {t.reelflow.credits.balance}
                     </div>
-                    <p className="reelflow-display reelflow-num mt-3 text-5xl leading-none sm:text-6xl">
-                      {formatCredits(account.balance)}
-                    </p>
+                    <p className="reelflow-display reelflow-num mt-3 text-5xl leading-none sm:text-6xl">{formatCredits(account.balance)}</p>
                     <p className="mt-3 text-sm text-muted-foreground">{t.reelflow.credits.balanceHint}</p>
                   </div>
                   <Badge variant={account.debtBalance > 0 ? 'destructive' : 'secondary'} className="w-fit">
@@ -234,114 +154,117 @@ function ReelflowCreditsPage() {
                 </div>
 
                 <div className="mt-7 grid gap-3 sm:grid-cols-2">
-                  <CreditMetric
-                    icon={LockKeyhole}
-                    testId="reelflow-credit-frozen"
-                    title={t.reelflow.credits.frozen}
-                    value={formatCredits(account.frozenBalance)}
-                    hint={t.reelflow.credits.frozenHint}
-                    tone="amber"
-                  />
-                  <CreditMetric
-                    icon={AlertTriangle}
-                    testId="reelflow-credit-debt"
-                    title={t.reelflow.credits.debt}
-                    value={formatCredits(account.debtBalance)}
-                    hint={t.reelflow.credits.debtHint}
-                    danger={account.debtBalance > 0}
-                  />
+                  <CreditMetric icon={LockKeyhole} testId="reelflow-credit-frozen" title={t.reelflow.credits.frozen} value={formatCredits(account.frozenBalance)} hint={t.reelflow.credits.frozenHint} tone="amber" />
+                  <CreditMetric icon={AlertTriangle} testId="reelflow-credit-debt" title={t.reelflow.credits.debt} value={formatCredits(account.debtBalance)} hint={t.reelflow.credits.debtHint} danger={account.debtBalance > 0} />
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <CreditMetric
-                  icon={TrendingUp}
-                  testId="reelflow-credit-total-granted"
-                  title={t.reelflow.credits.totalGranted}
-                  value={formatCredits(account.totalGranted)}
-                  hint={t.reelflow.credits.totalGrantedHint}
-                  tone="green"
-                />
-                <CreditMetric
-                  icon={TrendingDown}
-                  testId="reelflow-credit-total-consumed"
-                  title={t.reelflow.credits.totalConsumed}
-                  value={formatCredits(account.totalConsumed)}
-                  hint={t.reelflow.credits.totalConsumedHint}
-                  tone="blue"
-                />
+                <CreditMetric icon={TrendingUp} testId="reelflow-credit-total-granted" title={t.reelflow.credits.totalGranted} value={formatCredits(account.totalGranted)} hint={t.reelflow.credits.totalGrantedHint} tone="green" />
+                <CreditMetric icon={TrendingDown} testId="reelflow-credit-total-consumed" title={t.reelflow.credits.totalConsumed} value={formatCredits(account.totalConsumed)} hint={t.reelflow.credits.totalConsumedHint} tone="blue" />
               </div>
             </section>
 
-            <section className="reelflow-panel p-5">
+            {/* Recharge: 3 packs + custom amount -> checkout (reserved payment selection) */}
+            <section className="reelflow-panel p-5" data-testid="reelflow-credit-recharge">
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="reelflow-display text-xl">{t.reelflow.credits.buyTitle}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">{t.reelflow.credits.buyDescription}</p>
+                  <h2 className="reelflow-display text-xl">{r.title}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">{r.subtitle}</p>
                 </div>
                 <Badge variant="secondary" className="gap-1.5">
                   <ShieldCheck className="h-3 w-3" aria-hidden="true" />
                   {t.reelflow.credits.noExpiry}
                 </Badge>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {data.plans.map((plan) => {
-                  const planText = plan.i18n?.[locale] || plan.i18n?.en
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {packs.map((pack) => {
+                  const total = pack.credits + (pack.bonus || 0)
+                  const perCredit = (pack.amount / total).toFixed(3)
+                  const href = `/${locale}/checkout?type=credits&pack=${pack.id}`
                   return (
                     <article
-                      key={plan.id}
-                      className={[
-                        'relative flex min-h-72 flex-col overflow-hidden p-5',
-                        plan.recommended ? 'reelflow-hero-panel' : 'reelflow-soft-tile',
-                      ].join(' ')}
-                      data-testid={`reelflow-credit-plan-${plan.id}`}
+                      key={pack.id}
+                      className={cn('relative flex flex-col overflow-hidden rounded-2xl p-5', pack.recommended ? 'reelflow-hero-panel ring-1 ring-primary/30' : 'reelflow-soft-tile')}
+                      style={{ overflow: 'visible' }}
+                      data-testid={`reelflow-credit-pack-${pack.id}`}
                     >
-                      {plan.recommended && (
-                        <span className="absolute right-0 top-0 h-24 w-24 translate-x-10 -translate-y-10 rounded-full bg-primary/15 blur-2xl" aria-hidden="true" />
+                      {pack.recommended && (
+                        <span className="absolute -top-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-[0_8px_20px_-8px_var(--reelflow-coral)]">
+                          <Crown className="h-3.5 w-3.5" aria-hidden="true" />
+                          {t.reelflow.credits.recommended}
+                        </span>
                       )}
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="text-base font-semibold">{planText?.name || plan.id}</h3>
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.reelflow.credits.planCardDescription}</p>
-                        </div>
-                        {plan.recommended && <Badge>{t.reelflow.credits.recommended}</Badge>}
+                      <div className="flex items-baseline gap-2">
+                        <span className="reelflow-display reelflow-num text-4xl">{total.toLocaleString()}</span>
+                        <span className="text-sm text-muted-foreground">{r.unit}</span>
                       </div>
-                      <div className="mt-6">
-                        <p className="text-sm font-medium text-muted-foreground">{formatMoney(plan.amount, plan.currency)}</p>
-                        <p className="reelflow-display reelflow-num mt-2 text-4xl leading-none">
-                          {formatCredits(plan.credits)}
-                          <span className="ml-2 text-sm font-normal text-muted-foreground">{t.reelflow.common.credits}</span>
-                        </p>
-                        <p className="mt-3 text-sm text-muted-foreground">{providerText(plan.provider)}</p>
+                      {pack.bonus ? (
+                        <span className="mt-2 w-fit">
+                          <span className="reelflow-pill" data-tone="warning">{r.bonusTag.replace('{n}', String(pack.bonus))}</span>
+                        </span>
+                      ) : (
+                        <span className="mt-2 text-xs text-muted-foreground">{r.perCredit.replace('{n}', perCredit)}</span>
+                      )}
+                      <div className="mt-5 flex items-end gap-1">
+                        <span className="reelflow-display reelflow-num text-3xl">${pack.amount}</span>
                       </div>
-                      <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
-                        {[t.reelflow.credits.planBenefitWorkspace, t.reelflow.credits.planBenefitNoExpiry].map((feature) => (
-                          <li key={feature} className="flex gap-2">
-                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                            <span className="min-w-0">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="mt-auto pt-5">
-                        <Button type="button" className="w-full" onClick={() => buyPlan(plan)} disabled={buyingPlanId === plan.id} data-testid={`reelflow-buy-plan-${plan.id}`}>
-                          {buyingPlanId === plan.id ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                          ) : (
-                            <CreditCard className="mr-2 h-4 w-4" aria-hidden="true" />
-                          )}
-                          {t.reelflow.credits.buyNow}
-                          <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-                        </Button>
-                      </div>
+                      {pack.bonus ? <span className="mt-1 text-xs text-muted-foreground">{r.perCredit.replace('{n}', perCredit)}</span> : null}
+                      <Button asChild size="lg" variant={pack.recommended ? 'default' : 'outline'} className="mt-5 w-full">
+                        <a href={href} data-testid={`reelflow-credit-buy-${pack.id}`}>
+                          {r.buy}
+                          <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                        </a>
+                      </Button>
                     </article>
                   )
                 })}
               </div>
+
+              {/* Custom amount */}
+              <div className="reelflow-muted-tile mt-4 flex flex-col gap-5 rounded-2xl p-5 md:flex-row md:items-end md:justify-between">
+                <div className="max-w-md">
+                  <h3 className="reelflow-display text-lg">{r.custom.title}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{r.custom.hint}</p>
+                  <div className="mt-4 max-w-xs">
+                    <Label htmlFor="custom-credits">{r.custom.label}</Label>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <Input
+                        id="custom-credits"
+                        type="number"
+                        min={CUSTOM_MIN}
+                        step={CUSTOM_STEP}
+                        value={customCredits}
+                        onChange={(event) => setCustomCredits(Number(event.target.value))}
+                        onBlur={() => setCustomCredits((c) => Math.max(CUSTOM_MIN, Math.round(c / CUSTOM_STEP) * CUSTOM_STEP))}
+                        className="reelflow-num"
+                        data-testid="reelflow-credit-custom-input"
+                      />
+                      <span className="text-sm text-muted-foreground">{r.unit}</span>
+                    </div>
+                    <p className="mt-1.5 text-xs text-muted-foreground">{r.custom.minHint.replace('{n}', String(CUSTOM_MIN)).replace('{step}', String(CUSTOM_STEP))}</p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 md:items-end">
+                  <div className="md:text-right">
+                    <p className="text-xs text-muted-foreground">{r.custom.amountLabel}</p>
+                    <p className="reelflow-display reelflow-num text-3xl">${customAmount}</p>
+                  </div>
+                  <Button asChild size="lg">
+                    <a href={`/${locale}/checkout?type=credits&credits=${Math.max(CUSTOM_MIN, customCredits)}&custom=1`} data-testid="reelflow-credit-buy-custom">
+                      {r.custom.cta}
+                      <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                    </a>
+                  </Button>
+                </div>
+              </div>
             </section>
 
+            {/* Ledger */}
             <section className="reelflow-panel overflow-hidden">
               <div className="px-5 py-4 shadow-[inset_0_-1px_0_var(--reelflow-hairline)]">
-                <h2 className="text-lg font-semibold">{t.reelflow.credits.ledgerTitle}</h2>
+                <h2 className="reelflow-display text-lg">{t.reelflow.credits.ledgerTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{t.reelflow.credits.ledgerDescription}</p>
               </div>
               {data.ledger.length === 0 ? (
@@ -368,9 +291,7 @@ function ReelflowCreditsPage() {
                           <TableCell>
                             <div className="min-w-56">
                               <p>{item.description || ledgerTypeText(item.type)}</p>
-                              {(item.orderId || item.jobId) && (
-                                <p className="mt-1 text-xs text-muted-foreground">{item.orderId || item.jobId}</p>
-                              )}
+                              {(item.orderId || item.jobId) && <p className="mt-1 text-xs text-muted-foreground">{item.orderId || item.jobId}</p>}
                             </div>
                           </TableCell>
                           <TableCell className={item.amount >= 0 ? 'text-primary' : 'text-destructive'}>
@@ -388,19 +309,6 @@ function ReelflowCreditsPage() {
           </>
         ) : null}
       </div>
-
-      <Dialog open={!!qrCodeUrl} onOpenChange={(open) => !open && closeQrDialog()}>
-        <DialogContent className="overscroll-contain sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-center">{t.reelflow.credits.wechatQrTitle}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4">
-            {qrCodeUrl && <img src={qrCodeUrl} alt={t.reelflow.credits.wechatQrAlt} width={256} height={256} className="h-64 w-64" />}
-            <p className="text-center text-sm text-muted-foreground">{t.reelflow.credits.wechatQrHint}</p>
-            {qrOrderId && <p className="text-xs text-muted-foreground">{qrOrderId}</p>}
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   )
 }
@@ -440,9 +348,7 @@ function CreditMetric({
         </div>
         <p className="text-sm font-medium text-muted-foreground">{title}</p>
       </div>
-      <p className={`reelflow-display reelflow-num mt-4 text-2xl ${danger ? 'text-destructive' : ''}`}>
-        {value}
-      </p>
+      <p className={`reelflow-display reelflow-num mt-4 text-2xl ${danger ? 'text-destructive' : ''}`}>{value}</p>
       {hint && <p className="mt-2 text-xs leading-5 text-muted-foreground">{hint}</p>}
     </section>
   )

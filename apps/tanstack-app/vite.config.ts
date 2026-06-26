@@ -1,6 +1,9 @@
 import { config as dotenvConfig } from 'dotenv'
 import path from 'node:path'
 
+// Load local overrides first (.env.local wins), then base .env. dotenv does not
+// overwrite already-set vars, so .env.local takes precedence over .env.
+dotenvConfig({ path: path.resolve(__dirname, '../../.env.local') })
 dotenvConfig({ path: path.resolve(__dirname, '../../.env') })
 
 // Resolve SQLITE_DB_PATH to absolute — relative paths are resolved against monorepo root

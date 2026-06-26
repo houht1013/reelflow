@@ -114,7 +114,10 @@ export async function notifyReelflowJobFailed(input: {
     userId: input.userId,
     type: 'job_failed',
     title: 'Reelflow task needs attention',
-    body: input.errorMessage,
+    // Keep the user-facing body generic; the raw provider error (which can be
+    // an HTML gateway page) is kept only in `data` for admin/diagnostics and is
+    // never rendered on user pages. The UI localizes this by type anyway.
+    body: 'The task could not be completed. Please try again.',
     data: {
       jobId: input.jobId,
       errorMessage: input.errorMessage,

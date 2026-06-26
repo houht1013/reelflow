@@ -2,9 +2,9 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { AlertCircle, Archive, CheckCircle2, Loader2, Mic2, Sparkles } from 'lucide-react'
+import { AlertCircle, Archive, CheckCircle2, Loader2, Mic2, Sparkles, X } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Button } from '@libs/react-shared/ui/button'
 import { Label } from '@libs/react-shared/ui/label'
@@ -23,6 +23,8 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/voice')({
 const MAX_TEXT_LENGTH = 2000
 const VOICE_OPTIONS = ['alloy', 'verse', 'aria', 'sage', 'nova'] as const
 const SPEED_OPTIONS = ['0.75', '1', '1.25', '1.5'] as const
+// After this many seconds, surface a "model is busy, hang tight" hint.
+const SLOW_HINT_SECONDS = 20
 
 type VoiceToolResult = {
   asset: {
@@ -52,9 +54,12 @@ function ReelflowVoiceToolPage() {
   const [voice, setVoice] = useState<string>(VOICE_OPTIONS[0])
   const [speed, setSpeed] = useState<string>('1')
   const [generating, setGenerating] = useState(false)
+  const [elapsed, setElapsed] = useState(0)
   const [result, setResult] = useState<VoiceToolResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [textError, setTextError] = useState<string | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const voiceLabels = t.reelflow.voiceTool.voices as Record<string, string>
   const estimatedCost = text.trim().length
@@ -74,9 +79,14 @@ function ReelflowVoiceToolPage() {
       return
     }
 
+    const controller = new AbortController()
+    abortRef.current = controller
     setGenerating(true)
     setError(null)
     setTextError(null)
+    setElapsed(0)
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000)
     try {
       const response = await fetch('/api/reelflow/tools/voice', {
         method: 'POST',
@@ -86,6 +96,7 @@ function ReelflowVoiceToolPage() {
           voice,
           speed: Number(speed),
         }),
+        signal: controller.signal,
       })
       const payload = await response.json()
       if (!response.ok) {
@@ -105,14 +116,30 @@ function ReelflowVoiceToolPage() {
 
       setResult(payload.data)
       toast.success(t.reelflow.voiceTool.success)
+      // A charge just settled — let the shell header refresh its balance.
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('reelflow:credits-changed'))
     } catch (err) {
+      // User-initiated cancel: not an error, just stop quietly.
+      if (err instanceof DOMException && err.name === 'AbortError') return
       const message = err instanceof Error ? err.message : t.reelflow.voiceTool.errors.failed
       setError(message)
       toast.error(t.reelflow.voiceTool.errors.failed, { description: message })
     } finally {
+      if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+      abortRef.current = null
       setGenerating(false)
     }
   }
+
+  const cancelGenerate = () => abortRef.current?.abort()
+
+  // Stop the timer / in-flight request if the user leaves the page.
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+      abortRef.current?.abort()
+    }
+  }, [])
 
   const resetVoiceForm = () => {
     setText('')
@@ -241,9 +268,15 @@ function ReelflowVoiceToolPage() {
 
           <div className="flex min-h-[420px] items-center justify-center rounded-xl bg-[radial-gradient(circle_at_50%_0%,color-mix(in_oklch,var(--reelflow-coral)_8%,transparent),transparent_42%),color-mix(in_oklch,var(--background)_82%,white)] p-6 shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
             {generating ? (
-              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+              <div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
                 <Loader2 className="h-9 w-9 animate-spin" aria-hidden="true" />
-                <p>{t.reelflow.voiceTool.generatingHint}</p>
+                <p>{t.reelflow.voiceTool.generatingHint} · {elapsed}s</p>
+                {elapsed >= SLOW_HINT_SECONDS && (
+                  <p className="max-w-xs text-xs text-muted-foreground/80">{t.reelflow.voiceTool.generatingSlow}</p>
+                )}
+                <Button type="button" variant="outline" size="sm" className="mt-1 rounded-full" onClick={cancelGenerate} data-testid="reelflow-voice-cancel">
+                  <X className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />{t.reelflow.voiceTool.cancel}
+                </Button>
               </div>
             ) : result ? (
               <div className="w-full max-w-md text-center">
