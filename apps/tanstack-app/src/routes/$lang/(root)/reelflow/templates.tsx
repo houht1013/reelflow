@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/use-translation'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Button } from '@libs/react-shared/ui/button'
 import { Input } from '@libs/react-shared/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@libs/react-shared/ui/select'
 import { cn } from '@libs/ui/utils/cn'
 import { AlertCircle, ArrowRight, Flame, Layers3, LockKeyhole, Loader2, RefreshCw, Search, Sparkles, Star } from 'lucide-react'
 import { EmptyState, PageHeader, TonePill, categoryVisual } from '@/components/reelflow-ui'
@@ -45,7 +46,8 @@ function ReelflowTemplatesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
-  const [activeTag, setActiveTag] = useState<string>('')
+  const [activeCategory, setActiveCategory] = useState<string>('')
+  const [sortBy, setSortBy] = useState<'recommended' | 'newest' | 'hot'>('recommended')
 
   const loadTemplates = async () => {
     setLoading(true)
@@ -68,22 +70,28 @@ function ReelflowTemplatesPage() {
 
   const badgeLabels = t.reelflow.templates.badges as Record<TemplateBadge, string>
 
-  const allTags = useMemo(() => {
+  const allCategories = useMemo(() => {
     const set = new Set<string>()
-    for (const tpl of templates) for (const tag of tpl.metadata?.tags ?? []) set.add(tag)
+    for (const tpl of templates) if (tpl.category) set.add(tpl.category)
     return Array.from(set)
   }, [templates])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return templates.filter((tpl) => {
-      const tags = tpl.metadata?.tags ?? []
-      if (activeTag && !tags.includes(activeTag)) return false
+    const matched = templates.filter((tpl) => {
+      if (activeCategory && tpl.category !== activeCategory) return false
       if (!q) return true
+      const tags = tpl.metadata?.tags ?? []
       const haystack = [tpl.name, tpl.description ?? '', tpl.category ?? '', ...tags].join(' ').toLowerCase()
       return haystack.includes(q)
     })
-  }, [templates, query, activeTag])
+    const badgeRank = (tpl: ReelflowTemplate, badge: TemplateBadge) => ((tpl.metadata?.badges ?? []).includes(badge) ? 0 : 1)
+    const sorted = [...matched]
+    if (sortBy === 'recommended') sorted.sort((a, b) => (a.recommended === b.recommended ? badgeRank(a, 'recommended') - badgeRank(b, 'recommended') : a.recommended ? -1 : 1))
+    else if (sortBy === 'newest') sorted.sort((a, b) => badgeRank(a, 'new') - badgeRank(b, 'new'))
+    else sorted.sort((a, b) => badgeRank(a, 'hot') - badgeRank(b, 'hot'))
+    return sorted
+  }, [templates, query, activeCategory, sortBy])
 
   return (
     <main className="min-h-screen" data-testid="reelflow-templates-page">
@@ -98,23 +106,35 @@ function ReelflowTemplatesPage() {
           }
         />
 
-        {/* Search + tag filters */}
-        <div className="mt-6 space-y-4">
-          <div className="relative max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-            <Input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t.reelflow.templates.searchPlaceholder}
-              className="pl-9"
-              data-testid="reelflow-template-search"
-            />
+        {/* Search + sort + category filters */}
+        <div className="mt-6 space-y-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative min-w-[220px] flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t.reelflow.templates.searchPlaceholder}
+                className="pl-9"
+                data-testid="reelflow-template-search"
+              />
+            </div>
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value as typeof sortBy)}>
+              <SelectTrigger className="w-auto min-w-[120px]" aria-label={t.reelflow.templates.sortLabel}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recommended">{t.reelflow.templates.sortRecommended}</SelectItem>
+                <SelectItem value="newest">{t.reelflow.templates.sortNewest}</SelectItem>
+                <SelectItem value="hot">{t.reelflow.templates.sortHot}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          {allTags.length > 0 && (
+          {allCategories.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              <TagChip active={activeTag === ''} onClick={() => setActiveTag('')}>{t.reelflow.templates.allTag}</TagChip>
-              {allTags.map((tag) => (
-                <TagChip key={tag} active={activeTag === tag} onClick={() => setActiveTag(activeTag === tag ? '' : tag)}>{tag}</TagChip>
+              <TagChip active={activeCategory === ''} onClick={() => setActiveCategory('')}>{t.reelflow.templates.allTag}</TagChip>
+              {allCategories.map((category) => (
+                <TagChip key={category} active={activeCategory === category} onClick={() => setActiveCategory(activeCategory === category ? '' : category)}>{category}</TagChip>
               ))}
             </div>
           )}
@@ -157,7 +177,13 @@ function ReelflowTemplatesPage() {
               const visual = categoryVisual(template.category)
               const FallbackIcon = visual.icon
               return (
-                <article key={template.id} className="reelflow-soft-tile group flex flex-col overflow-hidden p-0" data-testid={`reelflow-template-card-${template.code}`}>
+                <Link
+                  key={template.id}
+                  to="/$lang/reelflow/draft/$templateCode"
+                  params={{ lang: locale, templateCode: template.code }}
+                  className="reelflow-soft-tile group flex flex-col overflow-hidden p-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+                  data-testid={`reelflow-template-card-${template.code}`}
+                >
                   {/* Cover media */}
                   <div
                     className="relative aspect-[16/10] w-full overflow-hidden"
@@ -197,14 +223,12 @@ function ReelflowTemplatesPage() {
                         ))}
                       </div>
                     )}
-                    <Button className="mt-5 w-full" asChild>
-                      <Link to="/$lang/reelflow/draft" params={{ lang: locale }} search={{ template: template.code }} data-testid={`reelflow-template-use-${template.code}`}>
-                        {t.reelflow.generate.createFromTemplate}
-                        <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                      </Link>
-                    </Button>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary" data-testid={`reelflow-template-use-${template.code}`}>
+                      {t.reelflow.generate.createFromTemplate}
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                    </span>
                   </div>
-                </article>
+                </Link>
               )
             })}
           </section>

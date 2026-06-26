@@ -121,7 +121,7 @@ function ReelflowHomePage() {
             <h1 className="reelflow-display mt-3 text-[1.8rem] leading-[1.15] sm:text-[2.1rem]">{home.title}</h1>
           </div>
           <Button size="lg" className="shrink-0" asChild>
-            <Link to="/$lang/reelflow/draft" params={{ lang: locale }}>
+            <Link to="/$lang/reelflow/templates" params={{ lang: locale }}>
               <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
               {home.newVideo}
             </Link>
@@ -146,7 +146,7 @@ function ReelflowHomePage() {
               <SkeletonRows count={3} className="h-[68px]" />
             ) : recentJobs.length === 0 ? (
               <Link
-                to="/$lang/reelflow/draft"
+                to="/$lang/reelflow/templates"
                 params={{ lang: locale }}
                 className="reelflow-soft-tile group flex items-center gap-3 p-5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >

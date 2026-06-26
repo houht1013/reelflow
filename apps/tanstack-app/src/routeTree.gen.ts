@@ -93,7 +93,6 @@ import { Route as LangrootReelflowTemplatesRouteImport } from './routes/$lang/(r
 import { Route as LangrootReelflowNotificationsRouteImport } from './routes/$lang/(root)/reelflow/notifications'
 import { Route as LangrootReelflowInvitesRouteImport } from './routes/$lang/(root)/reelflow/invites'
 import { Route as LangrootReelflowImageRouteImport } from './routes/$lang/(root)/reelflow/image'
-import { Route as LangrootReelflowDraftRouteImport } from './routes/$lang/(root)/reelflow/draft'
 import { Route as LangrootReelflowCreditsRouteImport } from './routes/$lang/(root)/reelflow/credits'
 import { Route as LangrootReelflowAssetsRouteImport } from './routes/$lang/(root)/reelflow/assets'
 import { Route as LangrootBlogSlugRouteImport } from './routes/$lang/(root)/blog/$slug'
@@ -103,6 +102,7 @@ import { Route as ApiAdminCreditsTransactionsIndexRouteImport } from './routes/a
 import { Route as LangAdminUsersIdIndexRouteImport } from './routes/$lang/admin/users/$id/index'
 import { Route as LangAdminBlogIdIndexRouteImport } from './routes/$lang/admin/blog/$id/index'
 import { Route as LangrootReelflowJobsIndexRouteImport } from './routes/$lang/(root)/reelflow/jobs/index'
+import { Route as LangrootReelflowDraftIndexRouteImport } from './routes/$lang/(root)/reelflow/draft/index'
 import { Route as ApiReelflowJobsIdRetryRouteImport } from './routes/api/reelflow/jobs/$id/retry'
 import { Route as ApiReelflowJobsIdRerunRouteImport } from './routes/api/reelflow/jobs/$id/rerun'
 import { Route as ApiReelflowJobsIdDownloadDraftRouteImport } from './routes/api/reelflow/jobs/$id/download-draft'
@@ -112,6 +112,7 @@ import { Route as ApiAdminReelflowPricingIdRouteImport } from './routes/api/admi
 import { Route as ApiAdminReelflowJobsIdRouteImport } from './routes/api/admin/reelflow/jobs/$id'
 import { Route as LangAdminReelflowJobsIdRouteImport } from './routes/$lang/admin/reelflow/jobs/$id'
 import { Route as LangrootReelflowJobsIdRouteImport } from './routes/$lang/(root)/reelflow/jobs/$id'
+import { Route as LangrootReelflowDraftTemplateCodeRouteImport } from './routes/$lang/(root)/reelflow/draft/$templateCode'
 import { Route as ApiAdminReelflowTemplatesIdGrantsRouteImport } from './routes/api/admin/reelflow/templates/$id/grants'
 import { Route as ApiAdminReelflowProvidersIdHealthRouteImport } from './routes/api/admin/reelflow/providers/$id/health'
 
@@ -541,11 +542,6 @@ const LangrootReelflowImageRoute = LangrootReelflowImageRouteImport.update({
   path: '/reelflow/image',
   getParentRoute: () => LangrootRouteRoute,
 } as any)
-const LangrootReelflowDraftRoute = LangrootReelflowDraftRouteImport.update({
-  id: '/reelflow/draft',
-  path: '/reelflow/draft',
-  getParentRoute: () => LangrootRouteRoute,
-} as any)
 const LangrootReelflowCreditsRoute = LangrootReelflowCreditsRouteImport.update({
   id: '/reelflow/credits',
   path: '/reelflow/credits',
@@ -593,6 +589,12 @@ const LangrootReelflowJobsIndexRoute =
   LangrootReelflowJobsIndexRouteImport.update({
     id: '/reelflow/jobs/',
     path: '/reelflow/jobs/',
+    getParentRoute: () => LangrootRouteRoute,
+  } as any)
+const LangrootReelflowDraftIndexRoute =
+  LangrootReelflowDraftIndexRouteImport.update({
+    id: '/reelflow/draft/',
+    path: '/reelflow/draft/',
     getParentRoute: () => LangrootRouteRoute,
   } as any)
 const ApiReelflowJobsIdRetryRoute = ApiReelflowJobsIdRetryRouteImport.update({
@@ -644,6 +646,12 @@ const LangrootReelflowJobsIdRoute = LangrootReelflowJobsIdRouteImport.update({
   path: '/reelflow/jobs/$id',
   getParentRoute: () => LangrootRouteRoute,
 } as any)
+const LangrootReelflowDraftTemplateCodeRoute =
+  LangrootReelflowDraftTemplateCodeRouteImport.update({
+    id: '/reelflow/draft/$templateCode',
+    path: '/reelflow/draft/$templateCode',
+    getParentRoute: () => LangrootRouteRoute,
+  } as any)
 const ApiAdminReelflowTemplatesIdGrantsRoute =
   ApiAdminReelflowTemplatesIdGrantsRouteImport.update({
     id: '/grants',
@@ -706,7 +714,6 @@ export interface FileRoutesByFullPath {
   '/$lang/blog/$slug': typeof LangrootBlogSlugRoute
   '/$lang/reelflow/assets': typeof LangrootReelflowAssetsRoute
   '/$lang/reelflow/credits': typeof LangrootReelflowCreditsRoute
-  '/$lang/reelflow/draft': typeof LangrootReelflowDraftRoute
   '/$lang/reelflow/image': typeof LangrootReelflowImageRoute
   '/$lang/reelflow/invites': typeof LangrootReelflowInvitesRoute
   '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
@@ -744,6 +751,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/subscriptions/': typeof ApiAdminSubscriptionsIndexRoute
   '/api/admin/users/': typeof ApiAdminUsersIndexRoute
   '/api/reelflow/jobs/': typeof ApiReelflowJobsIndexRoute
+  '/$lang/reelflow/draft/$templateCode': typeof LangrootReelflowDraftTemplateCodeRoute
   '/$lang/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
   '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
   '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
@@ -753,6 +761,7 @@ export interface FileRoutesByFullPath {
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
+  '/$lang/reelflow/draft/': typeof LangrootReelflowDraftIndexRoute
   '/$lang/reelflow/jobs/': typeof LangrootReelflowJobsIndexRoute
   '/$lang/admin/blog/$id/': typeof LangAdminBlogIdIndexRoute
   '/$lang/admin/users/$id/': typeof LangAdminUsersIdIndexRoute
@@ -809,7 +818,6 @@ export interface FileRoutesByTo {
   '/$lang/blog/$slug': typeof LangrootBlogSlugRoute
   '/$lang/reelflow/assets': typeof LangrootReelflowAssetsRoute
   '/$lang/reelflow/credits': typeof LangrootReelflowCreditsRoute
-  '/$lang/reelflow/draft': typeof LangrootReelflowDraftRoute
   '/$lang/reelflow/image': typeof LangrootReelflowImageRoute
   '/$lang/reelflow/invites': typeof LangrootReelflowInvitesRoute
   '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
@@ -847,6 +855,7 @@ export interface FileRoutesByTo {
   '/api/admin/subscriptions': typeof ApiAdminSubscriptionsIndexRoute
   '/api/admin/users': typeof ApiAdminUsersIndexRoute
   '/api/reelflow/jobs': typeof ApiReelflowJobsIndexRoute
+  '/$lang/reelflow/draft/$templateCode': typeof LangrootReelflowDraftTemplateCodeRoute
   '/$lang/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
   '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
   '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
@@ -856,6 +865,7 @@ export interface FileRoutesByTo {
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
+  '/$lang/reelflow/draft': typeof LangrootReelflowDraftIndexRoute
   '/$lang/reelflow/jobs': typeof LangrootReelflowJobsIndexRoute
   '/$lang/admin/blog/$id': typeof LangAdminBlogIdIndexRoute
   '/$lang/admin/users/$id': typeof LangAdminUsersIdIndexRoute
@@ -917,7 +927,6 @@ export interface FileRoutesById {
   '/$lang/(root)/blog/$slug': typeof LangrootBlogSlugRoute
   '/$lang/(root)/reelflow/assets': typeof LangrootReelflowAssetsRoute
   '/$lang/(root)/reelflow/credits': typeof LangrootReelflowCreditsRoute
-  '/$lang/(root)/reelflow/draft': typeof LangrootReelflowDraftRoute
   '/$lang/(root)/reelflow/image': typeof LangrootReelflowImageRoute
   '/$lang/(root)/reelflow/invites': typeof LangrootReelflowInvitesRoute
   '/$lang/(root)/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
@@ -955,6 +964,7 @@ export interface FileRoutesById {
   '/api/admin/subscriptions/': typeof ApiAdminSubscriptionsIndexRoute
   '/api/admin/users/': typeof ApiAdminUsersIndexRoute
   '/api/reelflow/jobs/': typeof ApiReelflowJobsIndexRoute
+  '/$lang/(root)/reelflow/draft/$templateCode': typeof LangrootReelflowDraftTemplateCodeRoute
   '/$lang/(root)/reelflow/jobs/$id': typeof LangrootReelflowJobsIdRoute
   '/$lang/admin/reelflow/jobs/$id': typeof LangAdminReelflowJobsIdRoute
   '/api/admin/reelflow/jobs/$id': typeof ApiAdminReelflowJobsIdRoute
@@ -964,6 +974,7 @@ export interface FileRoutesById {
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
+  '/$lang/(root)/reelflow/draft/': typeof LangrootReelflowDraftIndexRoute
   '/$lang/(root)/reelflow/jobs/': typeof LangrootReelflowJobsIndexRoute
   '/$lang/admin/blog/$id/': typeof LangAdminBlogIdIndexRoute
   '/$lang/admin/users/$id/': typeof LangAdminUsersIdIndexRoute
@@ -1024,7 +1035,6 @@ export interface FileRouteTypes {
     | '/$lang/blog/$slug'
     | '/$lang/reelflow/assets'
     | '/$lang/reelflow/credits'
-    | '/$lang/reelflow/draft'
     | '/$lang/reelflow/image'
     | '/$lang/reelflow/invites'
     | '/$lang/reelflow/notifications'
@@ -1062,6 +1072,7 @@ export interface FileRouteTypes {
     | '/api/admin/subscriptions/'
     | '/api/admin/users/'
     | '/api/reelflow/jobs/'
+    | '/$lang/reelflow/draft/$templateCode'
     | '/$lang/reelflow/jobs/$id'
     | '/$lang/admin/reelflow/jobs/$id'
     | '/api/admin/reelflow/jobs/$id'
@@ -1071,6 +1082,7 @@ export interface FileRouteTypes {
     | '/api/reelflow/jobs/$id/download-draft'
     | '/api/reelflow/jobs/$id/rerun'
     | '/api/reelflow/jobs/$id/retry'
+    | '/$lang/reelflow/draft/'
     | '/$lang/reelflow/jobs/'
     | '/$lang/admin/blog/$id/'
     | '/$lang/admin/users/$id/'
@@ -1127,7 +1139,6 @@ export interface FileRouteTypes {
     | '/$lang/blog/$slug'
     | '/$lang/reelflow/assets'
     | '/$lang/reelflow/credits'
-    | '/$lang/reelflow/draft'
     | '/$lang/reelflow/image'
     | '/$lang/reelflow/invites'
     | '/$lang/reelflow/notifications'
@@ -1165,6 +1176,7 @@ export interface FileRouteTypes {
     | '/api/admin/subscriptions'
     | '/api/admin/users'
     | '/api/reelflow/jobs'
+    | '/$lang/reelflow/draft/$templateCode'
     | '/$lang/reelflow/jobs/$id'
     | '/$lang/admin/reelflow/jobs/$id'
     | '/api/admin/reelflow/jobs/$id'
@@ -1174,6 +1186,7 @@ export interface FileRouteTypes {
     | '/api/reelflow/jobs/$id/download-draft'
     | '/api/reelflow/jobs/$id/rerun'
     | '/api/reelflow/jobs/$id/retry'
+    | '/$lang/reelflow/draft'
     | '/$lang/reelflow/jobs'
     | '/$lang/admin/blog/$id'
     | '/$lang/admin/users/$id'
@@ -1234,7 +1247,6 @@ export interface FileRouteTypes {
     | '/$lang/(root)/blog/$slug'
     | '/$lang/(root)/reelflow/assets'
     | '/$lang/(root)/reelflow/credits'
-    | '/$lang/(root)/reelflow/draft'
     | '/$lang/(root)/reelflow/image'
     | '/$lang/(root)/reelflow/invites'
     | '/$lang/(root)/reelflow/notifications'
@@ -1272,6 +1284,7 @@ export interface FileRouteTypes {
     | '/api/admin/subscriptions/'
     | '/api/admin/users/'
     | '/api/reelflow/jobs/'
+    | '/$lang/(root)/reelflow/draft/$templateCode'
     | '/$lang/(root)/reelflow/jobs/$id'
     | '/$lang/admin/reelflow/jobs/$id'
     | '/api/admin/reelflow/jobs/$id'
@@ -1281,6 +1294,7 @@ export interface FileRouteTypes {
     | '/api/reelflow/jobs/$id/download-draft'
     | '/api/reelflow/jobs/$id/rerun'
     | '/api/reelflow/jobs/$id/retry'
+    | '/$lang/(root)/reelflow/draft/'
     | '/$lang/(root)/reelflow/jobs/'
     | '/$lang/admin/blog/$id/'
     | '/$lang/admin/users/$id/'
@@ -1939,13 +1953,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangrootReelflowImageRouteImport
       parentRoute: typeof LangrootRouteRoute
     }
-    '/$lang/(root)/reelflow/draft': {
-      id: '/$lang/(root)/reelflow/draft'
-      path: '/reelflow/draft'
-      fullPath: '/$lang/reelflow/draft'
-      preLoaderRoute: typeof LangrootReelflowDraftRouteImport
-      parentRoute: typeof LangrootRouteRoute
-    }
     '/$lang/(root)/reelflow/credits': {
       id: '/$lang/(root)/reelflow/credits'
       path: '/reelflow/credits'
@@ -2007,6 +2014,13 @@ declare module '@tanstack/react-router' {
       path: '/reelflow/jobs'
       fullPath: '/$lang/reelflow/jobs/'
       preLoaderRoute: typeof LangrootReelflowJobsIndexRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
+    '/$lang/(root)/reelflow/draft/': {
+      id: '/$lang/(root)/reelflow/draft/'
+      path: '/reelflow/draft'
+      fullPath: '/$lang/reelflow/draft/'
+      preLoaderRoute: typeof LangrootReelflowDraftIndexRouteImport
       parentRoute: typeof LangrootRouteRoute
     }
     '/api/reelflow/jobs/$id/retry': {
@@ -2072,6 +2086,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LangrootReelflowJobsIdRouteImport
       parentRoute: typeof LangrootRouteRoute
     }
+    '/$lang/(root)/reelflow/draft/$templateCode': {
+      id: '/$lang/(root)/reelflow/draft/$templateCode'
+      path: '/reelflow/draft/$templateCode'
+      fullPath: '/$lang/reelflow/draft/$templateCode'
+      preLoaderRoute: typeof LangrootReelflowDraftTemplateCodeRouteImport
+      parentRoute: typeof LangrootRouteRoute
+    }
     '/api/admin/reelflow/templates/$id/grants': {
       id: '/api/admin/reelflow/templates/$id/grants'
       path: '/grants'
@@ -2124,7 +2145,6 @@ interface LangrootRouteRouteChildren {
   LangrootBlogSlugRoute: typeof LangrootBlogSlugRoute
   LangrootReelflowAssetsRoute: typeof LangrootReelflowAssetsRoute
   LangrootReelflowCreditsRoute: typeof LangrootReelflowCreditsRoute
-  LangrootReelflowDraftRoute: typeof LangrootReelflowDraftRoute
   LangrootReelflowImageRoute: typeof LangrootReelflowImageRoute
   LangrootReelflowInvitesRoute: typeof LangrootReelflowInvitesRoute
   LangrootReelflowNotificationsRoute: typeof LangrootReelflowNotificationsRoute
@@ -2132,7 +2152,9 @@ interface LangrootRouteRouteChildren {
   LangrootReelflowVoiceRoute: typeof LangrootReelflowVoiceRoute
   LangrootBlogIndexRoute: typeof LangrootBlogIndexRoute
   LangrootReelflowIndexRoute: typeof LangrootReelflowIndexRoute
+  LangrootReelflowDraftTemplateCodeRoute: typeof LangrootReelflowDraftTemplateCodeRoute
   LangrootReelflowJobsIdRoute: typeof LangrootReelflowJobsIdRoute
+  LangrootReelflowDraftIndexRoute: typeof LangrootReelflowDraftIndexRoute
   LangrootReelflowJobsIndexRoute: typeof LangrootReelflowJobsIndexRoute
 }
 
@@ -2151,7 +2173,6 @@ const LangrootRouteRouteChildren: LangrootRouteRouteChildren = {
   LangrootBlogSlugRoute: LangrootBlogSlugRoute,
   LangrootReelflowAssetsRoute: LangrootReelflowAssetsRoute,
   LangrootReelflowCreditsRoute: LangrootReelflowCreditsRoute,
-  LangrootReelflowDraftRoute: LangrootReelflowDraftRoute,
   LangrootReelflowImageRoute: LangrootReelflowImageRoute,
   LangrootReelflowInvitesRoute: LangrootReelflowInvitesRoute,
   LangrootReelflowNotificationsRoute: LangrootReelflowNotificationsRoute,
@@ -2159,7 +2180,10 @@ const LangrootRouteRouteChildren: LangrootRouteRouteChildren = {
   LangrootReelflowVoiceRoute: LangrootReelflowVoiceRoute,
   LangrootBlogIndexRoute: LangrootBlogIndexRoute,
   LangrootReelflowIndexRoute: LangrootReelflowIndexRoute,
+  LangrootReelflowDraftTemplateCodeRoute:
+    LangrootReelflowDraftTemplateCodeRoute,
   LangrootReelflowJobsIdRoute: LangrootReelflowJobsIdRoute,
+  LangrootReelflowDraftIndexRoute: LangrootReelflowDraftIndexRoute,
   LangrootReelflowJobsIndexRoute: LangrootReelflowJobsIndexRoute,
 }
 
