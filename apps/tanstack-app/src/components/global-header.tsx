@@ -14,7 +14,6 @@ import {
 import { ArrowRight, LayoutDashboard, LogOut, Menu, Settings, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@libs/react-shared/ui/avatar";
 import { useTranslation } from "@/hooks/use-translation";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { BrandMark } from "@/components/brand-mark";
 import { toast } from "sonner";
 import { cn } from "@libs/ui/utils/cn";
@@ -73,10 +72,10 @@ export default function Header({ className }: HeaderProps) {
     navigate({ to: `/${currentLocale}` });
   };
 
-  const navItems = [
+  const navItems: { href: string; label: string; newTab?: boolean }[] = [
     { href: `/${currentLocale}#product`, label: t.header.navigation.product },
     { href: `/${currentLocale}#workflow`, label: t.header.navigation.workflow },
-    { href: `/${currentLocale}/pricing`, label: t.header.navigation.pricing },
+    { href: `/${currentLocale}/pricing`, label: t.header.navigation.pricing, newTab: true },
     { href: `/${currentLocale}#docs`, label: t.header.navigation.docs },
   ];
 
@@ -103,6 +102,8 @@ export default function Header({ className }: HeaderProps) {
                 <a
                   key={item.href}
                   href={item.href}
+                  target={item.newTab ? "_blank" : undefined}
+                  rel={item.newTab ? "noopener noreferrer" : undefined}
                   className={cn(
                     "text-sm font-medium transition-colors",
                     isLandingPage ? "text-white/58 hover:text-white" : "text-muted-foreground hover:text-foreground"
@@ -115,8 +116,6 @@ export default function Header({ className }: HeaderProps) {
           )}
 
           <div className={cn("items-center gap-3", isMinimal ? "flex" : "hidden md:flex")}>
-            <ThemeToggle />
-
             {isMinimal ? null : isPending ? (
               <div className="h-8 w-24 rounded-full bg-white/10" />
             ) : user ? (
@@ -168,6 +167,8 @@ export default function Header({ className }: HeaderProps) {
               <a
                 key={item.href}
                 href={item.href}
+                target={item.newTab ? "_blank" : undefined}
+                rel={item.newTab ? "noopener noreferrer" : undefined}
                 className={cn(
                   "block rounded-lg px-3 py-2 text-base font-medium",
                   isLandingPage ? "text-white/76 hover:bg-white/10 hover:text-white" : "text-foreground hover:bg-muted"
@@ -178,10 +179,6 @@ export default function Header({ className }: HeaderProps) {
               </a>
             ))}
             <div className={cn("my-3 border-t", isLandingPage ? "border-white/[0.08]" : "border-border")} />
-            <div className="flex items-center justify-between px-3 py-2">
-              <span className={cn("text-sm font-medium", isLandingPage ? "text-white/80" : "text-foreground")}>{t.header.mobile.themeSettings}</span>
-              <ThemeToggle />
-            </div>
             {user ? (
               <div className="grid gap-2 pt-2">
                 <Link to="/$lang/reelflow" params={{ lang: currentLocale }} onClick={() => setIsMenuOpen(false)}>
