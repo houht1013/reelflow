@@ -1109,27 +1109,19 @@ export const zhCN: Locale = {
           features: ["每日签到赠送积分", "基础模板与标准生成队列", "可编辑剪映草稿", "部分功能可体验"]
         },
         {
-          id: "basic",
-          name: "Basic",
-          monthly: 12,
-          credits: 1300,
-          inheritFrom: "Free",
-          features: ["更多月度积分", "全部基础模板", "脚本编辑", "导出音频 / 视频 / 常用格式", "移除 Reelflow 品牌元素"]
-        },
-        {
           id: "pro",
           name: "Pro",
           monthly: 24,
           credits: 4050,
           recommended: true,
-          inheritFrom: "Basic",
-          features: ["更高月度积分", "全部模板", "解锁 4K 高清生图", "优先生成队列", "AI 补图与补语音"]
+          inheritFrom: "Free",
+          features: ["更多月度积分", "全部模板与脚本编辑", "导出音频 / 视频，移除品牌", "解锁 4K 高清生图", "优先生成队列", "AI 补图与补语音"]
         },
         {
           id: "max",
           name: "Max",
-          monthly: 240,
-          credits: 45000,
+          monthly: 120,
+          credits: 20000,
           inheritFrom: "Pro",
           features: ["海量月度积分", "最高优先级队列", "批量任务并行", "专属客户支持", "抢先体验新功能"]
         }

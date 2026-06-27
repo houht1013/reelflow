@@ -1102,27 +1102,19 @@ export const en: Locale = {
           features: ["Daily check-in credits", "Core templates & standard queue", "Editable Jianying draft", "Try selected features"]
         },
         {
-          id: "basic",
-          name: "Basic",
-          monthly: 12,
-          credits: 1300,
-          inheritFrom: "Free",
-          features: ["More monthly credits", "All core templates", "Script editing", "Export audio / video / common formats", "Remove Reelflow branding"]
-        },
-        {
           id: "pro",
           name: "Pro",
           monthly: 24,
           credits: 4050,
           recommended: true,
-          inheritFrom: "Basic",
-          features: ["Higher monthly credits", "All templates", "Unlock 4K HD images", "Priority generation queue", "AI image & voice fill"]
+          inheritFrom: "Free",
+          features: ["More monthly credits", "All templates + script editing", "Export audio / video, no watermark", "Unlock 4K HD images", "Priority generation queue", "AI image & voice fill"]
         },
         {
           id: "max",
           name: "Max",
-          monthly: 240,
-          credits: 45000,
+          monthly: 120,
+          credits: 20000,
           inheritFrom: "Pro",
           features: ["Massive monthly credits", "Highest-priority queue", "Parallel batch tasks", "Dedicated support", "Early access to new features"]
         }

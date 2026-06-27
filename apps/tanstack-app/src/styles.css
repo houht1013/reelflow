@@ -680,18 +680,6 @@ body:has(.reelflow-landing) {
   }
 }
 
-.landing-save-chip {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  border: 1px solid rgb(126 224 168 / 30%);
-  background: rgb(126 224 168 / 12%);
-  padding: 0.25rem 0.6rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgb(150 235 188);
-}
-
 .landing-footer-social {
   display: inline-flex;
   height: 2.25rem;

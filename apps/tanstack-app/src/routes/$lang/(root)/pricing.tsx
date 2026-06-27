@@ -62,33 +62,42 @@ function PricingPage() {
           </div>
 
           {/* Billing toggle */}
-          <div className="mt-9 flex items-center justify-center gap-3" data-reveal style={rd(200)}>
-            <div className="relative inline-flex rounded-full border border-white/12 bg-white/[0.05] p-1 backdrop-blur">
-              <span
-                className="absolute inset-y-1 left-1 w-24 rounded-full bg-white shadow-[0_8px_24px_-10px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                style={{ transform: billing === 'yearly' ? 'translateX(6rem)' : 'translateX(0)' }}
-                aria-hidden="true"
-              />
-              {(['monthly', 'yearly'] as Billing[]).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setBilling(mode)}
-                  aria-pressed={billing === mode}
-                  className={cn(
-                    'relative z-10 w-24 rounded-full py-1.5 text-sm font-medium transition-colors',
-                    billing === mode ? 'text-slate-950' : 'text-white/65 hover:text-white',
-                  )}
-                >
-                  {mode === 'monthly' ? v.billing.monthly : v.billing.yearly}
-                </button>
-              ))}
+          <div className="mt-9 flex items-center justify-center" data-reveal style={rd(200)}>
+            <div className="inline-flex items-center rounded-full border border-white/12 bg-white/[0.05] p-1 backdrop-blur">
+              {(['monthly', 'yearly'] as Billing[]).map((mode) => {
+                const active = billing === mode
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setBilling(mode)}
+                    aria-pressed={active}
+                    className={cn(
+                      'flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                      active
+                        ? 'bg-white text-slate-950 shadow-[0_8px_24px_-10px_rgba(0,0,0,0.7)]'
+                        : 'text-white/65 hover:text-white',
+                    )}
+                  >
+                    {mode === 'monthly' ? v.billing.monthly : v.billing.yearly}
+                    {mode === 'yearly' && (
+                      <span
+                        className={cn(
+                          'rounded-full px-1.5 py-0.5 text-[0.7rem] font-semibold leading-none',
+                          active ? 'bg-emerald-500/15 text-emerald-600' : 'bg-emerald-400/15 text-emerald-300',
+                        )}
+                      >
+                        {v.billing.save.replace('{n}', String(yearlySavePct))}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
-            <span className="landing-save-chip">{v.billing.save.replace('{n}', String(yearlySavePct))}</span>
           </div>
 
           {/* Plans */}
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto mt-10 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {plans.map((plan, index) => {
               const isYearly = billing === 'yearly' && !plan.free
               const perMonth = isYearly ? Math.round((plan.monthly * YEARLY_MULTIPLIER) / 12) : plan.monthly
