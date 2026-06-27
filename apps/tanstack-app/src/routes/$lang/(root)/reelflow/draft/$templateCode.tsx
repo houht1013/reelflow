@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@libs/react-shared/ui/button'
 import { Input } from '@libs/react-shared/ui/input'
@@ -27,15 +27,30 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/draft/$templateCode
 type TemplateInputField = {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'select' | 'switch' | 'number' | 'asset'
+  type: 'text' | 'textarea' | 'select' | 'switch' | 'number' | 'slider' | 'color' | 'aspect' | 'voice' | 'image' | 'asset'
   required?: boolean
+  help?: string
   placeholder?: string
   defaultValue?: unknown
+  group?: string
   options?: Array<{ label: string; value: string }>
   assetTypes?: string[]
   min?: number
   max?: number
+  step?: number
+  precision?: number
+  unit?: string
+  accept?: string[]
+  maxSizeMb?: number
 }
+
+const ASPECT_OPTIONS: Array<{ label: string; value: string }> = [
+  { label: '竖屏 9:16', value: '9:16' },
+  { label: '横屏 16:9', value: '16:9' },
+  { label: '方形 1:1', value: '1:1' },
+  { label: '4:5', value: '4:5' },
+  { label: '3:4', value: '3:4' },
+]
 
 type TemplateBadge = 'new' | 'recommended' | 'hot'
 
@@ -122,7 +137,8 @@ function ReelflowComposerPage() {
     for (const field of template.inputSchema?.fields || []) {
       if (field.defaultValue !== undefined) defaults[field.key] = field.defaultValue
       else if (field.type === 'switch') defaults[field.key] = false
-      else if (field.type === 'number' && field.min !== undefined) defaults[field.key] = field.min
+      else if ((field.type === 'number' || field.type === 'slider') && field.min !== undefined) defaults[field.key] = field.min
+      else if (field.type === 'color') defaults[field.key] = '#000000'
       else defaults[field.key] = ''
     }
     setInputParams(defaults)
@@ -167,10 +183,11 @@ function ReelflowComposerPage() {
   const fillExample = () => {
     const next: Record<string, unknown> = { ...inputParams }
     for (const field of fields) {
-      if (field.type === 'asset' || field.type === 'switch') continue
+      if (['asset', 'switch', 'image', 'color', 'slider', 'number'].includes(field.type)) continue
       if (next[field.key]) continue
       if (field.placeholder) next[field.key] = field.placeholder
-      else if (field.type === 'select' && field.options?.length) next[field.key] = field.options[0].value
+      else if ((field.type === 'select' || field.type === 'voice') && field.options?.length) next[field.key] = field.options[0].value
+      else if (field.type === 'aspect') next[field.key] = (field.options?.[0]?.value ?? ASPECT_OPTIONS[0].value)
     }
     setRunError(null)
     setFieldErrorKey(null)
@@ -308,22 +325,24 @@ function ReelflowComposerPage() {
                   const hasFieldError = fieldErrorKey === field.key
                   const errorId = `reelflow-${field.key}-error`
                   return (
-                    <div key={field.key} data-field-key={field.key} className={field.type === 'textarea' || field.type === 'asset' ? 'space-y-2 sm:col-span-2' : 'space-y-2'}>
+                    <div key={field.key} data-field-key={field.key} className={field.type === 'textarea' || field.type === 'asset' || field.type === 'image' ? 'space-y-2 sm:col-span-2' : 'space-y-2'}>
                       <div className="flex items-center gap-1.5">
                         <Label htmlFor={`reelflow-${field.key}`}>{fieldLabel(field)}</Label>
                         {field.required && <span className="text-destructive" aria-hidden="true">*</span>}
                       </div>
                       {field.type === 'asset' ? (
                         <AssetPicker field={field} assets={assets} loading={assetsLoading} error={assetError} value={String(inputParams[field.key] || '')} locale={locale} t={t} invalid={hasFieldError} onValueChange={(value) => setFieldValue(field.key, value)} />
+                      ) : field.type === 'image' ? (
+                        <ImageUploadField field={field} value={String(inputParams[field.key] || '')} invalid={hasFieldError} onValueChange={(value) => setFieldValue(field.key, value)} />
                       ) : field.type === 'textarea' ? (
                         <Textarea id={`reelflow-${field.key}`} name={field.key} autoComplete="off" value={String(inputParams[field.key] || '')} onChange={(event) => setFieldValue(field.key, event.target.value)} placeholder={field.placeholder || t.reelflow.generate.textPlaceholder} aria-invalid={hasFieldError} className="min-h-24 resize-y" />
-                      ) : field.type === 'select' ? (
+                      ) : field.type === 'select' || field.type === 'voice' || field.type === 'aspect' ? (
                         <Select name={field.key} value={String(inputParams[field.key] || '')} onValueChange={(value) => setFieldValue(field.key, value)}>
                           <SelectTrigger id={`reelflow-${field.key}`} aria-label={fieldLabel(field)} aria-invalid={hasFieldError} className="w-full">
                             <SelectValue placeholder={t.reelflow.generate.selectPlaceholder} />
                           </SelectTrigger>
                           <SelectContent>
-                            {(field.options || []).map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                            {((field.options?.length ? field.options : field.type === 'aspect' ? ASPECT_OPTIONS : [])).map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       ) : field.type === 'switch' ? (
@@ -331,9 +350,23 @@ function ReelflowComposerPage() {
                           <span className="text-sm text-muted-foreground">{inputParams[field.key] ? t.reelflow.generate.booleanOn : t.reelflow.generate.booleanOff}</span>
                           <Switch id={`reelflow-${field.key}`} name={field.key} aria-label={fieldLabel(field)} checked={Boolean(inputParams[field.key])} onCheckedChange={(value) => setFieldValue(field.key, value)} />
                         </div>
+                      ) : field.type === 'slider' ? (
+                        <div className="reelflow-muted-tile flex h-10 items-center gap-3 px-3">
+                          <input id={`reelflow-${field.key}`} name={field.key} type="range" min={field.min ?? 0} max={field.max ?? 100} step={field.step ?? 1} value={Number(inputParams[field.key] ?? field.min ?? 0)} onChange={(event) => setFieldValue(field.key, Number(event.target.value))} className="h-1.5 flex-1 cursor-pointer accent-primary" aria-label={fieldLabel(field)} />
+                          <span className="w-14 shrink-0 text-right text-sm tabular-nums text-muted-foreground">{Number(inputParams[field.key] ?? field.min ?? 0)}{field.unit || ''}</span>
+                        </div>
+                      ) : field.type === 'color' ? (
+                        <div className="flex items-center gap-2">
+                          <input id={`reelflow-${field.key}`} name={field.key} type="color" value={String(inputParams[field.key] || '#000000')} onChange={(event) => setFieldValue(field.key, event.target.value)} className="h-10 w-12 shrink-0 cursor-pointer rounded-md border border-[var(--reelflow-hairline)] bg-transparent p-1" aria-label={fieldLabel(field)} />
+                          <Input value={String(inputParams[field.key] || '')} onChange={(event) => setFieldValue(field.key, event.target.value)} placeholder="#000000" aria-invalid={hasFieldError} className="font-mono" />
+                        </div>
                       ) : (
-                        <Input id={`reelflow-${field.key}`} name={field.key} autoComplete="off" inputMode={field.type === 'number' ? 'numeric' : undefined} type={field.type === 'number' ? 'number' : 'text'} min={field.min} max={field.max} value={String(inputParams[field.key] ?? '')} onChange={(event) => setFieldValue(field.key, field.type === 'number' ? Number(event.target.value) : event.target.value)} placeholder={field.placeholder || t.reelflow.generate.textPlaceholder} aria-invalid={hasFieldError} />
+                        <div className="relative">
+                          <Input id={`reelflow-${field.key}`} name={field.key} autoComplete="off" inputMode={field.type === 'number' ? 'numeric' : undefined} type={field.type === 'number' ? 'number' : 'text'} min={field.min} max={field.max} step={field.type === 'number' ? (field.step ?? (field.precision ? 1 / 10 ** field.precision : undefined)) : undefined} value={String(inputParams[field.key] ?? '')} onChange={(event) => setFieldValue(field.key, field.type === 'number' ? (event.target.value === '' ? '' : Number(event.target.value)) : event.target.value)} placeholder={field.placeholder || t.reelflow.generate.textPlaceholder} aria-invalid={hasFieldError} className={field.type === 'number' && field.unit ? 'pr-10' : undefined} />
+                          {field.type === 'number' && field.unit && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{field.unit}</span>}
+                        </div>
                       )}
+                      {field.help && !hasFieldError && <p className="text-xs leading-5 text-muted-foreground">{field.help}</p>}
                       {hasFieldError && <p id={errorId} className="text-xs font-medium text-destructive" aria-live="polite">{fieldRequiredMessage(field)}</p>}
                     </div>
                   )
@@ -434,6 +467,69 @@ function ReelflowComposerPage() {
         </DialogContent>
       </Dialog>
     </main>
+  )
+}
+
+function ImageUploadField({
+  field,
+  value,
+  invalid,
+  onValueChange,
+}: {
+  field: TemplateInputField
+  value: string
+  invalid?: boolean
+  onValueChange: (value: string) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const accept = field.accept?.length ? field.accept.join(',') : 'image/*'
+  const maxSizeMb = field.maxSizeMb ?? 10
+
+  const pick = () => inputRef.current?.click()
+
+  const onFile = async (file?: File) => {
+    if (!file) return
+    setError(null)
+    if (!file.type.startsWith('image/')) { setError('请选择图片文件'); return }
+    if (file.size > maxSizeMb * 1024 * 1024) { setError(`图片不能超过 ${maxSizeMb}MB`); return }
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('provider', 'oss')
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.success || !data?.data?.url) throw new Error(data?.error || '上传失败')
+      onValueChange(String(data.data.url))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '上传失败')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className={`reelflow-muted-tile p-3 ${invalid ? 'ring-1 ring-destructive/55' : ''}`} data-testid={`reelflow-image-upload-${field.key}`}>
+      <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={(event) => onFile(event.target.files?.[0])} />
+      {value ? (
+        <div className="flex items-center gap-3">
+          <img src={value} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]" />
+          <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{value}</p>
+          <div className="flex shrink-0 gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={pick} disabled={uploading}>{uploading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : '更换'}</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => onValueChange('')}><X className="h-4 w-4" aria-hidden="true" /></Button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" onClick={pick} disabled={uploading} className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--reelflow-hairline)] py-6 text-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-60">
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ImageIcon className="h-4 w-4" aria-hidden="true" />}
+          {uploading ? '上传中…' : (field.placeholder || `点击上传图片（≤${maxSizeMb}MB）`)}
+        </button>
+      )}
+      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+    </div>
   )
 }
 

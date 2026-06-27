@@ -14,20 +14,23 @@ const schema = z.object({
   aspect: z.enum(['16:9', '9:16']).default('16:9'),
   voice: z.string().optional(),
   speed: z.number().min(0.5).max(2).default(1),
+  logo: z.string().optional(),
 });
 
 type Input = z.infer<typeof schema>;
 
 const fields: TemplateField[] = [
-  { key: 'topic', label: '主题/观点', type: 'text', required: true, placeholder: '例如：为什么你越刷短视频越焦虑' },
-  { key: 'bigTitle', label: '大字标题', type: 'text', defaultValue: '全员弱智' },
-  { key: 'handle', label: '账号水印', type: 'text', defaultValue: '@做个人' },
-  { key: 'cta', label: '结尾CTA', type: 'text', defaultValue: '关注我，别再假装睡着' },
-  { key: 'aspect', label: '画面比例', type: 'select', defaultValue: '16:9', options: [
+  { key: 'topic', label: '主题/观点', type: 'text', required: true, group: '内容', placeholder: '例如：为什么你越刷短视频越焦虑', help: '一句话给出要解说的观点，越具体越好。' },
+  { key: 'bigTitle', label: '大字标题', type: 'text', group: '内容', defaultValue: '全员弱智' },
+  { key: 'handle', label: '账号水印', type: 'text', group: '品牌', defaultValue: '@做个人' },
+  { key: 'cta', label: '结尾CTA', type: 'text', group: '品牌', defaultValue: '关注我，别再假装睡着' },
+  { key: 'logo', label: '品牌 Logo', type: 'image', group: '品牌', accept: ['image/png', 'image/jpeg', 'image/webp'], maxSizeMb: 5, help: '可选：上传品牌 Logo（后续叠加到画面）。' },
+  { key: 'aspect', label: '画面比例', type: 'aspect', group: '风格', defaultValue: '16:9', options: [
     { label: '横屏 16:9', value: '16:9' },
     { label: '竖屏 9:16', value: '9:16' },
   ] },
-  { key: 'voice', label: '配音音色', type: 'text', placeholder: '留空用默认音色' },
+  { key: 'voice', label: '配音音色', type: 'text', group: '配音', placeholder: '留空用默认音色' },
+  { key: 'speed', label: '语速', type: 'slider', group: '配音', min: 0.5, max: 2, step: 0.1, precision: 1, unit: '×', defaultValue: 1, help: '配音播放速度。' },
 ];
 
 const SCENES = 6;
@@ -132,7 +135,9 @@ export default defineTemplate({
       return {
         draftUrl: draft.draftUrl,
         assets: [{ key: 'draft', type: 'draft' as const, label: '剪映草稿', url: draft.draftUrl }],
-        summary: { sceneCount: script.scenes.length, aspect: input.aspect },
+        // NOTE: branding overlay (logo/bigTitle/handle/cta) rendering into the
+        // draft is a follow-up; logo is carried through for now.
+        summary: { sceneCount: script.scenes.length, aspect: input.aspect, logo: input.logo ?? null },
       };
     });
   },
