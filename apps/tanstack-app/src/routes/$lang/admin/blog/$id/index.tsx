@@ -299,7 +299,7 @@ function BlogPostPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-10">
+      <div className="space-y-6">
         <div className="mb-6">
           <Skeleton className="h-6 w-32" />
         </div>
@@ -326,19 +326,19 @@ function BlogPostPage() {
   }
 
   return (
-    <div className="container mx-auto p-10">
+    <div className="space-y-6">
       <div className="flex items-center mb-6">
-        <a href={`/${locale}/admin/blog`} className="text-blue-500 hover:text-blue-700">
+        <a href={`/${locale}/admin/blog`} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
           &larr; {t.actions.backToBlog}
         </a>
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">
+      <h1 className="reelflow-display mb-6 text-[1.9rem]">
         {isEditMode ? t.admin.blog.editPost : t.admin.blog.createPost}
       </h1>
 
       {error && (
-        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">{error}</div>
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">{error}</div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-5xl mx-auto">

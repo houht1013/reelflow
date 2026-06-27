@@ -167,10 +167,10 @@ function UserDetailPage() {
 
   if (!id) {
     return (
-      <div className="container mx-auto p-10">
-        <h1 className="text-2xl font-bold">{t.common.notFound || 'Not Found'}</h1>
+      <div className="space-y-6">
+        <h1 className="reelflow-display text-[1.9rem]">{t.common.notFound || 'Not Found'}</h1>
         <p className="mt-4 text-muted-foreground">The requested user was not found.</p>
-        <a href={`/${locale}/admin/users`} className="text-blue-500 hover:text-blue-700 mt-4 inline-block">
+        <a href={`/${locale}/admin/users`} className="text-sm text-muted-foreground transition-colors hover:text-foreground mt-4 inline-block">
           ← {t.actions.backToList}
         </a>
       </div>
@@ -179,7 +179,7 @@ function UserDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-10">
+      <div className="space-y-6">
         <div className="mb-6">
           <Skeleton className="h-6 w-32" />
         </div>
@@ -206,19 +206,19 @@ function UserDetailPage() {
   }
 
   return (
-    <div className="container mx-auto p-10">
+    <div className="space-y-6">
       <div className="flex items-center mb-6">
-        <a href={`/${locale}/admin/users`} className="text-blue-500 hover:text-blue-700">
+        <a href={`/${locale}/admin/users`} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
           ← {t.actions.backToList}
         </a>
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">
+      <h1 className="reelflow-display mb-6 text-[1.9rem]">
         {isEditMode ? t.admin.users.editUser : t.admin.users.createUser}
       </h1>
 
       {error && (
-        <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
           {error}
         </div>
       )}
