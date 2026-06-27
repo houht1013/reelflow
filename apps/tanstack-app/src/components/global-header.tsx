@@ -70,7 +70,7 @@ export default function Header({ className }: HeaderProps) {
   const navItems: { href: string; label: string; newTab?: boolean }[] = [
     { href: `/${currentLocale}#product`, label: t.header.navigation.product },
     { href: `/${currentLocale}#workflow`, label: t.header.navigation.workflow },
-    { href: `/${currentLocale}/pricing`, label: t.header.navigation.pricing, newTab: true },
+    { href: `/${currentLocale}/pricing`, label: t.header.navigation.pricing },
     { href: `/${currentLocale}#docs`, label: t.header.navigation.docs },
   ];
 
