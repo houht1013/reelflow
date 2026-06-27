@@ -77,7 +77,7 @@ export default function Header({ className }: HeaderProps) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full border-b backdrop-blur-xl",
+        "sticky top-0 z-40 w-full border-b backdrop-blur-xl backdrop-saturate-150",
         isDark
           ? "border-white/[0.08] bg-[#07080c] text-white supports-[backdrop-filter]:bg-[#07080c]/85"
           : "border-border bg-background/90 text-foreground",
