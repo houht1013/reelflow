@@ -16,6 +16,7 @@
 // All timeline values on the capcut API are MICROSECONDS.
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
+import type { ResolvedVideo } from './templates/_recipe/ir';
 import {
   ProviderCallError,
   chargeCredits,
@@ -117,6 +118,23 @@ export const capcutClient = {
   },
   saveDraft(input: { draftUrl: string }) {
     return capcutPost<{ draft_url: string }>('/save_draft', { draft_url: input.draftUrl });
+  },
+  /** Kick off async MP4 render of a saved draft. */
+  genVideo(input: { draftUrl: string; apiKey?: string }) {
+    return capcutPost<{ message: string }>('/gen_video', {
+      draft_url: input.draftUrl,
+      apiKey: input.apiKey,
+    });
+  },
+  /** Poll MP4 render status. video_url is set once status completes. */
+  genVideoStatus(input: { draftUrl: string }) {
+    return capcutPost<{
+      draft_url: string;
+      status: string;
+      progress: number;
+      video_url: string;
+      error_message?: string;
+    }>('/gen_video_status', { draft_url: input.draftUrl });
   },
 };
 
@@ -274,4 +292,111 @@ export async function assembleReelflowDraft(input: AssembleReelflowDraftInput): 
     credits,
     mock,
   };
+}
+
+// --- MP4 render via capcut-mate gen_video (async) ---
+const GEN_VIDEO_POLL_INTERVAL_MS = 3000;
+const GEN_VIDEO_POLL_MAX_ATTEMPTS = 120; // ~6 min
+
+/**
+ * Render a saved draft to an MP4 via capcut-mate gen_video. Best-effort: returns
+ * the video URL, or null on timeout/failure (the draft remains the core
+ * deliverable). Polls gen_video_status until a video_url appears.
+ */
+export async function renderDraftMp4(draftUrl: string): Promise<string | null> {
+  const apiKey = process.env.CAPCUT_GEN_VIDEO_API_KEY || undefined;
+  try {
+    await capcutClient.genVideo({ draftUrl, apiKey });
+  } catch (error) {
+    console.error('capcut gen_video start failed:', error instanceof Error ? error.message : error);
+    return null;
+  }
+  for (let attempt = 0; attempt < GEN_VIDEO_POLL_MAX_ATTEMPTS; attempt++) {
+    await new Promise((r) => setTimeout(r, GEN_VIDEO_POLL_INTERVAL_MS));
+    let status: Awaited<ReturnType<typeof capcutClient.genVideoStatus>>;
+    try {
+      status = await capcutClient.genVideoStatus({ draftUrl });
+    } catch (error) {
+      console.error('capcut gen_video_status poll failed:', error instanceof Error ? error.message : error);
+      continue;
+    }
+    if (status.video_url) return status.video_url;
+    if (status.error_message || status.status === 'failed' || status.status === 'error') {
+      console.error('capcut gen_video failed:', status.error_message || status.status);
+      return null;
+    }
+  }
+  console.error('capcut gen_video timed out after polling');
+  return null;
+}
+
+// --- Resolved IR → capcut draft (+ optional MP4) ---
+export type AssembleResolvedVideoInput = {
+  workspaceId: string;
+  userId: string;
+  ir: ResolvedVideo;
+  billing?: ProviderBillingMode;
+  ledgerType?: string;
+  description?: string;
+  displayName?: string;
+  jobId?: string;
+  stageId?: string;
+  assetMetadata?: Record<string, unknown>;
+};
+
+export type AssembleResolvedVideoResult = AssembleReelflowDraftResult & { mp4Url: string | null };
+
+/**
+ * Single renderer: materialize a Resolved Video IR into a capcut draft, then
+ * (per ir.delivery.mp4) render an MP4 via gen_video. Reuses assembleReelflowDraft
+ * for metering/asset/credit. Image shots are wired today; video shots + motion +
+ * transitions land in later milestones.
+ */
+export async function assembleResolvedVideo(input: AssembleResolvedVideoInput): Promise<AssembleResolvedVideoResult> {
+  const { ir } = input;
+
+  const scenes: ReelflowDraftScene[] = ir.shots
+    .filter((s) => s.visual.kind === 'image')
+    .map((s) => ({ imageUrl: (s.visual as { url: string }).url, startMs: s.startMs, endMs: s.endMs }));
+  const audios: ReelflowDraftAudio[] = ir.shots
+    .filter((s) => s.audioUrl)
+    .map((s) => ({ audioUrl: s.audioUrl as string, startMs: s.startMs, endMs: s.endMs, durationMs: s.audioDurationMs }));
+  const captions: ReelflowDraftCaption[] = ir.shots.flatMap((s) => s.captions);
+
+  const draft = await assembleReelflowDraft({
+    workspaceId: input.workspaceId,
+    userId: input.userId,
+    width: ir.canvas.width,
+    height: ir.canvas.height,
+    scenes,
+    audios,
+    captions,
+    captionStyle: ir.captionStyle,
+    billing: input.billing,
+    ledgerType: input.ledgerType,
+    description: input.description,
+    displayName: input.displayName,
+    jobId: input.jobId,
+    stageId: input.stageId,
+    assetMetadata: input.assetMetadata,
+  });
+
+  let mp4Url: string | null = null;
+  if (ir.delivery.mp4 !== 'off' && !draft.mock) {
+    mp4Url = await renderDraftMp4(draft.draftUrl);
+    if (mp4Url) {
+      await registerGeneratedAsset({
+        workspaceId: input.workspaceId,
+        userId: input.userId,
+        assetType: 'video',
+        sourceType: 'generated',
+        storageProvider: 'capcut-mate',
+        url: mp4Url,
+        mimeType: 'video/mp4',
+        metadata: { displayName: input.displayName || 'Reelflow MP4', draftUrl: draft.draftUrl, provider: 'capcut-mate', generatedFrom: 'reelflow_gen_video', ...input.assetMetadata },
+      }).catch((error) => console.error('Failed to register MP4 asset:', error));
+    }
+  }
+
+  return { ...draft, mp4Url };
 }
