@@ -153,7 +153,7 @@ function CheckoutPage() {
 
                 <div className="mt-5 flex items-end justify-between">
                   <span className="text-sm text-muted-foreground">{c.total}</span>
-                  <span className="reelflow-display reelflow-num text-3xl">${order.amount}</span>
+                  <span className="reelflow-display reelflow-num text-3xl">¥{order.amount}</span>
                 </div>
 
                 <Button size="lg" className="mt-5 w-full" onClick={handleConfirm}>

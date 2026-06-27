@@ -1084,7 +1084,7 @@ export const en: Locale = {
         yearly: "Yearly",
         save: "Save {n}%",
         perMonth: "/mo",
-        billedYearlyAs: "Billed ${total}/year",
+        billedYearlyAs: "Billed ¥{total}/year",
         billedMonthly: "Billed monthly, cancel anytime"
       },
       mostPopular: "Most popular",
@@ -1096,6 +1096,7 @@ export const en: Locale = {
         {
           id: "free",
           name: "Free",
+          tagline: "See what Reelflow can do for you",
           monthly: 0,
           credits: 10,
           free: true,
@@ -1104,6 +1105,7 @@ export const en: Locale = {
         {
           id: "pro",
           name: "Pro",
+          tagline: "Boost your everyday creation",
           monthly: 24,
           credits: 4050,
           recommended: true,
@@ -1113,6 +1115,7 @@ export const en: Locale = {
         {
           id: "max",
           name: "Max",
+          tagline: "Unlock the full power of Reelflow",
           monthly: 120,
           credits: 20000,
           inheritFrom: "Pro",

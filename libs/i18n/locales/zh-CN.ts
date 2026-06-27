@@ -1091,7 +1091,7 @@ export const zhCN: Locale = {
         yearly: "按年",
         save: "省 {n}%",
         perMonth: "/月",
-        billedYearlyAs: "按年付费 ${total}/年",
+        billedYearlyAs: "按年付费 ¥{total}/年",
         billedMonthly: "按月计费，可随时取消"
       },
       mostPopular: "最受欢迎",
@@ -1103,6 +1103,7 @@ export const zhCN: Locale = {
         {
           id: "free",
           name: "Free",
+          tagline: "探索 Reelflow 能为你做什么",
           monthly: 0,
           credits: 10,
           free: true,
@@ -1111,6 +1112,7 @@ export const zhCN: Locale = {
         {
           id: "pro",
           name: "Pro",
+          tagline: "提升你的日常创作效率",
           monthly: 24,
           credits: 4050,
           recommended: true,
@@ -1120,6 +1122,7 @@ export const zhCN: Locale = {
         {
           id: "max",
           name: "Max",
+          tagline: "解锁 Reelflow 全部潜力",
           monthly: 120,
           credits: 20000,
           inheritFrom: "Pro",

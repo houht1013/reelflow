@@ -15,6 +15,7 @@ type Billing = 'monthly' | 'yearly'
 type Plan = {
   id: string
   name: string
+  tagline?: string
   monthly: number
   credits: number
   free?: boolean
@@ -84,7 +85,7 @@ function PricingPage() {
                       <span
                         className={cn(
                           'rounded-full px-1.5 py-0.5 text-[0.7rem] font-semibold leading-none',
-                          active ? 'bg-emerald-500/15 text-emerald-600' : 'bg-emerald-400/15 text-emerald-300',
+                          active ? 'bg-amber-500/15 text-amber-600' : 'bg-[#ffb84d]/15 text-[#ffb84d]',
                         )}
                       >
                         {v.billing.save.replace('{n}', String(yearlySavePct))}
@@ -130,14 +131,15 @@ function PricingPage() {
 
                   <div className="relative">
                     <h3 className="reelflow-display text-xl text-white">{plan.name}</h3>
+                    {plan.tagline ? <p className="mt-1.5 text-sm leading-6 text-white/55">{plan.tagline}</p> : null}
 
                     {/* Price */}
                     <div className="mt-4 min-h-[68px]">
                       <div className="flex items-end gap-1.5">
                         {showOriginal ? (
-                          <span className="mb-1 text-base text-white/40 line-through">${plan.monthly}</span>
+                          <span className="mb-1 text-base text-white/40 line-through">¥{plan.monthly}</span>
                         ) : null}
-                        <span className="reelflow-display reelflow-num text-4xl text-white">${perMonth}</span>
+                        <span className="reelflow-display reelflow-num text-4xl text-white">¥{perMonth}</span>
                         <span className="mb-1 text-sm text-white/45">{v.billing.perMonth}</span>
                       </div>
                       {plan.free ? null : isYearly ? (
