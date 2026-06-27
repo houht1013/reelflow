@@ -122,9 +122,35 @@
 
 ---
 
-## 7. 待你拍板的开放问题
+## 7. 已确认决策（2026-06-27）
 
-1. 画面来源：现阶段只 AI 生图？还是要纳入 AI 视频片段 / 实拍素材 / 用户上传片段？（影响 IR 的 `visual.kind` 与 provider）
-2. 出片渲染：MP4 继续用现有 cloud render，还是评估改用 capcut-mate 的 `gen_video`？
-3. 节奏驱动：旁白时长(现状) / 固定时长 / 卡点 BGM —— 首批支持哪些？
-4. 后台搭建器：现阶段"我拆解→出 spec→admin 发布"即可？可视化搭建器列为远期？
+1. **画面来源**：全部 —— AI 生图 / AI 生视频 / 已有素材库匹配 / 用户上传。`VisualDirective` 抽象，背后需 resolver + 带检索的素材库。
+2. **出片渲染**：改用 capcut-mate `gen_video`（异步，需轮询 + 并发上限）；剪映草稿仍是核心可编辑交付物。
+3. **节奏驱动**：旁白时长驱动（每镜时长 = 该镜 TTS 时长；视频片段按旁白裁剪/循环）。
+4. **面向 Agent 开发**：模板由**桌面编码 Agent（Claude Code / Codex）**通过 **Skill + CLI** 驱动产出，非人用 GUI 搭建器、非服务端 in-product agent。人只在"视觉质检 + 批准发布"把关。
+5. **产物开放可迁移**：Recipe = 仓库内 JSON 文件（git 版本、可复制复用），声明式、无内嵌代码；构建步骤解析校验后发布到 DB 成为可售模板。
+
+### 7.1 接口形态：Skill + CLI（不用 MCP）
+- **CLI**（平台能力句柄）：`video:probe`(抽帧/ASR/切镜) · `capcut:caps`(枚举) · `recipe:schema/new/validate` · `recipe:preview`(沙箱试运行) · `template:publish/rollback/versions`。
+- **Skill**（方法论 playbook）：拆解→构造→测试→发布 的标准流程 + DSL 约定 + 常见坑。
+- 术语：原 "dryRun" 统一命名为 **`preview`（预览生成）** —— 注意它**真实调用 provider、有成本**，"dry" 仅指不发布、不扣终端用户积分（走 dev 配额 + 成本上限）。
+
+### 7.2 职责边界（Agent / 平台 / 人）
+- **Agent（Claude Code+Skill）**：看片、拆结构、写 recipe、读 preview 结果、迭代自纠。
+- **平台（CLI+引擎+DB+预览画布）**：抽取、校验、真实执行(preview)、IR→capcut renderer + gen_video、素材匹配、持久化/版本/发布。
+- **人**：预览画布上做**视觉质检** + **批准发布**（taste gate）。
+
+### 7.3 预览 UI = 画布（React Flow）
+- 形态：**预览/对照/标注看板（Viewer + Comparator + Annotator）**，非手工剪辑器；结构性修改一律走 Agent。
+- 每次 `preview` 在画布落成一簇节点：对标 → 脚本 → 分镜卡 → 配音 → 草稿/MP4 + 成本/校验；多版本并排比对；节点可标注。
+- 反馈闭环：画布标注/安全旋钮 → 结构化反馈 → 回流 Claude Code → 改 recipe → 重新 preview → 新节点簇。
+- 选型：**React Flow（@xyflow/react，MIT、无水印）**；节点=自定义 React（可塞视频/图卡）；自带平移/缩放/minimap/分组。tldraw 商用需授权且偏自由白板，不选。
+
+## 8. 落地顺序（里程碑）
+
+- **M1 契约**（✅ 本次）：Recipe DSL + Resolved IR + 结构引擎接口（`libs/reelflow/templates/_recipe/` 的 `recipe.ts` / `ir.ts` / `structure.ts`）。
+- **M2 引擎 + 渲染**：把 `runNarratedStoryboard` 抽成 `narrated-storyboard` 结构引擎(产出 IR)；IR → capcut **单一 renderer**(扩到 视频/文字/关键帧/转场 + `gen_video` 出 MP4)。
+- **M3 CLI + Skill**：`reelflow` CLI(schema/new/validate/preview/publish…) + Skill 方法论。
+- **M4 preview 沙箱**：dev 配额 + 成本上限 + 逐阶段产物捕获 + 预览数据。
+- **M5 画布**：React Flow 对照/标注看板，消费 preview 产物 + 反馈回流。
+- **M6 版本/发布**：`template_version` 表 + publish/rollback + 锁版护栏。
