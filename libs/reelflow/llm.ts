@@ -2,6 +2,7 @@
 // Used by the script / storyboard / caption stages and any LLM-backed tooling.
 // Billing + usage metering go through the shared provider-runtime scaffolding.
 import { reelflowConfig } from '@config';
+import { resolveActiveModel, type ResolvedAiModel } from './models';
 import {
   ProviderCallError,
   chargeCredits,
@@ -87,8 +88,12 @@ async function chatCompletion(input: {
   temperature?: number;
   maxTokens?: number;
   responseFormat?: 'text' | 'json';
+  db?: ResolvedAiModel | null;
 }): Promise<{ text: string; usage: ReelflowTextUsage; model: string; mock: boolean }> {
-  const { baseUrl, apiKey, mock, timeoutMs, maxAttempts } = reelflowConfig.ai.llm;
+  const cfg = reelflowConfig.ai.llm;
+  const { mock, timeoutMs, maxAttempts } = cfg;
+  const baseUrl = input.db?.baseUrl || cfg.baseUrl;
+  const apiKey = input.db?.apiKey || cfg.apiKey;
 
   const combined = input.messages.map((message) => message.content).join('\n');
   if (combined.includes('__reelflow_mock_fail__')) {
@@ -165,8 +170,10 @@ export async function generateReelflowText(input: ReelflowTextInput): Promise<Re
   }
 
   const billing = input.billing ?? 'meter-only';
-  const provider = reelflowConfig.ai.llm.provider;
-  const requestedModel = input.model || reelflowConfig.ai.llm.model;
+  // Admin-managed model (DB) is the source of truth; env is the fallback.
+  const dbModel = await resolveActiveModel('text').catch(() => null);
+  const provider = dbModel?.provider || reelflowConfig.ai.llm.provider;
+  const requestedModel = dbModel?.modelId || input.model || reelflowConfig.ai.llm.model;
 
   let completion;
   try {
@@ -176,6 +183,7 @@ export async function generateReelflowText(input: ReelflowTextInput): Promise<Re
       temperature: input.temperature,
       maxTokens: input.maxTokens,
       responseFormat: input.responseFormat,
+      db: dbModel,
     });
   } catch (error) {
     throw new ProviderCallError(

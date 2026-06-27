@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
+import { resolveActiveModel } from './models';
 import {
   ProviderCallError,
   chargeCredits,
@@ -185,12 +186,16 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
   }
 
   const cfg = reelflowConfig.ai.tts;
-  const voice = (input.voice || cfg.defaultVoice).trim();
+  // Admin-managed audio model (DB) supplies defaults; env is the fallback. The
+  // dubbingx CLI is local, so only voice/lang/format are DB-managed here.
+  const dbModel = await resolveActiveModel('audio').catch(() => null);
+  const dbConfig = (dbModel?.config ?? {}) as Record<string, unknown>;
+  const voice = (input.voice || dbModel?.modelId || cfg.defaultVoice).trim();
   if (!voice) {
     throw new ProviderCallError('A dubbingx voice id is required', 'invalid_input', 400);
   }
-  const lang = input.lang || cfg.defaultLang;
-  const format = input.format || (cfg.defaultFormat as 'mp3' | 'wav');
+  const lang = input.lang || (dbConfig.lang as string) || cfg.defaultLang;
+  const format = input.format || (dbConfig.format as 'mp3' | 'wav') || (cfg.defaultFormat as 'mp3' | 'wav');
   const doAlign = input.align ?? cfg.align;
   const billing = input.billing ?? 'meter-only';
 
