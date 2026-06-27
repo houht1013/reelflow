@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { defineTemplate, type TemplateField } from '../_sdk/types';
+import type { ResolvedBrandingOverlay } from '../_sdk/ir';
 
 // High-code template (SDK route) — replicated from a 16:9 "反鸡汤" commentary
 // reference: one flat black-silhouette illustration on a dark-red distressed
@@ -123,6 +124,13 @@ export default defineTemplate({
         for (const seg of voices[i].segments) captions.push({ startMs: cursor + seg.startMs, endMs: cursor + seg.endMs, text: seg.text });
         cursor += dur;
       });
+      // Fixed brand overlays from the open dynamic params, used here in code.
+      const branding: ResolvedBrandingOverlay[] = [];
+      if (input.bigTitle) branding.push({ kind: 'text', position: 'bottom-left', value: input.bigTitle, scale: 1.8 });
+      if (input.handle) branding.push({ kind: 'text', position: 'bottom-right', value: input.handle, scale: 1 });
+      if (input.cta) branding.push({ kind: 'text', position: 'bottom-center', value: input.cta, scale: 1.1 });
+      if (input.logo) branding.push({ kind: 'logo', position: 'top-right', value: input.logo, scale: 0.16 });
+
       const draft = await ctx.capcut.assemble({
         width,
         height,
@@ -130,14 +138,13 @@ export default defineTemplate({
         audios,
         captions,
         captionStyle: { fontSize: 16, transformY: portrait ? 1500 : 880 },
+        branding,
         displayName: input.topic,
       });
       return {
         draftUrl: draft.draftUrl,
         assets: [{ key: 'draft', type: 'draft' as const, label: '剪映草稿', url: draft.draftUrl }],
-        // NOTE: branding overlay (logo/bigTitle/handle/cta) rendering into the
-        // draft is a follow-up; logo is carried through for now.
-        summary: { sceneCount: script.scenes.length, aspect: input.aspect, logo: input.logo ?? null },
+        summary: { sceneCount: script.scenes.length, aspect: input.aspect, branding: branding.length },
       };
     });
   },

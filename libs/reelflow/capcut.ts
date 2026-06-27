@@ -16,7 +16,7 @@
 // All timeline values on the capcut API are MICROSECONDS.
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
-import type { ResolvedVideo } from './templates/_sdk/ir';
+import type { ResolvedVideo, ResolvedBrandingOverlay } from './templates/_sdk/ir';
 import {
   ProviderCallError,
   chargeCredits,
@@ -152,6 +152,8 @@ export type AssembleReelflowDraftInput = {
   audios?: ReelflowDraftAudio[];
   captions?: ReelflowDraftCaption[];
   captionStyle?: CapcutCaptionStyle;
+  /** Fixed brand elements drawn over the whole video (logo / title / handle / CTA). */
+  branding?: ResolvedBrandingOverlay[];
   billing?: ProviderBillingMode;
   ledgerType?: string;
   description?: string;
@@ -168,6 +170,28 @@ export type AssembleReelflowDraftResult = {
   credits: { consumed: number; balanceAfter: number } | null;
   mock: boolean;
 };
+
+// Map a branding position to capcut placement. Text is anchored horizontally by
+// `alignment` (0=left,1=center,2=right) + vertical offset; logos use x/y offsets
+// (pixels from canvas center, +x right, +y down).
+function brandingPlacement(
+  position: ResolvedBrandingOverlay['position'],
+  width: number,
+  height: number,
+): { alignment: number; transformX: number; transformY: number } {
+  const top = -Math.round(height * 0.4);
+  const bottom = Math.round(height * 0.4);
+  const left = -Math.round(width * 0.36);
+  const right = Math.round(width * 0.36);
+  switch (position) {
+    case 'top-left': return { alignment: 0, transformX: left, transformY: top };
+    case 'top-right': return { alignment: 2, transformX: right, transformY: top };
+    case 'bottom-left': return { alignment: 0, transformX: left, transformY: bottom };
+    case 'bottom-right': return { alignment: 2, transformX: right, transformY: bottom };
+    case 'bottom-center':
+    default: return { alignment: 1, transformX: 0, transformY: bottom };
+  }
+}
 
 export async function assembleReelflowDraft(input: AssembleReelflowDraftInput): Promise<AssembleReelflowDraftResult> {
   const width = input.width ?? 1080;
@@ -219,6 +243,36 @@ export async function assembleReelflowDraft(input: AssembleReelflowDraftInput): 
         font_size: caption.fontSize,
       }));
     if (captions.length) await capcutClient.addCaptions({ draftUrl, captions, style: input.captionStyle });
+
+    // Fixed branding overlays (logo / title / handle / CTA), shown the whole video.
+    const branding = (input.branding ?? []).filter((overlay) => overlay.value);
+    if (branding.length) {
+      const endMs = Math.max(
+        ...(input.scenes ?? []).map((scene) => scene.endMs),
+        ...(input.audios ?? []).map((audio) => audio.endMs),
+        1000,
+      );
+      const endUs = Math.round(endMs * MS_TO_US);
+      for (const overlay of branding) {
+        const place = brandingPlacement(overlay.position, width, height);
+        if (overlay.kind === 'logo') {
+          await capcutClient.addImages({
+            draftUrl,
+            images: [{ image_url: overlay.value, start: 0, end: endUs }],
+            scaleX: overlay.scale ?? 0.16,
+            scaleY: overlay.scale ?? 0.16,
+            transformX: place.transformX,
+            transformY: place.transformY,
+          });
+        } else {
+          await capcutClient.addCaptions({
+            draftUrl,
+            captions: [{ start: 0, end: endUs, text: overlay.value }],
+            style: { alignment: place.alignment, transformY: place.transformY, fontSize: Math.round(14 * (overlay.scale ?? 1)) },
+          });
+        }
+      }
+    }
 
     const saved = await capcutClient.saveDraft({ draftUrl });
     draftUrl = saved.draft_url || draftUrl;

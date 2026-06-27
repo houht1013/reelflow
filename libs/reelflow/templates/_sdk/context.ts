@@ -234,7 +234,7 @@ export function createTemplateContext(job: TemplateJob): TemplateContext {
 
     capcut: {
       async assemble(input) {
-        const res = await assembleReelflowDraft({ ...base, stageId: currentStageId ?? undefined, width: input.width, height: input.height, scenes: input.scenes, audios: input.audios, captions: input.captions, captionStyle: input.captionStyle, displayName: input.displayName });
+        const res = await assembleReelflowDraft({ ...base, stageId: currentStageId ?? undefined, width: input.width, height: input.height, scenes: input.scenes, audios: input.audios, captions: input.captions, captionStyle: input.captionStyle, branding: input.branding, displayName: input.displayName });
         return { draftUrl: res.draftUrl, assetId: res.asset?.id ?? null };
       },
     },

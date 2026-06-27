@@ -4,6 +4,7 @@ import type { z } from 'zod';
 import type { ReelflowStageCode } from '../../constants';
 import type { ReelflowCaptionTimeline } from '../../tts';
 import type { ReelflowDraftScene, ReelflowDraftAudio, ReelflowDraftCaption, CapcutCaptionStyle } from '../../capcut';
+import type { ResolvedBrandingOverlay } from './ir';
 
 // Standardized input field component the frontend renders from metadata.
 export type TemplateFieldType =
@@ -122,6 +123,8 @@ export type TemplateContext = {
       audios?: ReelflowDraftAudio[];
       captions?: ReelflowDraftCaption[];
       captionStyle?: CapcutCaptionStyle;
+      /** Fixed brand elements (logo / title / handle / CTA) over the whole video. */
+      branding?: ResolvedBrandingOverlay[];
       displayName?: string;
     }): Promise<{ draftUrl: string; assetId: string | null }>;
   };
