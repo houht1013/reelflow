@@ -1076,9 +1076,9 @@ export const en: Locale = {
     },
     v2: {
       eyebrow: "Upgrade plan",
-      title: "Upgrade your plan",
-      subtitle: "Up to 120x more creation throughput",
-      subtitle2: "Powered by industry-leading models",
+      title: "Choose the plan that fits",
+      subtitle: "Pick a plan by how much you create — unlock more credits, templates, and HD output.",
+      subtitle2: "Powered by industry-leading models. Upgrade or cancel anytime.",
       billing: {
         monthly: "Monthly",
         yearly: "Yearly",
@@ -1131,7 +1131,20 @@ export const en: Locale = {
         { title: "Secure payment", desc: "Payment completes on a dedicated, fully encrypted checkout." },
         { title: "Flexible billing", desc: "Upgrade or cancel anytime." },
         { title: "Top models", desc: "Powered by industry-leading models for stable, high-quality output." }
-      ]
+      ],
+      faqTitle: "Frequently asked questions",
+      faq: [
+        { q: "What are credits and how are they used?", a: "Credits are the universal usage unit. Generating scripts, storyboard images, voiceover, and draft packaging each deduct by actual usage; you can review the breakdown in the task detail." },
+        { q: "How does yearly billing work?", a: "Yearly is prepaid at the price of 10 months — roughly 17% off — and you can upgrade anytime within the cycle." },
+        { q: "Can I cancel or get a refund?", a: "You can cancel anytime; access stays until the end of the current cycle. Refunds follow the terms of service." },
+        { q: "Which payment methods are supported?", a: "Payment completes on a dedicated, fully encrypted checkout. Methods such as Alipay are being integrated." }
+      ],
+      closing: {
+        title: "Ready to start?",
+        description: "Sign up free to try the official templates, then upgrade as you grow for more credits and HD output.",
+        primaryCta: "Start free",
+        secondaryCta: "See how it works"
+      }
     },
     checkout: {
       metadata: { title: "Reelflow - Checkout", description: "Confirm your order and choose a payment method." },

@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { useTranslation } from '@/hooks/use-translation'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button } from '@libs/react-shared/ui/button'
 import { cn } from '@libs/ui/utils/cn'
-import { ArrowRight, Check, Coins, Crown, Shield, Sparkles, Zap } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, Coins, Crown, Shield, Sparkles, Zap } from 'lucide-react'
+import { LandingAtmosphere, LandingFooter, useScrollFX, useScrollReveal } from '@/components/landing-fx'
 
 // Yearly = pay 10 months, get 12 (~17% off). Easy to tune later or move server-side.
 const YEARLY_MULTIPLIER = 10
@@ -31,49 +32,63 @@ function PricingPage() {
   const { t, locale } = useTranslation()
   const v = t.pricing.v2
   const plans = v.plans as Plan[]
+  const faq = v.faq as Array<{ q: string; a: string }>
   const [billing, setBilling] = useState<Billing>('yearly')
   const yearlySavePct = Math.round((1 - YEARLY_MULTIPLIER / 12) * 100)
 
+  const heroRef = useRef<HTMLElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+  useScrollReveal()
+  useScrollFX(progressRef, heroRef)
+
   return (
-    <div className="reelflow-app min-h-screen">
-      <section className="px-5 pb-20 pt-16 md:px-8">
-        <div className="mx-auto max-w-7xl">
-          {/* Hero */}
-          <div className="reelflow-reveal mx-auto max-w-2xl text-center">
-            <h1 className="reelflow-display text-4xl leading-[1.1] sm:text-5xl">{v.title}</h1>
-            <p className="mt-4 text-lg text-foreground/80">{v.subtitle}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{v.subtitle2}</p>
+    <main className="reelflow-landing min-h-screen overflow-hidden text-white" data-testid="reelflow-pricing-page">
+      <div ref={progressRef} className="landing-scroll-progress" aria-hidden="true" />
+
+      {/* Hero + plans */}
+      <section ref={heroRef} className="relative px-5 pb-20 pt-16 md:px-8">
+        <LandingAtmosphere />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h1 className="reelflow-display text-4xl leading-[1.1] sm:text-5xl" data-reveal style={rd(0)}>
+              {v.title}
+            </h1>
+            <p className="mt-4 text-lg text-white/70" data-reveal style={rd(80)}>
+              {v.subtitle}
+            </p>
+            <p className="mt-1 text-sm text-white/45" data-reveal style={rd(140)}>
+              {v.subtitle2}
+            </p>
           </div>
 
           {/* Billing toggle */}
-          <div className="reelflow-reveal mt-8 flex items-center justify-center" data-delay="1">
-            <div className="inline-flex items-center rounded-full border border-border/70 bg-muted p-1">
-              <button
-                type="button"
-                onClick={() => setBilling('monthly')}
-                className={cn(
-                  'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
-                  billing === 'monthly' ? 'bg-background text-foreground shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {v.billing.monthly}
-              </button>
-              <button
-                type="button"
-                onClick={() => setBilling('yearly')}
-                className={cn(
-                  'flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
-                  billing === 'yearly' ? 'bg-background text-foreground shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {v.billing.yearly}
-                <span className="reelflow-pill" data-tone="success">{v.billing.save.replace('{n}', String(yearlySavePct))}</span>
-              </button>
+          <div className="mt-9 flex items-center justify-center gap-3" data-reveal style={rd(200)}>
+            <div className="relative inline-flex rounded-full border border-white/12 bg-white/[0.05] p-1 backdrop-blur">
+              <span
+                className="absolute inset-y-1 left-1 w-24 rounded-full bg-white shadow-[0_8px_24px_-10px_rgba(0,0,0,0.7)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{ transform: billing === 'yearly' ? 'translateX(6rem)' : 'translateX(0)' }}
+                aria-hidden="true"
+              />
+              {(['monthly', 'yearly'] as Billing[]).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setBilling(mode)}
+                  aria-pressed={billing === mode}
+                  className={cn(
+                    'relative z-10 w-24 rounded-full py-1.5 text-sm font-medium transition-colors',
+                    billing === mode ? 'text-slate-950' : 'text-white/65 hover:text-white',
+                  )}
+                >
+                  {mode === 'monthly' ? v.billing.monthly : v.billing.yearly}
+                </button>
+              ))}
             </div>
+            <span className="landing-save-chip">{v.billing.save.replace('{n}', String(yearlySavePct))}</span>
           </div>
 
           {/* Plans */}
-          <div className="mt-9 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {plans.map((plan, index) => {
               const isYearly = billing === 'yearly' && !plan.free
               const perMonth = isYearly ? Math.round((plan.monthly * YEARLY_MULTIPLIER) / 12) : plan.monthly
@@ -84,97 +99,199 @@ function PricingPage() {
                 <div
                   key={plan.id}
                   className={cn(
-                    'reelflow-reveal relative flex flex-col rounded-2xl p-6',
-                    plan.recommended ? 'reelflow-hero-panel ring-1 ring-primary/30' : 'reelflow-panel',
+                    'landing-panel relative flex flex-col rounded-2xl p-6',
+                    plan.recommended && 'ring-1 ring-[#ff6045]/45 shadow-[0_34px_90px_-44px_rgba(255,96,69,0.55)]',
                   )}
-                  style={{ overflow: 'visible' }}
-                  data-delay={String(index + 1)}
+                  style={{ overflow: 'visible', ...rd(index * 90) }}
+                  data-reveal
                 >
                   {plan.recommended && (
-                    <span className="absolute -top-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-[0_8px_20px_-8px_var(--reelflow-coral)]">
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-2xl"
+                      style={{ background: 'radial-gradient(circle at 75% -12%, rgb(255 96 69 / 22%), transparent 16rem)' }}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {plan.recommended && (
+                    <span className="absolute -top-3 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-[#ff6045] px-3 py-1 text-xs font-semibold text-white shadow-[0_10px_24px_-10px_#ff6045]">
                       <Crown className="h-3.5 w-3.5" aria-hidden="true" />
                       {v.mostPopular}
                     </span>
                   )}
 
-                  <h3 className="reelflow-display text-xl">{plan.name}</h3>
+                  <div className="relative">
+                    <h3 className="reelflow-display text-xl text-white">{plan.name}</h3>
 
-                  {/* Price */}
-                  <div className="mt-4 min-h-[68px]">
-                    <div className="flex items-end gap-1.5">
-                      {showOriginal ? (
-                        <span className="mb-1 text-base text-muted-foreground line-through">${plan.monthly}</span>
-                      ) : null}
-                      <span className="reelflow-display reelflow-num text-4xl">${perMonth}</span>
-                      <span className="mb-1 text-sm text-muted-foreground">{v.billing.perMonth}</span>
+                    {/* Price */}
+                    <div className="mt-4 min-h-[68px]">
+                      <div className="flex items-end gap-1.5">
+                        {showOriginal ? (
+                          <span className="mb-1 text-base text-white/40 line-through">${plan.monthly}</span>
+                        ) : null}
+                        <span className="reelflow-display reelflow-num text-4xl text-white">${perMonth}</span>
+                        <span className="mb-1 text-sm text-white/45">{v.billing.perMonth}</span>
+                      </div>
+                      {plan.free ? null : isYearly ? (
+                        <p className="mt-1 text-xs text-white/45">{v.billing.billedYearlyAs.replace('{total}', String(yearlyTotal))}</p>
+                      ) : (
+                        <p className="mt-1 text-xs text-white/45">{v.billing.billedMonthly}</p>
+                      )}
                     </div>
-                    {plan.free ? null : isYearly ? (
-                      <p className="mt-1 text-xs text-muted-foreground">{v.billing.billedYearlyAs.replace('{total}', String(yearlyTotal))}</p>
+
+                    {/* Credits */}
+                    <div className="mt-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-white/85">
+                        <Coins className="h-3.5 w-3.5 text-[#ffb84d]" aria-hidden="true" />
+                        {v.monthlyCredits.replace('{n}', plan.credits.toLocaleString())}
+                      </span>
+                    </div>
+
+                    {/* CTA */}
+                    {plan.free ? (
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="mt-5 w-full border-white/15 bg-white/[0.05] text-white/70 hover:bg-white/[0.05]"
+                        disabled
+                      >
+                        {v.currentFree}
+                      </Button>
+                    ) : plan.recommended ? (
+                      <Button
+                        asChild
+                        size="lg"
+                        className="landing-cta mt-5 w-full bg-[#ff6045] text-white shadow-[0_18px_44px_-22px_#ff6045] transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-[#ff735b]"
+                      >
+                        <a href={href}>
+                          {v.subscribe} {plan.name}
+                          <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                        </a>
+                      </Button>
                     ) : (
-                      <p className="mt-1 text-xs text-muted-foreground">{v.billing.billedMonthly}</p>
+                      <Button
+                        asChild
+                        size="lg"
+                        variant="outline"
+                        className="mt-5 w-full border-white/18 bg-white/[0.04] text-white transition-transform hover:-translate-y-0.5 hover:bg-white/[0.09] hover:text-white"
+                      >
+                        <a href={href}>
+                          {v.subscribe} {plan.name}
+                          <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                        </a>
+                      </Button>
                     )}
+
+                    {/* Features */}
+                    {plan.inheritFrom ? (
+                      <p className="mt-5 text-sm text-white/55">{v.includesPrefix.replace('{name}', plan.inheritFrom)}</p>
+                    ) : (
+                      <div className="mt-5" />
+                    )}
+                    <ul className="mt-3 flex-1 space-y-2.5">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2.5 text-sm leading-6 text-white/75">
+                          <span
+                            className={cn(
+                              'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full',
+                              plan.recommended ? 'bg-[#ff6045] text-white' : 'bg-[#ff6045]/18 text-[#ff8e78]',
+                            )}
+                          >
+                            <Check className="h-3 w-3" aria-hidden="true" />
+                          </span>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-
-                  {/* Credits */}
-                  <div className="mt-2">
-                    <span className="reelflow-pill" data-tone="brand">
-                      <Coins className="h-3.5 w-3.5" aria-hidden="true" />
-                      {v.monthlyCredits.replace('{n}', plan.credits.toLocaleString())}
-                    </span>
-                  </div>
-
-                  {/* CTA */}
-                  {plan.free ? (
-                    <Button size="lg" variant="outline" className="mt-5 w-full" disabled>
-                      {v.currentFree}
-                    </Button>
-                  ) : (
-                    <Button asChild size="lg" variant={plan.recommended ? 'default' : 'outline'} className="mt-5 w-full">
-                      <a href={href}>
-                        {v.subscribe} {plan.name}
-                        <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                      </a>
-                    </Button>
-                  )}
-
-                  {/* Features */}
-                  {plan.inheritFrom ? (
-                    <p className="mt-5 text-sm text-muted-foreground">{v.includesPrefix.replace('{name}', plan.inheritFrom)}</p>
-                  ) : (
-                    <div className="mt-5" />
-                  )}
-                  <ul className="mt-3 flex-1 space-y-2.5">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2.5 text-sm leading-6">
-                        <span className={cn('mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full', plan.recommended ? 'bg-primary text-primary-foreground' : 'bg-primary/12 text-primary')}>
-                          <Check className="h-3 w-3" aria-hidden="true" />
-                        </span>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               )
             })}
           </div>
 
           {/* Trust row */}
-          <div className="reelflow-reveal mt-16 grid gap-6 md:grid-cols-3" data-delay="2">
+          <div className="mt-16 grid gap-6 md:grid-cols-3" data-reveal style={rd(120)}>
             {(v.trust as Array<{ title: string; desc: string }>).map((item, index) => {
               const Icon = [Shield, Zap, Sparkles][index % 3]
               return (
                 <div key={item.title} className="flex flex-col items-center gap-3 text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-[#ffb84d]">
                     <Icon className="h-6 w-6" aria-hidden="true" />
                   </span>
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <p className="max-w-xs text-sm leading-6 text-muted-foreground">{item.desc}</p>
+                  <h3 className="font-semibold text-white">{item.title}</h3>
+                  <p className="max-w-xs text-sm leading-6 text-white/55">{item.desc}</p>
                 </div>
               )
             })}
           </div>
         </div>
       </section>
-    </div>
+
+      {/* FAQ */}
+      <section className="relative px-5 py-20 md:px-8">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="reelflow-display text-center text-3xl leading-tight md:text-4xl" data-reveal>
+            {v.faqTitle}
+          </h2>
+          <div className="mt-10 space-y-3">
+            {faq.map((item, index) => (
+              <details
+                key={item.q}
+                className="group rounded-xl border border-white/10 bg-white/[0.035] px-5 py-4 transition-colors hover:border-white/20"
+                data-reveal
+                style={rd(index * 70)}
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium text-white [&::-webkit-details-marker]:hidden">
+                  {item.q}
+                  <ChevronDown
+                    className="h-4 w-4 shrink-0 text-white/50 transition-transform duration-300 group-open:rotate-180"
+                    aria-hidden="true"
+                  />
+                </summary>
+                <p className="mt-3 text-sm leading-7 text-white/60">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Closing CTA */}
+      <section className="relative px-5 pb-24 md:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="landing-subscribe" data-reveal>
+            <div>
+              <h2 className="reelflow-display max-w-2xl text-3xl leading-tight text-white md:text-4xl">{v.closing.title}</h2>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-white/62">{v.closing.description}</p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 rounded-full bg-white px-6 text-slate-950 transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-white/88"
+              >
+                <a href={`/${locale}/reelflow`}>
+                  {v.closing.primaryCta}
+                  <ArrowRight className="ml-1 h-4 w-4" aria-hidden="true" />
+                </a>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-12 rounded-full border-white/20 bg-transparent px-6 text-white hover:-translate-y-0.5 hover:bg-white/[0.08] hover:text-white"
+              >
+                <a href={`/${locale}#workflow`}>{v.closing.secondaryCta}</a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <LandingFooter />
+    </main>
   )
+}
+
+/** data-reveal stagger delay helper. */
+function rd(ms: number): React.CSSProperties {
+  return { '--reveal-delay': `${ms}ms` } as React.CSSProperties
 }
