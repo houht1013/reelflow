@@ -105,6 +105,29 @@ type UsageRecord = {
   createdAt: string
 }
 
+type RunResultAsset = {
+  key: string
+  type: 'draft' | 'video' | 'image' | 'audio' | 'text' | 'json'
+  url?: string
+  mimeType?: string
+  sizeBytes?: number
+  durationMs?: number
+  width?: number
+  height?: number
+}
+
+type RunResult = {
+  jobId: string
+  templateCode: string
+  status: 'succeeded' | 'failed'
+  startedAt: string
+  finishedAt: string
+  durationMs: number
+  creditsConsumed: number
+  error?: { code: string; message: string }
+  assets: RunResultAsset[]
+}
+
 type DetailResponse = {
   job: JobDetail
   stages: JobStage[]
@@ -113,11 +136,16 @@ type DetailResponse = {
   assets: JobAsset[]
   usageRecords: UsageRecord[]
   progress: number
+  runResult: RunResult | null
 }
 
 type PreflightIssue = {
   code: string
   message?: string
+}
+
+const OUTPUT_TYPE_LABEL: Record<string, string> = {
+  draft: '剪映草稿', video: '成片 MP4', image: '图片', audio: '音频', text: '文本', json: '数据',
 }
 
 function ReelflowJobDetailPage() {
@@ -305,6 +333,34 @@ function ReelflowJobDetailPage() {
         ) : detail ? (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div className="space-y-6">
+              {detail.runResult && (
+                <section className="reelflow-panel reelflow-reveal p-6" data-delay="2" data-testid="reelflow-run-result">
+                  <div className="flex items-center justify-between">
+                    <h2 className="reelflow-display text-xl">运行结果</h2>
+                    <StatusPill
+                      status={detail.runResult.status === 'succeeded' ? 'completed' : 'failed'}
+                      label={detail.runResult.status === 'succeeded' ? '成功' : '失败'}
+                    />
+                  </div>
+                  <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <div><dt className="text-xs text-muted-foreground">任务ID</dt><dd className="reelflow-num mt-1 truncate text-sm" title={detail.runResult.jobId}>{detail.runResult.jobId.slice(0, 8)}…</dd></div>
+                    <div><dt className="text-xs text-muted-foreground">耗时</dt><dd className="reelflow-num mt-1 text-sm">{formatDuration(detail.runResult.durationMs)}</dd></div>
+                    <div><dt className="text-xs text-muted-foreground">消耗积分</dt><dd className="reelflow-num mt-1 text-sm">{detail.runResult.creditsConsumed}</dd></div>
+                    <div><dt className="text-xs text-muted-foreground">产物</dt><dd className="reelflow-num mt-1 text-sm">{detail.runResult.assets.length}</dd></div>
+                  </dl>
+                  {detail.runResult.error && <p className="mt-3 text-sm text-destructive">{detail.runResult.error.message || detail.runResult.error.code}</p>}
+                  {detail.runResult.assets.length > 0 && (
+                    <ul className="mt-4 space-y-2">
+                      {detail.runResult.assets.map((output, index) => (
+                        <li key={`${output.key}-${index}`} className="reelflow-muted-tile flex items-center justify-between gap-3 px-3 py-2">
+                          <span className="text-sm">{OUTPUT_TYPE_LABEL[output.type] || output.type}</span>
+                          {output.url && <a href={output.url} target="_blank" rel="noreferrer" className="text-sm text-primary hover:underline">打开</a>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              )}
               <section className="reelflow-panel reelflow-reveal p-6" data-delay="2">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>

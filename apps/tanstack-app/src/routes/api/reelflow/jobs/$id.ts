@@ -152,6 +152,9 @@ export const Route = createFileRoute('/api/reelflow/jobs/$id')({
           const completedStages = stages.filter((stage) => stage.status === 'completed' || stage.status === 'skipped').length
           const progress = stages.length > 0 ? Math.round((completedStages / stages.length) * 100) : 0
 
+          const { buildTemplateRunResult } = await import('@libs/reelflow/run-result')
+          const runResult = buildTemplateRunResult(detail, assets)
+
           return Response.json({
             job: detail,
             stages,
@@ -160,6 +163,7 @@ export const Route = createFileRoute('/api/reelflow/jobs/$id')({
             assets,
             usageRecords,
             progress,
+            runResult,
           })
         } catch (error) {
           console.error('Error fetching Reelflow job detail:', error)
