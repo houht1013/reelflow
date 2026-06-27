@@ -47,6 +47,7 @@
     "test:e2e:ui": "npx playwright test --config=tests/e2e/playwright.config.ts --ui",
     "smoke:reelflow:worker": "tsx tests/smoke/reelflow-worker-smoke.ts",
     "reelflow:sync-templates": "tsx scripts/sync-reelflow-templates.ts",
+    "reelflow": "tsx scripts/reelflow.ts",
     "typecheck": "turbo run typecheck",
     "typecheck:next": "turbo run typecheck --filter=@tinyship/next-app",
     "typecheck:nuxt": "turbo run typecheck --filter=@tinyship/nuxt-app",
