@@ -41,10 +41,11 @@ async function cmdPreview(args: string[]) {
   const inputPath = flag(args, 'input')
   const input = inputPath ? JSON.parse(readFileSync(resolve(process.cwd(), inputPath), 'utf8')) : {}
   const maxImages = flag(args, 'max-images') ? Number(flag(args, 'max-images')) : undefined
+  const mp4 = args.includes('--no-mp4') ? false : undefined
   const { runRecipePreview } = await import('../libs/reelflow/templates/_recipe/preview')
 
-  console.log(`Preview "${recipe.code}" v${recipe.version} (real providers, dev workspace, meter-only)…`)
-  const result = await runRecipePreview(recipe, input, { maxImages })
+  console.log(`Preview "${recipe.code}" v${recipe.version} (real providers, dev workspace, meter-only${mp4 === false ? ', no MP4' : ''})…`)
+  const result = await runRecipePreview(recipe, input, { maxImages, mp4 })
   ok(`preview done — ${result.shots.length} shots, ${(result.durationMs / 1000).toFixed(1)}s`)
   console.log(`  draft: ${result.draftUrl ?? '(none)'}`)
   console.log(`  mp4:   ${result.mp4Url ?? '(pending/none)'}`)

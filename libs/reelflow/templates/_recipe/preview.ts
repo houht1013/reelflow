@@ -48,6 +48,8 @@ export type PreviewOptions = {
   userId?: string;
   /** Pre-flight cap on storyboard images (cost guard). Default 16. */
   maxImages?: number;
+  /** Render the MP4 via gen_video. Default true; pass false to skip (faster/cheaper). */
+  mp4?: boolean;
 };
 
 async function resolveDevUserId(explicit?: string): Promise<string> {
@@ -138,6 +140,7 @@ export async function runRecipePreview(recipe: VideoRecipe, input: unknown, opts
   const ctx = createPreviewContext(ws.id, userId, capture);
 
   const ir = await buildRecipeIR(ctx, recipe, input);
+  if (opts.mp4 === false) ir.delivery = { ...ir.delivery, mp4: 'off' };
 
   const draft = await assembleResolvedVideo({
     workspaceId: ws.id,
