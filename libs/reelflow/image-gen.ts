@@ -114,7 +114,8 @@ async function callImageProvider(input: {
   format: string;
   referenceImage?: string;
 }): Promise<{ b64: string; mock: boolean }> {
-  const { baseUrl, apiKey, mock, timeoutMs, maxAttempts } = reelflowConfig.ai.image;
+  const { baseUrl, apiKey, mock, timeoutMs, maxAttempts, flavor: cfgFlavor, outputFormat, watermark, sequentialImageGeneration } = reelflowConfig.ai.image;
+  const flavor = cfgFlavor || (input.model.toLowerCase().includes('seedream') ? 'seedream' : 'openai');
 
   if (input.prompt.includes('__reelflow_mock_fail__')) {
     throw new Error('Mock image generation failed');
@@ -154,14 +155,25 @@ async function callImageProvider(input: {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          model: input.model,
-          prompt: input.prompt,
-          n: 1,
-          size: input.size,
-          quality: input.quality,
-          format: input.format,
-        }),
+        body: JSON.stringify(
+          flavor === 'seedream'
+            ? {
+                model: input.model,
+                prompt: input.prompt,
+                size: input.size,
+                output_format: outputFormat,
+                watermark,
+                sequential_image_generation: sequentialImageGeneration,
+              }
+            : {
+                model: input.model,
+                prompt: input.prompt,
+                n: 1,
+                size: input.size,
+                quality: input.quality,
+                format: input.format,
+              },
+        ),
       },
       { timeoutMs, attempts: maxAttempts, breakerKey: 'image' },
     );

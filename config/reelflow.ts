@@ -48,9 +48,16 @@ export const reelflowConfig = {
       baseUrl: (process.env.REELFLOW_IMAGE_BASE_URL ?? 'https://api3.wlai.vip').replace(/\/$/, ''),
       apiKey: process.env.REELFLOW_IMAGE_API_KEY ?? '',
       model: process.env.REELFLOW_IMAGE_MODEL ?? 'gpt-image-2',
-      // Reserved image models to integrate later (set REELFLOW_IMAGE_MODEL to one
-      // of these once wired): Seedream 4.0 / 4.5 / 5.0.
+      // Reserved image models (e.g. doubao-seedream-5-0-...:stable). Set
+      // REELFLOW_IMAGE_MODEL + BASE_URL + API_KEY to switch provider.
       reservedModels: ['seedream-4.0', 'seedream-4.5', 'seedream-5.0'],
+      // Request body flavor: 'openai' (gpt-image: n/quality/format) or 'seedream'
+      // (doubao seedream: output_format/watermark/sequential_image_generation).
+      // '' = auto-detect from the model name (contains "seedream").
+      flavor: (process.env.REELFLOW_IMAGE_FLAVOR ?? '') as '' | 'openai' | 'seedream',
+      outputFormat: process.env.REELFLOW_IMAGE_OUTPUT_FORMAT ?? 'jpeg',
+      watermark: process.env.REELFLOW_IMAGE_WATERMARK === '1',
+      sequentialImageGeneration: process.env.REELFLOW_IMAGE_SEQUENTIAL ?? 'disabled',
       mock: process.env.REELFLOW_IMAGE_MOCK === '1',
       // Upload generated images to object storage and expose a public http URL
       // (required so downstream services like capcut-mate can fetch them).
