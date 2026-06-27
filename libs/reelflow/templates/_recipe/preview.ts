@@ -70,7 +70,7 @@ function createPreviewContext(
 ): TemplateContext {
   const base = { workspaceId, userId, billing: 'meter-only' as const };
   return {
-    job: { id: `preview-${crypto.randomUUID()}`, workspaceId, userId, renderMp4Requested: true, imageConcurrency: 1 },
+    job: { id: `preview-${crypto.randomUUID()}`, workspaceId, userId, renderMp4Requested: true, imageConcurrency: 3 },
     ai: {
       async generateText(prompt, opts) {
         const res = await generateReelflowText({ ...base, prompt, system: opts?.system, temperature: opts?.temperature, maxTokens: opts?.maxTokens, model: opts?.model });
