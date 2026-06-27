@@ -89,6 +89,7 @@ import { Route as ApiPaymentReturnPaypalRouteImport } from './routes/api/payment
 import { Route as ApiAdminStatsMonthlyRouteImport } from './routes/api/admin/stats/monthly'
 import { Route as ApiAdminReelflowOverviewRouteImport } from './routes/api/admin/reelflow/overview'
 import { Route as ApiAdminBlogIdRouteImport } from './routes/api/admin/blog/$id'
+import { Route as LangAdminReelflowStudioRouteImport } from './routes/$lang/admin/reelflow/studio'
 import { Route as LangrootReelflowVoiceRouteImport } from './routes/$lang/(root)/reelflow/voice'
 import { Route as LangrootReelflowTemplatesRouteImport } from './routes/$lang/(root)/reelflow/templates'
 import { Route as LangrootReelflowNotificationsRouteImport } from './routes/$lang/(root)/reelflow/notifications'
@@ -521,6 +522,11 @@ const ApiAdminBlogIdRoute = ApiAdminBlogIdRouteImport.update({
   path: '/api/admin/blog/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LangAdminReelflowStudioRoute = LangAdminReelflowStudioRouteImport.update({
+  id: '/reelflow/studio',
+  path: '/reelflow/studio',
+  getParentRoute: () => LangAdminRoute,
+} as any)
 const LangrootReelflowVoiceRoute = LangrootReelflowVoiceRouteImport.update({
   id: '/reelflow/voice',
   path: '/reelflow/voice',
@@ -726,6 +732,7 @@ export interface FileRoutesByFullPath {
   '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
   '/$lang/reelflow/templates': typeof LangrootReelflowTemplatesRoute
   '/$lang/reelflow/voice': typeof LangrootReelflowVoiceRoute
+  '/$lang/admin/reelflow/studio': typeof LangAdminReelflowStudioRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
   '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
   '/api/admin/stats/monthly': typeof ApiAdminStatsMonthlyRoute
@@ -831,6 +838,7 @@ export interface FileRoutesByTo {
   '/$lang/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
   '/$lang/reelflow/templates': typeof LangrootReelflowTemplatesRoute
   '/$lang/reelflow/voice': typeof LangrootReelflowVoiceRoute
+  '/$lang/admin/reelflow/studio': typeof LangAdminReelflowStudioRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
   '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
   '/api/admin/stats/monthly': typeof ApiAdminStatsMonthlyRoute
@@ -941,6 +949,7 @@ export interface FileRoutesById {
   '/$lang/(root)/reelflow/notifications': typeof LangrootReelflowNotificationsRoute
   '/$lang/(root)/reelflow/templates': typeof LangrootReelflowTemplatesRoute
   '/$lang/(root)/reelflow/voice': typeof LangrootReelflowVoiceRoute
+  '/$lang/admin/reelflow/studio': typeof LangAdminReelflowStudioRoute
   '/api/admin/blog/$id': typeof ApiAdminBlogIdRoute
   '/api/admin/reelflow/overview': typeof ApiAdminReelflowOverviewRoute
   '/api/admin/stats/monthly': typeof ApiAdminStatsMonthlyRoute
@@ -1050,6 +1059,7 @@ export interface FileRouteTypes {
     | '/$lang/reelflow/notifications'
     | '/$lang/reelflow/templates'
     | '/$lang/reelflow/voice'
+    | '/$lang/admin/reelflow/studio'
     | '/api/admin/blog/$id'
     | '/api/admin/reelflow/overview'
     | '/api/admin/stats/monthly'
@@ -1155,6 +1165,7 @@ export interface FileRouteTypes {
     | '/$lang/reelflow/notifications'
     | '/$lang/reelflow/templates'
     | '/$lang/reelflow/voice'
+    | '/$lang/admin/reelflow/studio'
     | '/api/admin/blog/$id'
     | '/api/admin/reelflow/overview'
     | '/api/admin/stats/monthly'
@@ -1264,6 +1275,7 @@ export interface FileRouteTypes {
     | '/$lang/(root)/reelflow/notifications'
     | '/$lang/(root)/reelflow/templates'
     | '/$lang/(root)/reelflow/voice'
+    | '/$lang/admin/reelflow/studio'
     | '/api/admin/blog/$id'
     | '/api/admin/reelflow/overview'
     | '/api/admin/stats/monthly'
@@ -1938,6 +1950,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminBlogIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$lang/admin/reelflow/studio': {
+      id: '/$lang/admin/reelflow/studio'
+      path: '/reelflow/studio'
+      fullPath: '/$lang/admin/reelflow/studio'
+      preLoaderRoute: typeof LangAdminReelflowStudioRouteImport
+      parentRoute: typeof LangAdminRoute
+    }
     '/$lang/(root)/reelflow/voice': {
       id: '/$lang/(root)/reelflow/voice'
       path: '/reelflow/voice'
@@ -2213,6 +2232,7 @@ const LangrootRouteRouteWithChildren = LangrootRouteRoute._addFileChildren(
 
 interface LangAdminRouteChildren {
   LangAdminIndexRoute: typeof LangAdminIndexRoute
+  LangAdminReelflowStudioRoute: typeof LangAdminReelflowStudioRoute
   LangAdminBlogIndexRoute: typeof LangAdminBlogIndexRoute
   LangAdminCreditsIndexRoute: typeof LangAdminCreditsIndexRoute
   LangAdminOrdersIndexRoute: typeof LangAdminOrdersIndexRoute
@@ -2226,6 +2246,7 @@ interface LangAdminRouteChildren {
 
 const LangAdminRouteChildren: LangAdminRouteChildren = {
   LangAdminIndexRoute: LangAdminIndexRoute,
+  LangAdminReelflowStudioRoute: LangAdminReelflowStudioRoute,
   LangAdminBlogIndexRoute: LangAdminBlogIndexRoute,
   LangAdminCreditsIndexRoute: LangAdminCreditsIndexRoute,
   LangAdminOrdersIndexRoute: LangAdminOrdersIndexRoute,
