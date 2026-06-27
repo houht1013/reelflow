@@ -240,7 +240,7 @@ export function ReelflowShell({ children }: ShellProps) {
           </NavGroup>
 
           <NavGroup label={shell.groups.account} collapsed={sidebarCollapsed}>
-            <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} accent />
+            <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} />
             <ShellLink icon={CreditCard} label={hasSubscription ? shell.nav.subscription : shell.nav.subscribeCta} to="/$lang/pricing" lang={locale} active={false} collapsed={sidebarCollapsed} newTab />
             <ShellLink icon={Gift} label={shell.nav.invites} subtext={shell.nav.invitesHint} to="/$lang/reelflow/invites" lang={locale} active={pathname.includes('/reelflow/invites')} collapsed={sidebarCollapsed} accent />
             <ShellLink icon={Bell} label={shell.nav.notifications} to="/$lang/reelflow/notifications" lang={locale} active={pathname.includes('/reelflow/notifications')} collapsed={sidebarCollapsed} />
