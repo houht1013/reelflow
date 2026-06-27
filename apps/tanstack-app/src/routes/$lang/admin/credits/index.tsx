@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from '@/hooks/use-translation'
+import { PageHeader } from '@/components/reelflow-ui'
 import { DataTable } from './-data-table'
 
 export const Route = createFileRoute('/$lang/admin/credits/')({
@@ -72,12 +73,9 @@ function CreditsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-10 px-5">
-        <div>
-          <h1 className="text-2xl font-bold">{t.admin.credits.title}</h1>
-          <p className="text-muted-foreground">{t.admin.credits.subtitle}</p>
-        </div>
-        <div className="flex items-center justify-center py-10">
+      <div className="space-y-6">
+        <PageHeader title={t.admin.credits.title} description={t.admin.credits.subtitle} />
+        <div className="reelflow-panel flex items-center justify-center py-16">
           <div className="animate-pulse text-muted-foreground">Loading...</div>
         </div>
       </div>
@@ -86,26 +84,18 @@ function CreditsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-10 px-5">
-        <div>
-          <h1 className="text-2xl font-bold">{t.admin.credits.title}</h1>
-          <p className="text-muted-foreground">{t.admin.credits.subtitle}</p>
-        </div>
-        <div className="text-center py-10">
-          <p className="text-red-500">{error}</p>
+      <div className="space-y-6">
+        <PageHeader title={t.admin.credits.title} description={t.admin.credits.subtitle} />
+        <div className="reelflow-panel py-16 text-center">
+          <p className="text-destructive">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto py-10 px-5">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">{t.admin.credits.title}</h1>
-          <p className="text-muted-foreground">{t.admin.credits.subtitle}</p>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <PageHeader title={t.admin.credits.title} description={t.admin.credits.subtitle} />
       <div className="flex flex-col gap-4">
         <DataTable
           data={data.transactions}

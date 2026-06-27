@@ -65,7 +65,7 @@ function UsersPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-10 px-5">
+      <div className="space-y-6">
         <div className="animate-pulse">
           <div className="h-8 bg-muted rounded w-48 mb-4" />
           <div className="h-64 bg-muted rounded" />
@@ -76,8 +76,8 @@ function UsersPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-10 px-5">
-        <h1 className="text-2xl font-bold mb-4">{t.admin.users.title}</h1>
+      <div className="space-y-6">
+        <h1 className="reelflow-display text-[1.9rem] mb-4">{t.admin.users.title}</h1>
         <p className="text-red-500">{t.admin.users.messages.fetchError}</p>
       </div>
     )
@@ -86,9 +86,9 @@ function UsersPage() {
   const totalPages = Math.ceil((data?.total || 0) / pageSize)
 
   return (
-    <div className="container mx-auto py-10 px-5">
+    <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">{t.admin.users.title}</h1>
+        <h1 className="reelflow-display text-[1.9rem]">{t.admin.users.title}</h1>
         <a href={`/${locale}/admin/users/new`}>
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />

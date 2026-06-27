@@ -76,8 +76,8 @@ function SubscriptionsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-10 px-5">
-        <h1 className="text-2xl font-bold mb-4">{t.admin.subscriptions.title}</h1>
+      <div className="space-y-6">
+        <h1 className="reelflow-display text-[1.9rem] mb-4">{t.admin.subscriptions.title}</h1>
         <div className="flex items-center justify-center py-10">
           <div className="animate-pulse text-muted-foreground">Loading...</div>
         </div>
@@ -87,8 +87,8 @@ function SubscriptionsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-10 px-5">
-        <h1 className="text-2xl font-bold mb-4">{t.admin.subscriptions.title}</h1>
+      <div className="space-y-6">
+        <h1 className="reelflow-display text-[1.9rem] mb-4">{t.admin.subscriptions.title}</h1>
         <div className="text-center py-10">
           <p className="text-red-500">{error}</p>
         </div>
@@ -97,9 +97,9 @@ function SubscriptionsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-5">
+    <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">{t.admin.subscriptions.title}</h1>
+        <h1 className="reelflow-display text-[1.9rem]">{t.admin.subscriptions.title}</h1>
       </div>
       <div className="flex flex-col gap-4">
         <DataTable

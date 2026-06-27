@@ -77,9 +77,9 @@ function BlogPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-10 px-5">
+      <div className="space-y-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">{t.admin.blog.title}</h1>
+          <h1 className="reelflow-display text-[1.9rem]">{t.admin.blog.title}</h1>
           <a href={`/${locale}/admin/blog/new`}>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -96,9 +96,9 @@ function BlogPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-10 px-5">
+      <div className="space-y-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">{t.admin.blog.title}</h1>
+          <h1 className="reelflow-display text-[1.9rem]">{t.admin.blog.title}</h1>
           <a href={`/${locale}/admin/blog/new`}>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -114,9 +114,9 @@ function BlogPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 px-5">
+    <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">{t.admin.blog.title}</h1>
+        <h1 className="reelflow-display text-[1.9rem]">{t.admin.blog.title}</h1>
         <a href={`/${locale}/admin/blog/new`}>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
