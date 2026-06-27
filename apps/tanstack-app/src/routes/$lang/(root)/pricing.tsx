@@ -254,38 +254,6 @@ function PricingPage() {
         </div>
       </section>
 
-      {/* Closing CTA */}
-      <section className="relative px-5 pb-24 md:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="landing-subscribe" data-reveal>
-            <div>
-              <h2 className="reelflow-display max-w-2xl text-3xl leading-tight text-white md:text-4xl">{v.closing.title}</h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-white/62">{v.closing.description}</p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="h-12 rounded-full bg-white px-6 text-slate-950 transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-white/88"
-              >
-                <a href={`/${locale}/reelflow`}>
-                  {v.closing.primaryCta}
-                  <ArrowRight className="ml-1 h-4 w-4" aria-hidden="true" />
-                </a>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="h-12 rounded-full border-white/20 bg-transparent px-6 text-white hover:-translate-y-0.5 hover:bg-white/[0.08] hover:text-white"
-              >
-                <a href={`/${locale}#workflow`}>{v.closing.secondaryCta}</a>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <LandingFooter />
     </main>
   )

@@ -18,7 +18,12 @@ export default function Header({ className }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, locale: currentLocale } = useTranslation();
-  const isLandingPage = location.pathname === `/${currentLocale}` || location.pathname === `/${currentLocale}/`;
+  // Marketing pages render on the dark cinematic backdrop, so the header adopts
+  // the dark treatment there (landing + pricing).
+  const isDark =
+    location.pathname === `/${currentLocale}` ||
+    location.pathname === `/${currentLocale}/` ||
+    /\/pricing(\/|$)/.test(location.pathname);
   // Focused flows (checkout) use a stripped header: logo + night-mode toggle only.
   const isMinimal = /\/checkout(\/|$)/.test(location.pathname);
 
@@ -73,7 +78,7 @@ export default function Header({ className }: HeaderProps) {
     <header
       className={cn(
         "sticky top-0 z-40 w-full border-b backdrop-blur-xl",
-        isLandingPage
+        isDark
           ? "border-white/[0.08] bg-[#07080c] text-white supports-[backdrop-filter]:bg-[#07080c]/85"
           : "border-border bg-background/90 text-foreground",
         className
@@ -82,7 +87,7 @@ export default function Header({ className }: HeaderProps) {
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link to="/$lang" params={{ lang: currentLocale }} className="flex items-center gap-2.5">
-            <BrandMark className="h-10 w-10" variant={isLandingPage ? 'dark' : 'auto'} fallbackIconClassName="h-5 w-5" />
+            <BrandMark className="h-10 w-10" variant={isDark ? 'dark' : 'auto'} fallbackIconClassName="h-5 w-5" />
             <span className="text-xl font-semibold tracking-normal">Reelflow</span>
           </Link>
 
@@ -96,7 +101,7 @@ export default function Header({ className }: HeaderProps) {
                   rel={item.newTab ? "noopener noreferrer" : undefined}
                   className={cn(
                     "text-sm font-medium transition-colors",
-                    isLandingPage ? "text-white/58 hover:text-white" : "text-muted-foreground hover:text-foreground"
+                    isDark ? "text-white/58 hover:text-white" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {item.label}
@@ -118,7 +123,7 @@ export default function Header({ className }: HeaderProps) {
             ) : (
               <>
                 <Link to="/$lang/signin" params={{ lang: currentLocale }}>
-                  <Button variant="ghost" className={cn("text-sm font-medium", isLandingPage && "text-white hover:bg-white/10 hover:text-white")}>
+                  <Button variant="ghost" className={cn("text-sm font-medium", isDark && "text-white hover:bg-white/10 hover:text-white")}>
                     {t.header.auth.signIn}
                   </Button>
                 </Link>
@@ -137,7 +142,7 @@ export default function Header({ className }: HeaderProps) {
               onClick={() => setIsMenuOpen((open) => !open)}
               className={cn(
                 "inline-flex items-center justify-center rounded-md p-2 transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:hidden",
-                isLandingPage ? "text-white/70 hover:bg-white/10 hover:text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                isDark ? "text-white/70 hover:bg-white/10 hover:text-white" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <span className="sr-only">{t.reelflow.shell.openMenu}</span>
@@ -148,7 +153,7 @@ export default function Header({ className }: HeaderProps) {
       </div>
 
       {!isMinimal && isMenuOpen && (
-        <div className={cn("border-t md:hidden", isLandingPage ? "border-white/[0.08] bg-[#07080c]" : "border-border bg-background")}>
+        <div className={cn("border-t md:hidden", isDark ? "border-white/[0.08] bg-[#07080c]" : "border-border bg-background")}>
           <div className="mx-auto max-w-7xl space-y-2 px-5 py-4">
             {navItems.map((item) => (
               <a
@@ -158,14 +163,14 @@ export default function Header({ className }: HeaderProps) {
                 rel={item.newTab ? "noopener noreferrer" : undefined}
                 className={cn(
                   "block rounded-lg px-3 py-2 text-base font-medium",
-                  isLandingPage ? "text-white/76 hover:bg-white/10 hover:text-white" : "text-foreground hover:bg-muted"
+                  isDark ? "text-white/76 hover:bg-white/10 hover:text-white" : "text-foreground hover:bg-muted"
                 )}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
               </a>
             ))}
-            <div className={cn("my-3 border-t", isLandingPage ? "border-white/[0.08]" : "border-border")} />
+            <div className={cn("my-3 border-t", isDark ? "border-white/[0.08]" : "border-border")} />
             {user ? (
               <div className="grid gap-2 pt-2">
                 <Link to="/$lang/reelflow" params={{ lang: currentLocale }} onClick={() => setIsMenuOpen(false)}>
