@@ -2598,12 +2598,13 @@ export const en: Locale = {
         subtitle: "Buy as you go — works across every tool.",
         unit: "credits",
         bonusTag: "incl. {n} bonus",
-        perCredit: "≈ ${n}/credit",
+        perCredit: "≈ ¥{n}/credit",
         buy: "Top up",
         packs: [
-          { id: "c100", credits: 100, amount: 9 },
-          { id: "c550", credits: 500, bonus: 50, amount: 39, recommended: true },
-          { id: "c1200", credits: 1000, bonus: 200, amount: 69 }
+          { id: "c50", credits: 50, amount: 50 },
+          { id: "c100", credits: 100, bonus: 10, amount: 100 },
+          { id: "c500", credits: 500, bonus: 100, amount: 500, recommended: true },
+          { id: "c1000", credits: 1000, bonus: 300, amount: 1000 }
         ],
         custom: {
           title: "Custom amount",

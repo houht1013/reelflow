@@ -2605,12 +2605,13 @@ export const zhCN: Locale = {
         subtitle: "按需购买，用于全部创作功能。",
         unit: "积分",
         bonusTag: "含 {n} 赠送",
-        perCredit: "约 ${n}/积分",
+        perCredit: "约 ¥{n}/积分",
         buy: "充值",
         packs: [
-          { id: "c100", credits: 100, amount: 9 },
-          { id: "c550", credits: 500, bonus: 50, amount: 39, recommended: true },
-          { id: "c1200", credits: 1000, bonus: 200, amount: 69 }
+          { id: "c50", credits: 50, amount: 50 },
+          { id: "c100", credits: 100, bonus: 10, amount: 100 },
+          { id: "c500", credits: 500, bonus: 100, amount: 500, recommended: true },
+          { id: "c1000", credits: 1000, bonus: 300, amount: 1000 }
         ],
         custom: {
           title: "自定义额度",
