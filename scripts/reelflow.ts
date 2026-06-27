@@ -12,11 +12,47 @@
  */
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { config as loadEnv } from 'dotenv'
 import { registerStructure, listStructures, getStructure } from '../libs/reelflow/templates/_recipe/structure'
 import { narratedStoryboardEngine } from '../libs/reelflow/templates/_recipe/engines/narrated-storyboard'
 import type { VideoRecipe } from '../libs/reelflow/templates/_recipe/recipe'
 
+// Load local env (.env.local) so DB + providers are available for preview.
+if (existsSync('.env.local')) loadEnv({ path: '.env.local' })
+
 registerStructure(narratedStoryboardEngine)
+
+function flag(args: string[], name: string): string | undefined {
+  const i = args.indexOf(`--${name}`)
+  return i >= 0 ? args[i + 1] : undefined
+}
+
+async function importRecipe(file: string): Promise<VideoRecipe> {
+  const mod = (await import(pathToFileURL(resolve(process.cwd(), file)).href)) as { default?: VideoRecipe }
+  if (!mod.default) throw new Error(`${file} has no default export (expected a VideoRecipe)`)
+  return mod.default
+}
+
+async function cmdPreview(args: string[]) {
+  const file = args[0]
+  if (!file) { fail('usage: preview <recipe.ts> [--input data.json] [--out result.json] [--max-images N]'); process.exitCode = 1; return }
+  const recipe = await importRecipe(file)
+  const inputPath = flag(args, 'input')
+  const input = inputPath ? JSON.parse(readFileSync(resolve(process.cwd(), inputPath), 'utf8')) : {}
+  const maxImages = flag(args, 'max-images') ? Number(flag(args, 'max-images')) : undefined
+  const { runRecipePreview } = await import('../libs/reelflow/templates/_recipe/preview')
+
+  console.log(`Preview "${recipe.code}" v${recipe.version} (real providers, dev workspace, meter-only)…`)
+  const result = await runRecipePreview(recipe, input, { maxImages })
+  ok(`preview done — ${result.shots.length} shots, ${(result.durationMs / 1000).toFixed(1)}s`)
+  console.log(`  draft: ${result.draftUrl ?? '(none)'}`)
+  console.log(`  mp4:   ${result.mp4Url ?? '(pending/none)'}`)
+  for (const s of result.shots) console.log(`  · shot ${s.index + 1} [${s.startMs}-${s.endMs}ms] ${s.narration.slice(0, 24)}…`)
+
+  const out = flag(args, 'out')
+  if (out) { writeFileSync(resolve(process.cwd(), out), JSON.stringify(result, null, 2)); ok(`wrote ${out}`) }
+}
 
 const CAPCUT_BASE = process.env.CAPCUT_MATE_BASE_URL || 'http://localhost:30000'
 const CAPCUT_PREFIX = '/openapi/capcut-mate/v1'
@@ -93,8 +129,9 @@ async function main() {
     case 'structures': return cmdStructures()
     case 'validate': return cmdValidate(args[0])
     case 'caps': return cmdCaps()
+    case 'preview': return cmdPreview(args)
     default:
-      console.log('reelflow CLI — commands: structures | validate <recipe.ts> | caps')
+      console.log('reelflow CLI — commands: structures | validate <recipe.ts> | caps | preview <recipe.ts> [--input f.json] [--out f.json] [--max-images N]')
       if (cmd) process.exitCode = 1
   }
 }
