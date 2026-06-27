@@ -129,7 +129,11 @@ export default defineTemplate({
         captionStyle: { fontSize: 16, transformY: portrait ? 1500 : 880 },
         displayName: input.topic,
       });
-      return { draftUrl: draft.draftUrl, summary: { sceneCount: script.scenes.length, aspect: input.aspect } };
+      return {
+        draftUrl: draft.draftUrl,
+        assets: [{ key: 'draft', type: 'draft' as const, label: '剪映草稿', url: draft.draftUrl }],
+        summary: { sceneCount: script.scenes.length, aspect: input.aspect },
+      };
     });
   },
 });

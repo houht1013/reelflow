@@ -5,40 +5,69 @@ import type { ReelflowStageCode } from '../../constants';
 import type { ReelflowCaptionTimeline } from '../../tts';
 import type { ReelflowDraftScene, ReelflowDraftAudio, ReelflowDraftCaption, CapcutCaptionStyle } from '../../capcut';
 
+// Bilingual UI text. A plain string is used as-is (treated as the default
+// locale); an object carries per-locale copy. Lets the page render accurately
+// in zh-CN / en without a separate translation table.
+export type LocalizedText = string | { 'zh-CN'?: string; en?: string };
+
+/** Resolve a LocalizedText for a given locale (graceful fallback). */
+export function localize(text: LocalizedText | undefined | null, locale: string): string {
+  if (text == null) return '';
+  if (typeof text === 'string') return text;
+  const zh = text['zh-CN'] ?? '';
+  const en = text.en ?? '';
+  return locale.startsWith('zh') ? zh || en : en || zh;
+}
+
 // Standardized input field component the frontend renders from metadata.
 export type TemplateFieldType =
   | 'text'
   | 'textarea'
-  | 'number'
+  | 'number' // int/float — use `precision` (0 = integer) and min/max/step
   | 'slider'
-  | 'switch'
+  | 'switch' // boolean
   | 'select'
   | 'color'
   | 'aspect' // picks a canvas ratio, e.g. '16:9' | '9:16' | '1:1'
   | 'voice'  // picks a TTS voice id
-  | 'asset'; // picks an asset from the library
+  | 'image'  // uploads a single image -> asset (logo / reference / background)
+  | 'asset'; // picks an existing asset from the library
+
+export type TemplateFieldOption = { value: string; label: LocalizedText };
 
 // Standardized INPUT param metadata — synced to `template.inputSchema`. The
 // composer renders the right component purely from this (no per-template UI).
 export type TemplateField = {
+  /** Param key — also the run() input key. */
   key: string;
-  label: string;
+  label: LocalizedText;
   type: TemplateFieldType;
+  /** Helper/description text shown under the control. */
+  help?: LocalizedText;
+  placeholder?: LocalizedText;
   required?: boolean;
   defaultValue?: unknown;
-  placeholder?: string;
-  help?: string;
   /** UI grouping, e.g. '内容' / '风格' / '配音' / '品牌'. */
-  group?: string;
+  group?: LocalizedText;
   /** For select/aspect/voice. */
-  options?: { value: string; label: string }[];
+  options?: TemplateFieldOption[];
+  // number / slider
   min?: number;
   max?: number;
   step?: number;
+  /** Decimal places for number/slider (0 = integer). */
+  precision?: number;
   /** Unit suffix for number/slider, e.g. 's' / '%'. */
   unit?: string;
+  // image upload
+  /** Allowed mime/extension for type 'image', e.g. ['image/png','image/jpeg']. */
+  accept?: string[];
+  /** Upload size cap (MB) for type 'image'. */
+  maxSizeMb?: number;
   /** For type 'asset' — restrict pickable asset types. */
   assetTypes?: string[];
+  /** Reuse a shared param preset (aspect/voice/speed/...) for consistency. */
+  preset?: string;
 };
 
 // Standardized OUTPUT metadata — synced to `template.outputSchema`. The result
@@ -47,9 +76,9 @@ export type TemplateOutputType = 'draft' | 'video' | 'image' | 'audio' | 'text' 
 
 export type TemplateOutput = {
   key: string;
-  label: string;
+  label: LocalizedText;
   type: TemplateOutputType;
-  description?: string;
+  description?: LocalizedText;
 };
 
 // What a run is expected to consume — priced by the shared estimator (pricing_item)
@@ -139,12 +168,51 @@ export type TemplateContext = {
   log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>): Promise<void>;
 };
 
+// One concrete produced artifact (产物素材信息) — fills an `outputs[]` slot.
+export type OutputAsset = {
+  /** Matches a template.outputs[].key (e.g. 'draft' / 'mp4'). */
+  key: string;
+  type: TemplateOutputType;
+  label?: LocalizedText;
+  /** Public http(s) URL (or draft URL). */
+  url?: string;
+  /** Library asset id, when stored. */
+  assetId?: string;
+  mimeType?: string;
+  sizeBytes?: number;
+  /** For video/audio. */
+  durationMs?: number;
+  width?: number;
+  height?: number;
+  thumbnailUrl?: string;
+  meta?: Record<string, unknown>;
+};
+
+// What run() returns — the produced artifacts. The runtime wraps this into the
+// standardized TemplateRunResult envelope (adds jobId/status/duration/credits).
 export type TemplateRunOutput = {
   draftUrl?: string;
   /** MP4 URL if rendered (gen_video). */
   mp4Url?: string;
-  /** Concrete output values keyed by the template's `outputs[].key`. */
-  outputs?: Record<string, unknown>;
+  /** Produced artifacts keyed to the template's outputs[]. */
+  assets?: OutputAsset[];
+  summary?: Record<string, unknown>;
+};
+
+export type TemplateRunStatus = 'succeeded' | 'failed';
+
+// Standardized RUN RESULT envelope handed to the page: execution context
+// (任务ID / 状态 / 耗时 / 消耗积分) + produced artifacts (产物素材信息).
+export type TemplateRunResult = {
+  jobId: string; // 任务ID
+  templateCode: string;
+  status: TemplateRunStatus; // 成功/失败
+  startedAt: string; // ISO 8601
+  finishedAt: string; // ISO 8601
+  durationMs: number; // 耗时
+  creditsConsumed: number; // 消耗积分
+  error?: { code: string; message: string };
+  assets: OutputAsset[]; // 产物素材信息
   summary?: Record<string, unknown>;
 };
 
