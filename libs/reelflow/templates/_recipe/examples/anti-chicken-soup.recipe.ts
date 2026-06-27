@@ -60,7 +60,7 @@ export default defineRecipe({
       '- visualPrompt：英文生图提示词，描述一个「纯黑剪影人物在某情境」的扁平插画画面（只描述画面，不含文字）。',
       '严格输出 JSON：{"scenes":[{"narration":"...","visualPrompt":"..."}]}',
     ].join('\n'),
-    visual: { kind: 'ai_image', promptFrom: 'scene', style: VISUAL_STYLE, size: '1536x1024', quality: 'high' },
+    visual: { kind: 'ai_image', promptFrom: 'scene', style: VISUAL_STYLE, size: '1792x1024', quality: 'high' },
     captionStyle: { fontSize: 16, transformY: 820 },
   },
 })
