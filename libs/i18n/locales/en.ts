@@ -1106,8 +1106,8 @@ export const en: Locale = {
           id: "pro",
           name: "Pro",
           tagline: "Boost your everyday creation",
-          monthly: 24,
-          credits: 4050,
+          monthly: 39,
+          credits: 300,
           recommended: true,
           inheritFrom: "Free",
           features: ["More monthly credits", "All templates + script editing", "Export audio / video, no watermark", "Unlock 4K HD images", "Priority generation queue", "AI image & voice fill"]
@@ -1116,8 +1116,8 @@ export const en: Locale = {
           id: "max",
           name: "Max",
           tagline: "Unlock the full power of Reelflow",
-          monthly: 120,
-          credits: 20000,
+          monthly: 129,
+          credits: 1500,
           inheritFrom: "Pro",
           features: ["Massive monthly credits", "Highest-priority queue", "Parallel batch tasks", "Dedicated support", "Early access to new features"]
         }

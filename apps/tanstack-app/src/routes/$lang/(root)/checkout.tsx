@@ -8,7 +8,7 @@ import { cn } from '@libs/ui/utils/cn'
 import { ArrowLeft, Check, CreditCard, Globe, Lock, PackageOpen, QrCode } from 'lucide-react'
 
 const YEARLY_MULTIPLIER = 10
-const CUSTOM_RATE = 0.09
+const CUSTOM_RATE = 1 // ¥ per credit (1元 = 1积分)
 const CUSTOM_MIN = 100
 
 type CheckoutSearch = {

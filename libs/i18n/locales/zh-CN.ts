@@ -1113,8 +1113,8 @@ export const zhCN: Locale = {
           id: "pro",
           name: "Pro",
           tagline: "提升你的日常创作效率",
-          monthly: 24,
-          credits: 4050,
+          monthly: 39,
+          credits: 300,
           recommended: true,
           inheritFrom: "Free",
           features: ["更多月度积分", "全部模板与脚本编辑", "导出音频 / 视频，移除品牌", "解锁 4K 高清生图", "优先生成队列", "AI 补图与补语音"]
@@ -1123,8 +1123,8 @@ export const zhCN: Locale = {
           id: "max",
           name: "Max",
           tagline: "解锁 Reelflow 全部潜力",
-          monthly: 120,
-          credits: 20000,
+          monthly: 129,
+          credits: 1500,
           inheritFrom: "Pro",
           features: ["海量月度积分", "最高优先级队列", "批量任务并行", "专属客户支持", "抢先体验新功能"]
         }

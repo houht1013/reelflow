@@ -22,7 +22,7 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/credits')({
 })
 
 // Placeholder custom-amount maths (mirrors the checkout page). Easy to tune later.
-const CUSTOM_RATE = 0.09 // $ per credit
+const CUSTOM_RATE = 1 // ¥ per credit (1元 = 1积分)
 const CUSTOM_MIN = 100
 const CUSTOM_STEP = 50
 const CUSTOM_DEFAULT = 300
@@ -206,7 +206,7 @@ function ReelflowCreditsPage() {
                         <span className="mt-2 text-xs text-muted-foreground">{r.perCredit.replace('{n}', perCredit)}</span>
                       )}
                       <div className="mt-5 flex items-end gap-1">
-                        <span className="reelflow-display reelflow-num text-3xl">${pack.amount}</span>
+                        <span className="reelflow-display reelflow-num text-3xl">¥{pack.amount}</span>
                       </div>
                       {pack.bonus ? <span className="mt-1 text-xs text-muted-foreground">{r.perCredit.replace('{n}', perCredit)}</span> : null}
                       <Button asChild size="lg" variant={pack.recommended ? 'default' : 'outline'} className="mt-5 w-full">
@@ -247,7 +247,7 @@ function ReelflowCreditsPage() {
                 <div className="flex flex-col gap-3 md:items-end">
                   <div className="md:text-right">
                     <p className="text-xs text-muted-foreground">{r.custom.amountLabel}</p>
-                    <p className="reelflow-display reelflow-num text-3xl">${customAmount}</p>
+                    <p className="reelflow-display reelflow-num text-3xl">¥{customAmount}</p>
                   </div>
                   <Button asChild size="lg">
                     <a href={`/${locale}/checkout?type=credits&credits=${Math.max(CUSTOM_MIN, customCredits)}&custom=1`} data-testid="reelflow-credit-buy-custom">
