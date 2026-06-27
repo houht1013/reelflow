@@ -105,7 +105,7 @@ export const Route = createFileRoute('/api/payment/initiate')({
 
           await db.update(order).set({ providerOrderId: result.providerOrderId, metadata: result.metadata || {}, updatedAt: new Date() }).where(eq(order.id, orderId))
 
-          return Response.json(result)
+          return Response.json({ orderId, ...result })
         } catch (error) {
           console.error('Payment initiation error:', error)
           return Response.json({ error: 'Failed to initiate payment' }, { status: 500 })

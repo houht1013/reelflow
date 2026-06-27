@@ -1,11 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { useTranslation } from '@/hooks/use-translation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import QRCode from 'qrcode'
 import { Button } from '@libs/react-shared/ui/button'
+import { Dialog, DialogContent, DialogTitle } from '@libs/react-shared/ui/dialog'
 import { cn } from '@libs/ui/utils/cn'
-import { ArrowLeft, Check, CreditCard, Globe, Lock, PackageOpen, QrCode } from 'lucide-react'
+import { ArrowLeft, Check, CheckCircle2, CreditCard, Globe, Loader2, Lock, PackageOpen, QrCode, RefreshCw } from 'lucide-react'
+
+type PayPhase = 'loading' | 'pending' | 'paid' | 'expired' | 'error'
+const PAY_WINDOW_SECONDS = 180
 
 const YEARLY_MULTIPLIER = 10
 const CUSTOM_RATE = 1 // ¥ per credit (1元 = 1积分)
@@ -46,30 +51,36 @@ function CheckoutPage() {
   const v = t.pricing.v2
   const search = Route.useSearch()
   const [method, setMethod] = useState<string>('alipay')
-  const [submitting, setSubmitting] = useState(false)
+  const [payOpen, setPayOpen] = useState(false)
+  const [phase, setPhase] = useState<PayPhase>('loading')
+  const [qr, setQr] = useState('')
+  const [secondsLeft, setSecondsLeft] = useState(PAY_WINDOW_SECONDS)
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const order = resolveOrder(search, v, c, t.reelflow.credits.recharge)
   const planId = resolveBackendPlanId(search)
 
-  const methods = [
-    { id: 'wechat', label: c.methods.wechat, desc: c.methods.wechatDesc, icon: QrCode },
-    { id: 'alipay', label: c.methods.alipay, desc: c.methods.alipayDesc, icon: QrCode },
-    { id: 'card', label: c.methods.card, desc: c.methods.cardDesc, icon: CreditCard },
-    { id: 'paypal', label: c.methods.paypal, desc: c.methods.paypalDesc, icon: Globe },
-  ]
+  const stopTimers = () => {
+    if (tickRef.current) clearInterval(tickRef.current)
+    if (pollRef.current) clearInterval(pollRef.current)
+    tickRef.current = null
+    pollRef.current = null
+  }
 
-  const handleConfirm = async () => {
-    // Only Alipay is live (Alipay-first). Other channels stay reserved.
-    if (method !== 'alipay') {
+  // Clean up timers on unmount.
+  useEffect(() => stopTimers, [])
+
+  const startPayment = async () => {
+    if (method !== 'alipay' || !planId) {
       toast.info(c.reservedNote)
       return
     }
-    // Custom credit amounts have no fixed backend plan yet — keep reserved.
-    if (!planId) {
-      toast.info(c.reservedNote)
-      return
-    }
-    setSubmitting(true)
+    stopTimers()
+    setPayOpen(true)
+    setPhase('loading')
+    setQr('')
+    setSecondsLeft(PAY_WINDOW_SECONDS)
     try {
       const res = await fetch('/api/payment/initiate', {
         method: 'POST',
@@ -77,17 +88,60 @@ function CheckoutPage() {
         body: JSON.stringify({ planId, provider: 'alipay' }),
       })
       const data = await res.json().catch(() => null)
-      if (!res.ok || !data?.paymentUrl) {
-        toast.error(c.payError)
-        setSubmitting(false)
+      if (!res.ok || !data?.paymentUrl || !data?.orderId) {
+        setPhase('error')
         return
       }
-      window.location.href = data.paymentUrl
+      const dataUrl = await QRCode.toDataURL(data.paymentUrl, { width: 240, margin: 1 })
+      setQr(dataUrl)
+      setPhase('pending')
+
+      tickRef.current = setInterval(() => {
+        setSecondsLeft((s) => {
+          if (s <= 1) {
+            stopTimers()
+            setPhase('expired')
+            return 0
+          }
+          return s - 1
+        })
+      }, 1000)
+
+      pollRef.current = setInterval(async () => {
+        try {
+          const r = await fetch(`/api/payment/status?orderId=${encodeURIComponent(data.orderId)}`)
+          const d = await r.json().catch(() => null)
+          if (d?.status === 'paid') {
+            stopTimers()
+            setPhase('paid')
+          } else if (d?.status === 'canceled') {
+            stopTimers()
+            setPhase('expired')
+          }
+        } catch {
+          /* keep polling */
+        }
+      }, 3000)
     } catch {
-      toast.error(c.payError)
-      setSubmitting(false)
+      setPhase('error')
     }
   }
+
+  const closePay = (open: boolean) => {
+    if (!open) {
+      stopTimers()
+      setPayOpen(false)
+    }
+  }
+
+  const countdown = `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, '0')}`
+
+  const methods = [
+    { id: 'wechat', label: c.methods.wechat, desc: c.methods.wechatDesc, icon: QrCode },
+    { id: 'alipay', label: c.methods.alipay, desc: c.methods.alipayDesc, icon: QrCode },
+    { id: 'card', label: c.methods.card, desc: c.methods.cardDesc, icon: CreditCard },
+    { id: 'paypal', label: c.methods.paypal, desc: c.methods.paypalDesc, icon: Globe },
+  ]
 
   return (
     <div className="reelflow-app min-h-screen">
@@ -183,15 +237,81 @@ function CheckoutPage() {
                   <span className="reelflow-display reelflow-num text-3xl">¥{order.amount}</span>
                 </div>
 
-                <Button size="lg" className="mt-5 w-full" onClick={handleConfirm} disabled={submitting}>
+                <Button size="lg" className="mt-5 w-full" onClick={startPayment}>
                   <Lock className="mr-2 h-4 w-4" aria-hidden="true" />
-                  {submitting ? c.processing : c.confirm}
+                  {c.confirm}
                 </Button>
               </aside>
             </div>
           )}
         </div>
       </section>
+
+      <Dialog open={payOpen} onOpenChange={closePay}>
+        <DialogContent className="max-w-sm">
+          <DialogTitle className="text-center">
+            {phase === 'paid' ? c.paidTitle : phase === 'expired' ? c.expiredTitle : c.qrTitle}
+          </DialogTitle>
+
+          {phase === 'loading' && (
+            <div className="flex flex-col items-center gap-3 py-10 text-sm text-muted-foreground">
+              <Loader2 className="h-7 w-7 animate-spin text-primary" aria-hidden="true" />
+              {c.qrGenerating}
+            </div>
+          )}
+
+          {phase === 'pending' && (
+            <div className="flex flex-col items-center gap-4 py-2">
+              <div className="rounded-2xl border border-border bg-white p-3 shadow-sm">
+                {qr ? <img src={qr} alt="" width={216} height={216} className="h-[216px] w-[216px]" /> : null}
+              </div>
+              {order ? <p className="reelflow-display reelflow-num text-2xl">¥{order.amount}</p> : null}
+              <p className="text-sm text-muted-foreground">{c.qrHint}</p>
+              <p className="text-sm">
+                <span className="text-muted-foreground">{c.qrExpiresIn} </span>
+                <span className="reelflow-num font-semibold text-foreground">{countdown}</span>
+              </p>
+            </div>
+          )}
+
+          {phase === 'paid' && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color-mix(in_oklch,var(--reelflow-green)_16%,transparent)]">
+                <CheckCircle2 className="h-8 w-8" style={{ color: 'var(--reelflow-green)' }} aria-hidden="true" />
+              </span>
+              <p className="text-sm text-muted-foreground">{c.paidHint}</p>
+              <div className="grid w-full gap-2">
+                <Button asChild size="lg" className="w-full">
+                  <a href={`/${locale}/reelflow`}>{c.backToWorkbench}</a>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="w-full">
+                  <a href={`/${locale}/reelflow/credits`}>{c.viewCredits}</a>
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {phase === 'expired' && (
+            <div className="flex flex-col items-center gap-4 py-6">
+              <p className="text-sm text-muted-foreground">{c.expiredHint}</p>
+              <Button size="lg" className="w-full" onClick={startPayment}>
+                <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
+                {c.regenerate}
+              </Button>
+            </div>
+          )}
+
+          {phase === 'error' && (
+            <div className="flex flex-col items-center gap-4 py-6">
+              <p className="text-sm text-muted-foreground">{c.payError}</p>
+              <Button size="lg" className="w-full" onClick={startPayment}>
+                <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
+                {c.regenerate}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

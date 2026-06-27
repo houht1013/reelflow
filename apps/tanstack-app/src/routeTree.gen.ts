@@ -33,6 +33,7 @@ import { Route as ApiReelflowNotificationsRouteImport } from './routes/api/reelf
 import { Route as ApiReelflowInvitesRouteImport } from './routes/api/reelflow/invites'
 import { Route as ApiReelflowCreditsRouteImport } from './routes/api/reelflow/credits'
 import { Route as ApiReelflowAssetsRouteImport } from './routes/api/reelflow/assets'
+import { Route as ApiPaymentStatusRouteImport } from './routes/api/payment/status'
 import { Route as ApiPaymentQueryRouteImport } from './routes/api/payment/query'
 import { Route as ApiPaymentInitiateRouteImport } from './routes/api/payment/initiate'
 import { Route as ApiPaymentCancelRouteImport } from './routes/api/payment/cancel'
@@ -233,6 +234,11 @@ const ApiReelflowCreditsRoute = ApiReelflowCreditsRouteImport.update({
 const ApiReelflowAssetsRoute = ApiReelflowAssetsRouteImport.update({
   id: '/api/reelflow/assets',
   path: '/api/reelflow/assets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPaymentStatusRoute = ApiPaymentStatusRouteImport.update({
+  id: '/api/payment/status',
+  path: '/api/payment/status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPaymentQueryRoute = ApiPaymentQueryRouteImport.update({
@@ -698,6 +704,7 @@ export interface FileRoutesByFullPath {
   '/api/payment/cancel': typeof ApiPaymentCancelRoute
   '/api/payment/initiate': typeof ApiPaymentInitiateRoute
   '/api/payment/query': typeof ApiPaymentQueryRoute
+  '/api/payment/status': typeof ApiPaymentStatusRoute
   '/api/reelflow/assets': typeof ApiReelflowAssetsRouteWithChildren
   '/api/reelflow/credits': typeof ApiReelflowCreditsRouteWithChildren
   '/api/reelflow/invites': typeof ApiReelflowInvitesRoute
@@ -803,6 +810,7 @@ export interface FileRoutesByTo {
   '/api/payment/cancel': typeof ApiPaymentCancelRoute
   '/api/payment/initiate': typeof ApiPaymentInitiateRoute
   '/api/payment/query': typeof ApiPaymentQueryRoute
+  '/api/payment/status': typeof ApiPaymentStatusRoute
   '/api/reelflow/assets': typeof ApiReelflowAssetsRouteWithChildren
   '/api/reelflow/credits': typeof ApiReelflowCreditsRouteWithChildren
   '/api/reelflow/invites': typeof ApiReelflowInvitesRoute
@@ -911,6 +919,7 @@ export interface FileRoutesById {
   '/api/payment/cancel': typeof ApiPaymentCancelRoute
   '/api/payment/initiate': typeof ApiPaymentInitiateRoute
   '/api/payment/query': typeof ApiPaymentQueryRoute
+  '/api/payment/status': typeof ApiPaymentStatusRoute
   '/api/reelflow/assets': typeof ApiReelflowAssetsRouteWithChildren
   '/api/reelflow/credits': typeof ApiReelflowCreditsRouteWithChildren
   '/api/reelflow/invites': typeof ApiReelflowInvitesRoute
@@ -1019,6 +1028,7 @@ export interface FileRouteTypes {
     | '/api/payment/cancel'
     | '/api/payment/initiate'
     | '/api/payment/query'
+    | '/api/payment/status'
     | '/api/reelflow/assets'
     | '/api/reelflow/credits'
     | '/api/reelflow/invites'
@@ -1124,6 +1134,7 @@ export interface FileRouteTypes {
     | '/api/payment/cancel'
     | '/api/payment/initiate'
     | '/api/payment/query'
+    | '/api/payment/status'
     | '/api/reelflow/assets'
     | '/api/reelflow/credits'
     | '/api/reelflow/invites'
@@ -1231,6 +1242,7 @@ export interface FileRouteTypes {
     | '/api/payment/cancel'
     | '/api/payment/initiate'
     | '/api/payment/query'
+    | '/api/payment/status'
     | '/api/reelflow/assets'
     | '/api/reelflow/credits'
     | '/api/reelflow/invites'
@@ -1322,6 +1334,7 @@ export interface RootRouteChildren {
   ApiPaymentCancelRoute: typeof ApiPaymentCancelRoute
   ApiPaymentInitiateRoute: typeof ApiPaymentInitiateRoute
   ApiPaymentQueryRoute: typeof ApiPaymentQueryRoute
+  ApiPaymentStatusRoute: typeof ApiPaymentStatusRoute
   ApiReelflowAssetsRoute: typeof ApiReelflowAssetsRouteWithChildren
   ApiReelflowCreditsRoute: typeof ApiReelflowCreditsRouteWithChildren
   ApiReelflowInvitesRoute: typeof ApiReelflowInvitesRoute
@@ -1531,6 +1544,13 @@ declare module '@tanstack/react-router' {
       path: '/api/reelflow/assets'
       fullPath: '/api/reelflow/assets'
       preLoaderRoute: typeof ApiReelflowAssetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/payment/status': {
+      id: '/api/payment/status'
+      path: '/api/payment/status'
+      fullPath: '/api/payment/status'
+      preLoaderRoute: typeof ApiPaymentStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/payment/query': {
@@ -2323,6 +2343,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPaymentCancelRoute: ApiPaymentCancelRoute,
   ApiPaymentInitiateRoute: ApiPaymentInitiateRoute,
   ApiPaymentQueryRoute: ApiPaymentQueryRoute,
+  ApiPaymentStatusRoute: ApiPaymentStatusRoute,
   ApiReelflowAssetsRoute: ApiReelflowAssetsRouteWithChildren,
   ApiReelflowCreditsRoute: ApiReelflowCreditsRouteWithChildren,
   ApiReelflowInvitesRoute: ApiReelflowInvitesRoute,
