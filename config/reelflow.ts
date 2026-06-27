@@ -92,23 +92,29 @@ export const reelflowConfig = {
       timeoutMs: Number(process.env.REELFLOW_VIDEO_TIMEOUT_MS ?? 300_000),
       maxAttempts: Number(process.env.REELFLOW_VIDEO_MAX_ATTEMPTS ?? 2),
     },
-    // Text-to-speech + caption timeline alignment via the local dubbingx-cli.
+    // Text-to-speech + caption alignment via the DubbingX HTTP API.
     tts: {
       provider: 'dubbingx',
-      // Preferred: absolute path to the CLI's JS entry (run via `node <entry>`),
-      // which avoids shell-escaping issues with CJK text and <break> tags.
-      entry: process.env.REELFLOW_DUBBINGX_ENTRY ?? '',
-      // Fallback binary name on PATH when no entry is configured.
-      bin: process.env.REELFLOW_DUBBINGX_BIN ?? 'dubbingx',
-      defaultVoice: process.env.REELFLOW_DUBBINGX_VOICE ?? '',
-      defaultLang: process.env.REELFLOW_DUBBINGX_LANG ?? 'zh',
-      defaultFormat: process.env.REELFLOW_DUBBINGX_FORMAT ?? 'mp3',
-      // Run subtitle alignment by default; set REELFLOW_DUBBINGX_ALIGN=0 to skip.
-      align: process.env.REELFLOW_DUBBINGX_ALIGN !== '0',
-      mock: process.env.REELFLOW_DUBBINGX_MOCK === '1',
-      // Per-call CLI timeout (kills a hung dubbingx process) + retry once.
-      timeoutMs: Number(process.env.REELFLOW_DUBBINGX_TIMEOUT_MS ?? 180_000),
-      maxAttempts: Number(process.env.REELFLOW_DUBBINGX_MAX_ATTEMPTS ?? 2),
+      // TTS: POST /v1/addTtsTask (Bearer apiKey) then poll GET /v1/getTtsTaskInfo/{id}.
+      baseUrl: (process.env.REELFLOW_TTS_BASE_URL ?? 'https://tts-api.dubbingx.com').replace(/\/$/, ''),
+      apiKey: process.env.REELFLOW_TTS_API_KEY ?? '',
+      // Alignment: a POST endpoint that returns the volcengine align JSON
+      // ({data:{duration,utterances:[{start_time,end_time,text,words}]}}). When
+      // unset, captions degrade to a char-proportional timeline.
+      alignUrl: process.env.REELFLOW_TTS_ALIGN_URL ?? '',
+      alignToken: process.env.REELFLOW_TTS_ALIGN_TOKEN ?? '',
+      defaultVoice: process.env.REELFLOW_TTS_VOICE ?? process.env.REELFLOW_DUBBINGX_VOICE ?? '',
+      defaultLang: process.env.REELFLOW_TTS_LANG ?? process.env.REELFLOW_DUBBINGX_LANG ?? 'zh',
+      defaultFormat: process.env.REELFLOW_TTS_FORMAT ?? 'mp3',
+      // Run subtitle alignment by default; set REELFLOW_TTS_ALIGN=0 to skip.
+      align: process.env.REELFLOW_TTS_ALIGN !== '0',
+      mock: process.env.REELFLOW_TTS_MOCK === '1' || process.env.REELFLOW_DUBBINGX_MOCK === '1',
+      // Per-HTTP-call timeout + retry.
+      timeoutMs: Number(process.env.REELFLOW_TTS_TIMEOUT_MS ?? 60_000),
+      maxAttempts: Number(process.env.REELFLOW_TTS_MAX_ATTEMPTS ?? 2),
+      // Async task polling.
+      pollIntervalMs: Number(process.env.REELFLOW_TTS_POLL_INTERVAL_MS ?? 2_000),
+      pollMaxMs: Number(process.env.REELFLOW_TTS_POLL_MAX_MS ?? 180_000),
     },
   },
   // capcut-mate: local Jianying draft automation API (FastAPI).

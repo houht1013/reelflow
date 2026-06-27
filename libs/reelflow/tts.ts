@@ -1,28 +1,19 @@
-// Reelflow TTS + caption-alignment atomic capability, wrapping the local
-// `dubbingx-cli`. Covers two things the worker voice/caption stages need:
-//   1. text -> audio        (dubbingx tts)
-//   2. audio + text -> word/sentence subtitle timeline (dubbingx align, volcengine)
-//
-// NODE-ONLY: this module spawns a child process, so it is NOT exported from the
-// package barrel. Import it directly: `@libs/reelflow/tts`.
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
-import { readFile, unlink } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+// Reelflow TTS + caption-alignment atomic capability over the DubbingX HTTP API.
+// Covers the two things the worker voice/caption stages need:
+//   1. text -> audio  (POST /v1/addTtsTask -> poll GET /v1/getTtsTaskInfo/{id})
+//   2. audio + text -> word/sentence subtitle timeline (configurable align endpoint)
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
 import { resolveActiveModel, modelPricingOf } from './models';
 import {
   ProviderCallError,
   chargeCredits,
+  fetchWithRetry,
   meterUsage,
   resolveProviderPricing,
   withProviderBreaker,
   type ProviderBillingMode,
 } from './provider-runtime';
-
-const execFileAsync = promisify(execFile);
 
 export type ReelflowCaptionWord = { text: string; startMs: number; endMs: number; punctuation?: string };
 export type ReelflowCaptionSegment = { index: number; text: string; startMs: number; endMs: number; words: ReelflowCaptionWord[] };
@@ -60,39 +51,30 @@ export type ReelflowVoiceTrackResult = {
   credits: { consumed: number; balanceAfter: number } | null;
 };
 
-async function runDubbingx(args: string[]): Promise<string> {
-  const { entry, bin, timeoutMs, maxAttempts } = reelflowConfig.ai.tts;
-  const command = entry ? 'node' : bin;
-  const fullArgs = entry ? [entry, ...args] : args;
-  const attempts = Math.max(1, Math.floor(maxAttempts ?? 1));
-
-  // Breaker (fail fast on sustained CLI failure) + per-call timeout (kills a hung
-  // dubbingx process) + retry on transient failures.
-  return withProviderBreaker('tts', async () => {
-    let lastError: unknown;
-    for (let attempt = 0; attempt < attempts; attempt += 1) {
-      try {
-        const { stdout } = await execFileAsync(command, fullArgs, {
-          maxBuffer: 1024 * 1024 * 32,
-          windowsHide: true,
-          timeout: timeoutMs,
-          // .cmd shim on PATH needs a shell; the `node <entry>` path never does.
-          shell: !entry && process.platform === 'win32',
-        });
-        return stdout;
-      } catch (error) {
-        lastError = error;
-        if (attempt === attempts - 1) throw error;
-        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-      }
-    }
-    throw lastError;
-  });
+async function dubbingxRequest<T>(path: string, method: 'GET' | 'POST', body?: unknown): Promise<T> {
+  const { baseUrl, apiKey, timeoutMs, maxAttempts } = reelflowConfig.ai.tts;
+  const res = await fetchWithRetry(
+    `${baseUrl}${path}`,
+    {
+      method,
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    },
+    { timeoutMs, attempts: maxAttempts, breakerKey: 'tts' },
+  );
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`DubbingX ${path} failed: ${res.status} ${text.slice(0, 300)}`);
+  }
+  return (await res.json()) as T;
 }
 
-function parseField(stdout: string, label: string): string | null {
-  const match = stdout.match(new RegExp(`${label}[:：]\\s*(\\S+)`));
-  return match ? match[1] : null;
+// Defensive field pick — tolerate camelCase / snake_case and a `data` wrapper.
+function pick<T>(obj: unknown, ...keys: string[]): T | undefined {
+  const o = (obj && typeof obj === 'object' ? obj : {}) as Record<string, unknown>;
+  const src = (o.data && typeof o.data === 'object' ? { ...(o.data as Record<string, unknown>), ...o } : o);
+  for (const k of keys) if (src[k] != null) return src[k] as T;
+  return undefined;
 }
 
 async function synthesizeDubbingxVoice(input: {
@@ -105,20 +87,41 @@ async function synthesizeDubbingxVoice(input: {
   pitch?: number;
   volume?: number;
   format: string;
-}): Promise<{ audioUrl: string; taskId: string | null }> {
-  const args = ['tts', input.text, '--voice', input.voice, '--lang', input.lang, '--format', input.format, '--no-download'];
-  if (input.emotion) args.push('--emotion', input.emotion);
-  if (input.emotionCustom) args.push('--emotion-custom', input.emotionCustom);
-  if (typeof input.speed === 'number') args.push('--speed', String(input.speed));
-  if (typeof input.pitch === 'number') args.push('--pitch', String(input.pitch));
-  if (typeof input.volume === 'number') args.push('--volume', String(input.volume));
+}): Promise<{ audioUrl: string; taskId: string | null; durationMs: number | null }> {
+  // 1. Create the async TTS task.
+  const created = await dubbingxRequest<unknown>('/v1/addTtsTask', 'POST', {
+    voiceId: input.voice,
+    text: input.text,
+    language: input.lang,
+    fileFormat: input.format,
+    ...(typeof input.speed === 'number' ? { audioSpeed: input.speed } : {}),
+    ...(typeof input.pitch === 'number' ? { audioPitch: input.pitch } : {}),
+    ...(typeof input.volume === 'number' ? { audioVolume: input.volume } : {}),
+    ...(input.emotion ? { emotion: input.emotion } : {}),
+    ...(input.emotionCustom ? { emotionCustom: input.emotionCustom } : {}),
+  });
+  const taskId = String(pick<string>(created, 'taskId', 'task_id', 'id') ?? '');
+  if (!taskId) throw new Error(`DubbingX addTtsTask returned no taskId: ${JSON.stringify(created).slice(0, 200)}`);
 
-  const stdout = await runDubbingx(args);
-  const audioUrl = parseField(stdout, '下载链接');
-  if (!audioUrl) {
-    throw new Error(`dubbingx tts returned no download link. Output: ${stdout.slice(0, 300)}`);
+  // 2. Poll until completed.
+  const { pollIntervalMs, pollMaxMs } = reelflowConfig.ai.tts;
+  const deadline = Date.now() + pollMaxMs;
+  for (;;) {
+    const info = await dubbingxRequest<unknown>(`/v1/getTtsTaskInfo/${encodeURIComponent(taskId)}`, 'GET');
+    const status = String(pick<string>(info, 'status', 'state') ?? '').toLowerCase();
+    if (['completed', 'success', 'succeeded', 'done'].includes(status)) {
+      const audioUrl = pick<string>(info, 'audioUrl', 'audio_url', 'downloadUrl', 'download_url', 'fileUrl', 'url');
+      if (!audioUrl) throw new Error('DubbingX task completed without an audio URL');
+      const durRaw = pick<number>(info, 'duration', 'audioDuration', 'audio_duration');
+      const durationMs = typeof durRaw === 'number' ? Math.round(durRaw > 2000 ? durRaw : durRaw * 1000) : null;
+      return { audioUrl, taskId, durationMs };
+    }
+    if (['failed', 'error'].includes(status)) {
+      throw new Error(`DubbingX TTS task failed: ${pick<string>(info, 'message', 'error', 'errorMessage') ?? status}`);
+    }
+    if (Date.now() > deadline) throw new Error('DubbingX TTS task timed out');
+    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
   }
-  return { audioUrl, taskId: parseField(stdout, '任务ID') };
 }
 
 type AlignJson = {
@@ -151,15 +154,23 @@ function mapAlignJson(json: AlignJson): ReelflowCaptionTimeline {
   return { durationMs, segments };
 }
 
-async function alignDubbingxCaptions(input: { audioUrl: string; text: string }): Promise<ReelflowCaptionTimeline> {
-  const outPath = join(tmpdir(), `reelflow-align-${crypto.randomUUID()}.json`);
-  try {
-    await runDubbingx(['align', '--audio-url', input.audioUrl, '--text', input.text, '-o', outPath]);
-    const raw = await readFile(outPath, 'utf8');
-    return mapAlignJson(JSON.parse(raw) as AlignJson);
-  } finally {
-    await unlink(outPath).catch(() => {});
+async function alignDubbingxCaptions(input: { audioUrl: string; text: string }): Promise<ReelflowCaptionTimeline | null> {
+  const { alignUrl, alignToken, timeoutMs, maxAttempts } = reelflowConfig.ai.tts;
+  if (!alignUrl) return null; // no align endpoint configured -> caller degrades
+  const res = await fetchWithRetry(
+    alignUrl,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(alignToken ? { Authorization: `Bearer ${alignToken}` } : {}) },
+      body: JSON.stringify({ audioUrl: input.audioUrl, audio_url: input.audioUrl, text: input.text }),
+    },
+    { timeoutMs, attempts: maxAttempts, breakerKey: 'tts-align' },
+  );
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`DubbingX align failed: ${res.status} ${text.slice(0, 300)}`);
   }
+  return mapAlignJson((await res.json()) as AlignJson);
 }
 
 // --- Mock path (dev / e2e without the CLI or credits) ---
@@ -202,9 +213,10 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
   let audioUrl: string;
   let taskId: string | null = null;
   let captions: ReelflowCaptionTimeline | null = null;
+  let synthDurationMs: number | null = null;
   let mock = false;
 
-  if (cfg.mock || (!cfg.entry && !cfg.bin)) {
+  if (cfg.mock || !cfg.apiKey) {
     mock = true;
     audioUrl = SILENT_MP3;
     captions = doAlign ? buildMockTimeline(text) : null;
@@ -223,8 +235,10 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
       });
       audioUrl = synth.audioUrl;
       taskId = synth.taskId;
+      synthDurationMs = synth.durationMs;
       if (doAlign) {
-        captions = await alignDubbingxCaptions({ audioUrl, text });
+        // Degrade to a char-proportional timeline if no align endpoint is configured.
+        captions = (await alignDubbingxCaptions({ audioUrl, text })) ?? buildMockTimeline(text);
       }
     } catch (error) {
       throw new ProviderCallError(
@@ -235,7 +249,7 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
     }
   }
 
-  const durationMs = captions?.durationMs ?? null;
+  const durationMs = captions?.durationMs ?? synthDurationMs;
 
   // For a per_time audio model meter on seconds; otherwise on characters.
   const meterAmount = dbModel?.pricingMode === 'per_time' ? Math.max(0, Math.round((durationMs ?? 0) / 1000)) : text.length;
