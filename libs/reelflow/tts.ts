@@ -12,7 +12,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
-import { resolveActiveModel } from './models';
+import { resolveActiveModel, modelPricingOf } from './models';
 import {
   ProviderCallError,
   chargeCredits,
@@ -237,12 +237,15 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
 
   const durationMs = captions?.durationMs ?? null;
 
+  // For a per_time audio model meter on seconds; otherwise on characters.
+  const meterAmount = dbModel?.pricingMode === 'per_time' ? Math.max(0, Math.round((durationMs ?? 0) / 1000)) : text.length;
   const pricing = await resolveProviderPricing({
     resourceType: 'tts',
     provider: cfg.provider,
     model: voice,
-    amount: text.length,
+    amount: meterAmount,
     fallbackCreditCost: Math.max(1, Math.ceil(text.length * 0.002 * 100) / 100),
+    modelPricing: modelPricingOf(dbModel),
   });
 
   let credits: ReelflowVoiceTrackResult['credits'] = null;

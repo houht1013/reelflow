@@ -2,7 +2,7 @@
 // Used by the script / storyboard / caption stages and any LLM-backed tooling.
 // Billing + usage metering go through the shared provider-runtime scaffolding.
 import { reelflowConfig } from '@config';
-import { resolveActiveModel, type ResolvedAiModel } from './models';
+import { resolveActiveModel, modelPricingOf, type ResolvedAiModel } from './models';
 import {
   ProviderCallError,
   chargeCredits,
@@ -199,6 +199,7 @@ export async function generateReelflowText(input: ReelflowTextInput): Promise<Re
     model: completion.model,
     amount: completion.usage.totalTokens,
     fallbackCreditCost: Math.max(1, Math.ceil(completion.usage.totalTokens * 0.001 * 100) / 100),
+    modelPricing: modelPricingOf(dbModel),
   });
 
   let credits: ReelflowTextResult['credits'] = null;

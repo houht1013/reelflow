@@ -4,6 +4,7 @@
 import { and, asc, desc, eq } from 'drizzle-orm';
 import { db } from '@libs/database';
 import { aiModel } from '@libs/database/schema';
+import type { ModelPricingOverride } from './provider-runtime';
 
 export type AiModelCategory = 'text' | 'image' | 'video' | 'audio';
 export type PricingMode = 'per_call' | 'per_token' | 'per_time';
@@ -62,6 +63,12 @@ function toResolved(row: typeof aiModel.$inferSelect): ResolvedAiModel {
     pricingUnit: row.pricingUnit,
     minCreditCost: row.minCreditCost != null ? Number(row.minCreditCost) : null,
   };
+}
+
+/** Derive a pricing override for metering from a resolved model. */
+export function modelPricingOf(m: ResolvedAiModel | null | undefined): ModelPricingOverride | null {
+  if (!m) return null;
+  return { mode: m.pricingMode, creditUnitPrice: m.creditUnitPrice, unit: m.pricingUnit, minCreditCost: m.minCreditCost, modelId: m.modelId };
 }
 
 /** Active model for a category: enabled, default first, then priority. null if none. */

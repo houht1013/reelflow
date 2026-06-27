@@ -3,7 +3,7 @@
 // and reusable by tooling. Billing + usage metering go through provider-runtime.
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
-import { resolveActiveModel, type ResolvedAiModel } from './models';
+import { resolveActiveModel, modelPricingOf, type ResolvedAiModel } from './models';
 import {
   ProviderCallError,
   chargeCredits,
@@ -235,6 +235,7 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
     model,
     amount: 1,
     fallbackCreditCost: 8,
+    modelPricing: modelPricingOf(dbModel),
   });
 
   // Image cost is known up front; charge before the call and refund on failure.

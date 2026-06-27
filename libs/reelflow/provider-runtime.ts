@@ -198,13 +198,57 @@ export type ProviderPricing = {
  * Resolve the credit + provider cost for a usage event from the pricing catalog,
  * falling back to a caller-supplied default when no enabled pricing_item matches.
  */
+export type ModelPricingOverride = {
+  mode: 'per_call' | 'per_token' | 'per_time';
+  creditUnitPrice: number;
+  unit?: string | null;
+  minCreditCost?: number | null;
+  modelId?: string | null;
+};
+
+function computeModelCreditCost(p: ModelPricingOverride, amount: number): number {
+  let cost: number;
+  if (p.mode === 'per_call') cost = p.creditUnitPrice; // flat per call
+  else if (p.mode === 'per_token') cost = p.creditUnitPrice * (p.unit === '1k_tokens' ? amount / 1000 : amount);
+  else cost = p.creditUnitPrice * (p.unit === 'minute' ? amount / 60 : amount); // per_time (seconds)
+  return Math.max(Number(p.minCreditCost ?? 0), Math.ceil(cost * 100) / 100);
+}
+
 export async function resolveProviderPricing(input: {
   resourceType: ResourceType;
   provider: string;
   model?: string;
   amount: number;
   fallbackCreditCost: number;
+  /** When set (an active aiModel), pricing comes from the model, not pricing_item. */
+  modelPricing?: ModelPricingOverride | null;
 }): Promise<ProviderPricing> {
+  // Admin-managed model pricing takes precedence over the pricing_item catalog.
+  if (input.modelPricing) {
+    const mp = input.modelPricing;
+    const amount = Math.max(input.amount, 0);
+    const creditCost = computeModelCreditCost(mp, amount);
+    const usageUnit = mp.unit || DEFAULT_USAGE_UNIT[input.resourceType];
+    const model = mp.modelId || input.model || 'default';
+    return {
+      model,
+      usageUnit,
+      creditCost,
+      providerCostAmount: 0,
+      providerCostCurrency: 'USD',
+      snapshot: {
+        source: 'aiModel',
+        resourceType: input.resourceType,
+        provider: input.provider,
+        model,
+        usageUnit,
+        pricingMode: mp.mode,
+        creditUnitPrice: mp.creditUnitPrice,
+        minCreditCost: mp.minCreditCost ?? 0,
+      },
+    };
+  }
+
   const rows = await db
     .select()
     .from(pricingItem)
