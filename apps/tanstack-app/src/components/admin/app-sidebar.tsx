@@ -1,4 +1,4 @@
-import { User, CreditCard, ShoppingCart, LayoutDashboard, Coins, FileText, Clapperboard } from "lucide-react"
+import { User, CreditCard, ShoppingCart, LayoutDashboard, Coins, FileText, Clapperboard, Boxes } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation"
 import { Logo } from "@libs/react-shared/ui/logo"
 import { useRouterState } from "@tanstack/react-router"
@@ -51,6 +51,11 @@ export function AppSidebar() {
       title: t.navigation.admin.reelflow,
       url: `/admin/reelflow`,
       icon: Clapperboard,
+    },
+    {
+      title: '模型管理',
+      url: `/admin/reelflow/models`,
+      icon: Boxes,
     },
     {
       title: t.navigation.admin.blog,
