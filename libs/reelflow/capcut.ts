@@ -16,7 +16,7 @@
 // All timeline values on the capcut API are MICROSECONDS.
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
-import type { ResolvedVideo } from './templates/_recipe/ir';
+import type { ResolvedVideo } from './templates/_sdk/ir';
 import {
   ProviderCallError,
   chargeCredits,

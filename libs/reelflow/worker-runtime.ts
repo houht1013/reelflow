@@ -20,10 +20,8 @@ import { buildDraftPackageMetadata, getDraftPackageStorageKey } from './draft-pa
 import { notifyReelflowJobCompleted, notifyReelflowJobFailed } from './notifications';
 import { canClaimWorkspaceJob, resolveWorkspaceConcurrentJobLimit, resolveWorkspaceImageConcurrency } from './worker-limits';
 import { resolveTemplate } from './templates/loader';
-import { loadPublishedRecipe } from './templates/_recipe/published-recipes';
-import { recipeToTemplate } from './templates/_recipe/runner';
 import { createSdk } from './sdk';
-import type { TemplateRunOutput, ReelflowTemplate } from './templates/_sdk/types';
+import type { TemplateRunOutput } from './templates/_sdk/types';
 
 // Stabilize outbound fetch for long-running provider calls on Windows/Node 24:
 // don't reuse idle keep-alive sockets (the proxy closes them, surfacing as undici
@@ -241,12 +239,7 @@ export async function runClaimedJob(claimed: ClaimedJob): Promise<ProcessOneJobR
     .limit(1);
   // Resolve by code: built-in registry first, then a runtime-loaded template
   // file from the dynamic dir (B model — no rebuild needed).
-  let registryTemplate = jobRow ? await resolveTemplate(jobRow.templateCode) : undefined;
-  // Last resort: a legacy DB-published recipe.
-  if (!registryTemplate && jobRow) {
-    const published = await loadPublishedRecipe(jobRow.templateCode);
-    if (published) registryTemplate = recipeToTemplate(published) as ReelflowTemplate<unknown>;
-  }
+  const registryTemplate = jobRow ? await resolveTemplate(jobRow.templateCode) : undefined;
 
   if (registryTemplate) {
     try {
