@@ -15,4 +15,4 @@ cp -r skills/reelflow-video-template .claude/skills/
 之后 Claude Code 会按 `SKILL.md` 的 description 自动在相关任务时调用。
 
 ## 现有 Skill
-- **reelflow-video-template** — 拆解对标视频 → 构造 recipe → preview → 发布；驱动 `reelflow` CLI。
+- **reelflow-video-template** — 拆解对标视频 → 写高代码模板(defineTemplate + SDK) → 测试 → 上架；驱动 `reelflow` CLI。
