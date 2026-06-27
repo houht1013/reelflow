@@ -22,7 +22,7 @@ import { canClaimWorkspaceJob, resolveWorkspaceConcurrentJobLimit, resolveWorksp
 import { getTemplate } from './templates/registry';
 import { loadPublishedRecipe } from './templates/_recipe/published-recipes';
 import { recipeToTemplate } from './templates/_recipe/runner';
-import { createTemplateContext } from './templates/_sdk/context';
+import { createSdk } from './sdk';
 import type { TemplateRunOutput } from './templates/_sdk/types';
 
 // Stabilize outbound fetch for long-running provider calls on Windows/Node 24:
@@ -260,7 +260,7 @@ export async function runClaimedJob(claimed: ClaimedJob): Promise<ProcessOneJobR
         reelflowConfig.imageConcurrency.default,
         reelflowConfig.imageConcurrency.max,
       );
-      const ctx = createTemplateContext({
+      const ctx = createSdk({
         id: claimed.id,
         workspaceId: claimed.workspaceId,
         userId: claimed.createdByUserId,
