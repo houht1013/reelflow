@@ -5,20 +5,6 @@ import type { ReelflowStageCode } from '../../constants';
 import type { ReelflowCaptionTimeline } from '../../tts';
 import type { ReelflowDraftScene, ReelflowDraftAudio, ReelflowDraftCaption, CapcutCaptionStyle } from '../../capcut';
 
-// Bilingual UI text. A plain string is used as-is (treated as the default
-// locale); an object carries per-locale copy. Lets the page render accurately
-// in zh-CN / en without a separate translation table.
-export type LocalizedText = string | { 'zh-CN'?: string; en?: string };
-
-/** Resolve a LocalizedText for a given locale (graceful fallback). */
-export function localize(text: LocalizedText | undefined | null, locale: string): string {
-  if (text == null) return '';
-  if (typeof text === 'string') return text;
-  const zh = text['zh-CN'] ?? '';
-  const en = text.en ?? '';
-  return locale.startsWith('zh') ? zh || en : en || zh;
-}
-
 // Standardized input field component the frontend renders from metadata.
 export type TemplateFieldType =
   | 'text'
@@ -33,22 +19,22 @@ export type TemplateFieldType =
   | 'image'  // uploads a single image -> asset (logo / reference / background)
   | 'asset'; // picks an existing asset from the library
 
-export type TemplateFieldOption = { value: string; label: LocalizedText };
+export type TemplateFieldOption = { value: string; label: string };
 
 // Standardized INPUT param metadata — synced to `template.inputSchema`. The
 // composer renders the right component purely from this (no per-template UI).
 export type TemplateField = {
   /** Param key — also the run() input key. */
   key: string;
-  label: LocalizedText;
+  label: string;
   type: TemplateFieldType;
   /** Helper/description text shown under the control. */
-  help?: LocalizedText;
-  placeholder?: LocalizedText;
+  help?: string;
+  placeholder?: string;
   required?: boolean;
   defaultValue?: unknown;
   /** UI grouping, e.g. '内容' / '风格' / '配音' / '品牌'. */
-  group?: LocalizedText;
+  group?: string;
   /** For select/aspect/voice. */
   options?: TemplateFieldOption[];
   // number / slider
@@ -76,9 +62,9 @@ export type TemplateOutputType = 'draft' | 'video' | 'image' | 'audio' | 'text' 
 
 export type TemplateOutput = {
   key: string;
-  label: LocalizedText;
+  label: string;
   type: TemplateOutputType;
-  description?: LocalizedText;
+  description?: string;
 };
 
 // What a run is expected to consume — priced by the shared estimator (pricing_item)
@@ -173,7 +159,7 @@ export type OutputAsset = {
   /** Matches a template.outputs[].key (e.g. 'draft' / 'mp4'). */
   key: string;
   type: TemplateOutputType;
-  label?: LocalizedText;
+  label?: string;
   /** Public http(s) URL (or draft URL). */
   url?: string;
   /** Library asset id, when stored. */
