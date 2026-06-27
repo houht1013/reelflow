@@ -1176,6 +1176,35 @@ html:has(.reelflow-landing) {
 }
 .reelflow-shell-link svg { flex: none; }
 
+/* Iridescent ("炫彩") label for high-value nav items (credits, invites). */
+.reelflow-shell-accent {
+  background-image: linear-gradient(
+    90deg,
+    var(--reelflow-coral, #ff6045),
+    var(--reelflow-amber, #ffb84d),
+    var(--reelflow-violet, #8b7bff),
+    var(--reelflow-coral, #ff6045)
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: reelflow-shell-shimmer 5s linear infinite;
+}
+
+.reelflow-shell-accent-icon {
+  color: var(--reelflow-amber, #ffb84d);
+}
+
+@keyframes reelflow-shell-shimmer {
+  to { background-position: 220% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reelflow-shell-accent { animation: none; }
+}
+
 .reelflow-sidebar-nav { scrollbar-width: none; }
 .reelflow-sidebar-nav::-webkit-scrollbar { display: none; }
 

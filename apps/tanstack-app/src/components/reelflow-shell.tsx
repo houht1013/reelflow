@@ -59,6 +59,7 @@ export function ReelflowShell({ children }: ShellProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const [credits, setCredits] = useState<CreditSummary | null>(null)
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null)
   const [claimingInviteCode, setClaimingInviteCode] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [creationExpanded, setCreationExpanded] = useState(true)
@@ -115,6 +116,20 @@ export function ReelflowShell({ children }: ShellProps) {
   useEffect(() => {
     void loadCredits()
   }, [loadCredits, location.pathname])
+
+  // Subscription state drives the sidebar label (开通订阅 vs 订阅).
+  useEffect(() => {
+    let alive = true
+    fetch('/api/subscription/status')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive && d) setHasSubscription(Boolean(d.hasSubscription || d.isLifetime))
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -225,9 +240,9 @@ export function ReelflowShell({ children }: ShellProps) {
           </NavGroup>
 
           <NavGroup label={shell.groups.account} collapsed={sidebarCollapsed}>
-            <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} />
-            <ShellLink icon={CreditCard} label={shell.nav.subscription} to="/$lang/pricing" lang={locale} active={false} collapsed={sidebarCollapsed} newTab />
-            <ShellLink icon={Gift} label={shell.nav.invites} to="/$lang/reelflow/invites" lang={locale} active={pathname.includes('/reelflow/invites')} collapsed={sidebarCollapsed} />
+            <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} accent />
+            <ShellLink icon={CreditCard} label={hasSubscription ? shell.nav.subscription : shell.nav.subscribeCta} to="/$lang/pricing" lang={locale} active={false} collapsed={sidebarCollapsed} newTab />
+            <ShellLink icon={Gift} label={shell.nav.invites} subtext={shell.nav.invitesHint} to="/$lang/reelflow/invites" lang={locale} active={pathname.includes('/reelflow/invites')} collapsed={sidebarCollapsed} accent />
             <ShellLink icon={Bell} label={shell.nav.notifications} to="/$lang/reelflow/notifications" lang={locale} active={pathname.includes('/reelflow/notifications')} collapsed={sidebarCollapsed} />
           </NavGroup>
         </nav>
@@ -419,6 +434,8 @@ function ShellLink({
   child = false,
   disabled = false,
   newTab = false,
+  accent = false,
+  subtext,
 }: {
   icon: LucideIcon
   label: string
@@ -430,6 +447,8 @@ function ShellLink({
   child?: boolean
   disabled?: boolean
   newTab?: boolean
+  accent?: boolean
+  subtext?: string
 }) {
   const className = [
     'reelflow-shell-link',
@@ -443,8 +462,13 @@ function ShellLink({
 
   const content = (
     <>
-      <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
-      {!collapsed && <span className="min-w-0 flex-1 truncate">{label}</span>}
+      <Icon className={['h-[18px] w-[18px] shrink-0', accent ? 'reelflow-shell-accent-icon' : ''].join(' ')} aria-hidden="true" />
+      {!collapsed && (
+        <span className="min-w-0 flex-1">
+          <span className={['block truncate', accent ? 'reelflow-shell-accent font-semibold' : ''].join(' ')}>{label}</span>
+          {subtext && <span className="mt-0.5 block truncate text-[10px] font-normal leading-tight text-sidebar-foreground/45">{subtext}</span>}
+        </span>
+      )}
       {!collapsed && meta && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">{meta}</span>}
     </>
   )
