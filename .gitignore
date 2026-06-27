@@ -84,3 +84,6 @@ seed-data.sql
 code_review/
 # Local scratch: screenshots, dev logs, audit captures
 output/
+
+# Runtime drop-in video templates (B model) — environment-local
+reelflow-templates/

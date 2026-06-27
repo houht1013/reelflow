@@ -119,4 +119,13 @@ export const reelflowConfig = {
       .map((keyword) => keyword.trim())
       .filter(Boolean),
   },
+  // High-code video templates. Built-in templates live in the repo registry;
+  // when enabled, additional template .ts files are loaded from `dynamicDir` at
+  // RUNTIME (no rebuild/redeploy) — drop a file in and it takes effect, with
+  // freshness keyed by file mtime. Only trusted files in this dir are loaded;
+  // never execute code from untrusted sources.
+  templates: {
+    dynamicEnabled: process.env.REELFLOW_TEMPLATES_DYNAMIC !== '0',
+    dynamicDir: process.env.REELFLOW_TEMPLATES_DIR ?? 'reelflow-templates',
+  },
 } as const;
