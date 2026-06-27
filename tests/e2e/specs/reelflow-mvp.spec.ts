@@ -185,19 +185,6 @@ async function waitForJobCompletedNotification(page: import('@playwright/test').
 }
 
 function runWorkerOnce() {
-  const command = process.platform === 'win32' ? process.env.ComSpec || 'cmd.exe' : 'corepack';
-  const args = process.platform === 'win32'
-    ? ['/d', '/s', '/c', 'corepack pnpm --filter @reelflow/execution-worker once']
-    : ['pnpm', '--filter', '@reelflow/execution-worker', 'once'];
-
-  execFileSync(command, args, {
-    cwd: resolve(__dirname, '../../..'),
-    env: {
-      ...process.env,
-      DB_DIALECT: process.env.DB_DIALECT || 'pg',
-      REELFLOW_WORKER_EXECUTION_MODE: 'local_draft',
-    },
-    stdio: 'pipe',
-    timeout: 60_000,
-  });
+  // No-op: the in-process task queue (libs/reelflow/task-queue) processes jobs in
+  // the app server automatically. Tests wait on the job_completed notification.
 }

@@ -222,23 +222,9 @@ async function runWorkerUntilJobCompletes(
   throw new Error(`Timed out waiting for Reelflow job ${jobId} to complete. Last status: ${lastPayload?.job.status ?? 'unknown'}`);
 }
 
-function runWorkerOnce(extraEnv: Record<string, string>) {
-  const command = process.platform === 'win32' ? process.env.ComSpec || 'cmd.exe' : 'corepack';
-  const args = process.platform === 'win32'
-    ? ['/d', '/s', '/c', 'corepack pnpm --filter @reelflow/execution-worker once']
-    : ['pnpm', '--filter', '@reelflow/execution-worker', 'once'];
-
-  execFileSync(command, args, {
-    cwd: resolve(__dirname, '../../..'),
-    env: {
-      ...process.env,
-      ...extraEnv,
-      DB_DIALECT: process.env.DB_DIALECT || 'pg',
-      REELFLOW_WORKER_EXECUTION_MODE: 'local_draft',
-    },
-    stdio: 'pipe',
-    timeout: 60_000,
-  });
+function runWorkerOnce(_extraEnv: Record<string, string>) {
+  // No-op: the in-process task queue (libs/reelflow/task-queue) processes jobs in
+  // the app server automatically. Tests wait on the job_completed notification.
 }
 
 async function setRenderProviderEnabled() {

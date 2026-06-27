@@ -227,18 +227,6 @@ importers:
         specifier: ^5.8.3
         version: 5.9.3
 
-  apps/execution-worker:
-    devDependencies:
-      '@types/node':
-        specifier: ^22
-        version: 22.19.2
-      tsx:
-        specifier: ^4.19.3
-        version: 4.21.0
-      typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
-
   apps/next-app:
     dependencies:
       '@ai-sdk/react':

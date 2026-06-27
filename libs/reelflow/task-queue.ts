@@ -4,9 +4,8 @@
 //
 // This keeps the deployment simple (one process) at the cost of jobs being tied
 // to the web process lifetime. `recoverQueuedJobs()` re-enqueues anything left in
-// 'queued' on startup so nothing is lost across restarts. The standalone worker
-// (apps/execution-worker) still works against the same DB if a separate process
-// is ever needed — the DB-level atomic claim prevents double execution.
+// 'queued' on startup so nothing is lost across restarts. The DB-level atomic
+// claim still prevents double execution if the app is ever run multi-instance.
 import { db } from '@libs/database';
 import { job } from '@libs/database/schema';
 import { asc, desc, eq } from 'drizzle-orm';
