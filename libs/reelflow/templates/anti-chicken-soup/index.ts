@@ -44,6 +44,10 @@ export default defineTemplate({
   capabilityRequirements: ['llm', 'image', 'tts', 'draft'],
   schema,
   fields,
+  outputs: [
+    { key: 'draft', label: '剪映草稿', type: 'draft', description: '可编辑的剪映草稿包' },
+    { key: 'mp4', label: '成片 MP4', type: 'video', description: '可选渲染输出' },
+  ],
   stages: ['script', 'image', 'voice', 'caption', 'draft_package'],
 
   estimate() {

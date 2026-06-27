@@ -16,6 +16,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@libs/database';
 import { template } from '@libs/database/schema';
 import { listTemplates } from '@libs/reelflow/templates/registry';
+import { DEFAULT_TEMPLATE_OUTPUTS } from '@libs/reelflow/templates/_sdk/types';
 
 async function main() {
   const templates = listTemplates();
@@ -29,6 +30,7 @@ async function main() {
       category: t.category,
       builderVersion: t.version,
       inputSchema: { fields: t.fields },
+      outputSchema: { outputs: t.outputs ?? DEFAULT_TEMPLATE_OUTPUTS },
       capabilityRequirements: t.capabilityRequirements ?? [],
       updatedAt: new Date(),
     };

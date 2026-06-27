@@ -5,19 +5,51 @@ import type { ReelflowStageCode } from '../../constants';
 import type { ReelflowCaptionTimeline } from '../../tts';
 import type { ReelflowDraftScene, ReelflowDraftAudio, ReelflowDraftCaption, CapcutCaptionStyle } from '../../capcut';
 
-// Form field metadata — synced to the `template.inputSchema` column for the UI.
+// Standardized input field component the frontend renders from metadata.
+export type TemplateFieldType =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'slider'
+  | 'switch'
+  | 'select'
+  | 'color'
+  | 'aspect' // picks a canvas ratio, e.g. '16:9' | '9:16' | '1:1'
+  | 'voice'  // picks a TTS voice id
+  | 'asset'; // picks an asset from the library
+
+// Standardized INPUT param metadata — synced to `template.inputSchema`. The
+// composer renders the right component purely from this (no per-template UI).
 export type TemplateField = {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'select' | 'switch' | 'number' | 'asset';
+  type: TemplateFieldType;
   required?: boolean;
   defaultValue?: unknown;
   placeholder?: string;
   help?: string;
+  /** UI grouping, e.g. '内容' / '风格' / '配音' / '品牌'. */
+  group?: string;
+  /** For select/aspect/voice. */
   options?: { value: string; label: string }[];
   min?: number;
   max?: number;
+  step?: number;
+  /** Unit suffix for number/slider, e.g. 's' / '%'. */
+  unit?: string;
+  /** For type 'asset' — restrict pickable asset types. */
   assetTypes?: string[];
+};
+
+// Standardized OUTPUT metadata — synced to `template.outputSchema`. The result
+// page renders each output by type (video player / image / audio / link / text).
+export type TemplateOutputType = 'draft' | 'video' | 'image' | 'audio' | 'text' | 'json';
+
+export type TemplateOutput = {
+  key: string;
+  label: string;
+  type: TemplateOutputType;
+  description?: string;
 };
 
 // What a run is expected to consume — priced by the shared estimator (pricing_item)
@@ -109,8 +141,18 @@ export type TemplateContext = {
 
 export type TemplateRunOutput = {
   draftUrl?: string;
+  /** MP4 URL if rendered (gen_video). */
+  mp4Url?: string;
+  /** Concrete output values keyed by the template's `outputs[].key`. */
+  outputs?: Record<string, unknown>;
   summary?: Record<string, unknown>;
 };
+
+// Default outputs when a template doesn't declare its own (a draft + optional MP4).
+export const DEFAULT_TEMPLATE_OUTPUTS: TemplateOutput[] = [
+  { key: 'draft', label: '剪映草稿', type: 'draft', description: '可编辑的剪映草稿包' },
+  { key: 'mp4', label: '成片 MP4', type: 'video', description: '渲染输出的视频(可选)' },
+];
 
 export type TemplateBadge = 'new' | 'recommended' | 'hot';
 
@@ -131,8 +173,11 @@ export type ReelflowTemplate<TInput = unknown> = {
   capabilityRequirements?: string[];
   /** Single source of truth for input: validation + inferred run() type. */
   schema: z.ZodType<TInput>;
-  /** Form field metadata for the UI (synced to DB). */
+  /** Standardized input param metadata (synced to template.inputSchema). */
   fields: TemplateField[];
+  /** Standardized output metadata (synced to template.outputSchema). Defaults
+   *  to a draft + optional MP4 when omitted. */
+  outputs?: TemplateOutput[];
   /** Content stages this template uses (only these are pre-seeded for the progress UI). */
   stages: ReelflowStageCode[];
   /** Resource plan for the freeze estimate. */

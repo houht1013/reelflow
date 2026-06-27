@@ -65,6 +65,7 @@ export const template = pgTable("template", {
   landingPosition: text("landing_position"),
   builderVersion: text("builder_version"),
   inputSchema: jsonb("input_schema"),
+  outputSchema: jsonb("output_schema"),
   capabilityRequirements: jsonb("capability_requirements"),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
