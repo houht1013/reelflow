@@ -6,7 +6,7 @@
 import type { TemplateContext, ResourcePlan, TemplateField } from '../../_sdk/types';
 import type { NarratedStoryboardConfig, VisualDirective } from '../recipe';
 import type { ResolvedVideo, ResolvedVisual } from '../ir';
-import type { StructureEngine } from '../structure';
+import type { StructureEngine, RecipeGlobals } from '../structure';
 import { assembleTimeline, type ShotDraft } from '../timeline';
 
 type StoryboardScene = { narration: string; visualPrompt: string };
@@ -76,7 +76,7 @@ export const narratedStoryboardEngine: StructureEngine<NarratedStoryboardConfig,
     return { llmCalls: 1, images: usesVideo ? 0 : n, ttsChars: n * 90, draft: 1 };
   },
 
-  async build(ctx: TemplateContext, config: NarratedStoryboardConfig, input: Input): Promise<ResolvedVideo> {
+  async build(ctx: TemplateContext, config: NarratedStoryboardConfig, input: Input, globals?: RecipeGlobals): Promise<ResolvedVideo> {
     const maxScenes = typeof config.sceneCount === 'number' ? config.sceneCount : (config.sceneRange?.[1] ?? 6);
     const globalStyle = config.visual.kind === 'ai_image' ? config.visual.style : undefined;
 
@@ -102,7 +102,9 @@ export const narratedStoryboardEngine: StructureEngine<NarratedStoryboardConfig,
     const voices = await ctx.stage('voice', async () => {
       const out: { url: string; durationMs: number; segments: { startMs: number; endMs: number; text: string }[] }[] = [];
       for (const [i, scene] of script.scenes.entries()) {
-        const v = await ctx.item(`voice:${i}`, () => ctx.tts.speak(scene.narration, { align: true, displayName: `配音 ${i + 1}` }));
+        const v = await ctx.item(`voice:${i}`, () =>
+          ctx.tts.speak(scene.narration, { align: true, displayName: `配音 ${i + 1}`, voice: globals?.voice?.voice, speed: globals?.voice?.speed, emotion: globals?.voice?.emotion }),
+        );
         const durationMs = v.durationMs ?? 3000;
         const segments = v.captions?.segments.map((s) => ({ startMs: s.startMs, endMs: s.endMs, text: s.text }))
           ?? [{ startMs: 0, endMs: durationMs, text: scene.narration }];
@@ -125,9 +127,10 @@ export const narratedStoryboardEngine: StructureEngine<NarratedStoryboardConfig,
           : undefined,
       }));
       return assembleTimeline({
-        canvas: { width: 1080, height: 1920 },
+        canvas: globals?.canvas ?? { width: 1080, height: 1920 },
         shots,
         captionStyle: config.captionStyle,
+        branding: globals?.branding,
         delivery: { draft: true, mp4: 'optional' },
         meta: { structure: 'narrated-storyboard', sceneCount: shots.length },
       });

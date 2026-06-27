@@ -53,11 +53,21 @@ export type ResolvedCaptionStyle = {
   alignment?: number;
 };
 
+export type ResolvedBrandingOverlay = {
+  kind: 'logo' | 'text';
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'bottom-center';
+  /** url for logo, text for text. */
+  value: string;
+  scale?: number;
+};
+
 export type ResolvedVideo = {
   canvas: { width: number; height: number; fps?: number };
   shots: ResolvedShot[];
   bgm?: ResolvedBgm;
   captionStyle?: ResolvedCaptionStyle;
+  /** Fixed copy / logo / CTA shown for the whole video (resolved from params). */
+  branding?: ResolvedBrandingOverlay[];
   delivery: { draft: boolean; mp4: 'off' | 'optional' | 'always' };
   /** Free-form notes for preview/debug (script json, seeds, costs…). */
   meta?: Record<string, unknown>;

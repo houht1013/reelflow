@@ -83,7 +83,7 @@ async function cmdValidate(file?: string) {
   for (const k of ['schemaVersion', 'code', 'version', 'name', 'category', 'structure'] as const) {
     if (!recipe[k]) errors.push(`missing field: ${k}`)
   }
-  if (!recipe.input?.fields?.length) errors.push('input.fields is empty')
+  if (!recipe.params?.length && !recipe.input?.fields?.length) errors.push('params is empty (declare dynamic params)')
   if (!recipe.canvas?.width || !recipe.canvas?.height) errors.push('canvas width/height required')
 
   const engine = getStructure(recipe.structure)

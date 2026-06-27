@@ -6,6 +6,7 @@ import { db } from '@libs/database';
 import { template, templateVersion } from '@libs/database/schema';
 import { and, desc, eq } from 'drizzle-orm';
 import type { VideoRecipe } from './recipe';
+import { paramsToFields } from './params';
 
 export type PublishOptions = { changelog?: string; createdByUserId?: string };
 
@@ -54,7 +55,7 @@ export async function publishRecipe(recipe: VideoRecipe, opts: PublishOptions = 
       category: recipe.category,
       status: 'published',
       builderVersion: recipe.version,
-      inputSchema: { fields: recipe.input.fields },
+      inputSchema: { fields: paramsToFields(recipe) },
       metadata: { structure: recipe.structure, tags: recipe.tags ?? [], source: 'recipe' },
       updatedAt: now,
     };

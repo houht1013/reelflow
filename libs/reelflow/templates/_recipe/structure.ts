@@ -7,7 +7,14 @@
 // New "framework structures" = new engines registered here. Recipes pick an
 // engine by id and supply its config.
 import type { TemplateContext, ResourcePlan } from '../_sdk/types';
-import type { ResolvedVideo } from './ir';
+import type { ResolvedVideo, ResolvedBrandingOverlay } from './ir';
+
+/** Recipe-level resolved globals passed into an engine's build (from params). */
+export type RecipeGlobals = {
+  canvas: { width: number; height: number; fps?: number };
+  voice?: { voice?: string; speed?: number; emotion?: string };
+  branding?: ResolvedBrandingOverlay[];
+};
 
 export type StructureEngine<TConfig = unknown, TInput = Record<string, unknown>> = {
   /** Stable id referenced by recipes, e.g. 'narrated-storyboard'. */
@@ -19,7 +26,7 @@ export type StructureEngine<TConfig = unknown, TInput = Record<string, unknown>>
   /** Freeze-time resource plan (priced by the shared estimator). */
   estimate(config: TConfig, input: TInput): ResourcePlan;
   /** Generate media + assemble the Resolved IR. Must use ctx.stage/item for checkpointing. */
-  build(ctx: TemplateContext, config: TConfig, input: TInput): Promise<ResolvedVideo>;
+  build(ctx: TemplateContext, config: TConfig, input: TInput, globals?: RecipeGlobals): Promise<ResolvedVideo>;
 };
 
 const registry = new Map<string, StructureEngine<any, any>>();

@@ -9,6 +9,7 @@ import type { VideoRecipe } from './recipe';
 import type { ResolvedVideo } from './ir';
 import { getStructure, registerStructure } from './structure';
 import { narratedStoryboardEngine } from './engines/narrated-storyboard';
+import { resolveRecipeParams, resolveCanvas, resolveVoice, resolveBranding, paramsToFields } from './params';
 import { assembleResolvedVideo } from '../../capcut';
 
 // Register built-in structure engines (idempotent on repeated imports).
@@ -23,8 +24,16 @@ export async function buildRecipeIR(
   const engine = getStructure(recipe.structure);
   if (!engine) throw new Error(`Unknown structure engine: ${recipe.structure}`);
   const config = engine.parseConfig(recipe.config);
-  const parsedInput = engine.parseInput(input, recipe.input.fields);
-  return engine.build(ctx, config, parsedInput);
+  // Resolve dynamic params (defaults + user input) → the global vars reused
+  // across stages (script binding, voice/speed, canvas aspect, branding).
+  const params = resolveRecipeParams(recipe, input);
+  const parsedInput = engine.parseInput(params, paramsToFields(recipe));
+  const globals = {
+    canvas: resolveCanvas(recipe, params),
+    voice: resolveVoice(recipe.audio?.voice, params),
+    branding: resolveBranding(recipe.branding, params),
+  };
+  return engine.build(ctx, config, parsedInput, globals);
 }
 
 /** Full run: build the IR, then render it to a capcut draft (+ optional MP4). */
@@ -52,7 +61,8 @@ export async function runRecipe(
 export function estimateRecipe(recipe: VideoRecipe, input: unknown) {
   const engine = getStructure(recipe.structure);
   if (!engine) throw new Error(`Unknown structure engine: ${recipe.structure}`);
-  return engine.estimate(engine.parseConfig(recipe.config), engine.parseInput(input, recipe.input.fields));
+  const params = resolveRecipeParams(recipe, input);
+  return engine.estimate(engine.parseConfig(recipe.config), engine.parseInput(params, paramsToFields(recipe)));
 }
 
 /**
@@ -69,7 +79,7 @@ export function recipeToTemplate(recipe: VideoRecipe): ReelflowTemplate<Record<s
     version: recipe.version,
     tags: recipe.tags,
     schema: z.record(z.string(), z.unknown()),
-    fields: recipe.input.fields,
+    fields: paramsToFields(recipe),
     stages: ['script', 'image', 'voice', 'caption', 'draft_package'],
     estimate: (input) => estimateRecipe(recipe, input),
     run: (ctx, input) => runRecipe(ctx, recipe, input),

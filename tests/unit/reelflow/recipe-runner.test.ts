@@ -43,7 +43,7 @@ const recipe = defineRecipe({
   name: 'Test Storyboard',
   description: 'unit test recipe',
   category: '测试',
-  input: { fields: [{ key: 'topic', label: '主题', type: 'text', required: true }] },
+  params: [{ key: 'topic', label: '主题', type: 'text', required: true }],
   canvas: { width: 1080, height: 1920 },
   delivery: { draft: true, mp4: 'optional' },
   structure: 'narrated-storyboard',

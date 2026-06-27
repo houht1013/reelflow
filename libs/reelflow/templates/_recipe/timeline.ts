@@ -11,6 +11,7 @@ import type {
   ResolvedCaptionStyle,
   ResolvedBgm,
   ResolvedTextOverlay,
+  ResolvedBrandingOverlay,
 } from './ir';
 
 /** One shot's resolved inputs, with caption times RELATIVE to the shot start. */
@@ -31,6 +32,7 @@ export type AssembleTimelineOptions = {
   shots: ShotDraft[];
   captionStyle?: ResolvedCaptionStyle;
   bgm?: ResolvedBgm;
+  branding?: ResolvedBrandingOverlay[];
   delivery: { draft: boolean; mp4: 'off' | 'optional' | 'always' };
   meta?: Record<string, unknown>;
 };
@@ -66,6 +68,7 @@ export function assembleTimeline(opts: AssembleTimelineOptions): ResolvedVideo {
     shots,
     bgm: opts.bgm,
     captionStyle: opts.captionStyle,
+    branding: opts.branding,
     delivery: opts.delivery,
     meta: { ...(opts.meta ?? {}), totalDurationMs: cursor },
   };

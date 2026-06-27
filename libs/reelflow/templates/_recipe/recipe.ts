@@ -14,6 +14,54 @@ import type { TemplateField } from '../_sdk/types';
 
 export type RecipeSchemaVersion = '0.1';
 
+// ---- Dynamic params (open, typed) — the canvas/template GLOBAL variables and
+// the user-facing form. Reused across stages via {{key}} binding (script,
+// voice/speed, aspect→canvas, branding text, …). Open by design: an author
+// declares whatever params a template needs.
+export type ParamType =
+  | 'text'
+  | 'textarea'
+  | 'select'
+  | 'number'
+  | 'slider'
+  | 'switch'
+  | 'color'
+  | 'aspect'   // picks the canvas ratio, e.g. '9:16' | '16:9' | '1:1'
+  | 'voice'    // picks a TTS voice id
+  | 'asset';
+
+export type ParamDef = {
+  key: string;
+  label: string;
+  type: ParamType;
+  /** UI grouping, e.g. '内容' / '风格' / '配音' / '品牌'. */
+  group?: string;
+  required?: boolean;
+  default?: unknown;
+  /** For select/voice/aspect. */
+  options?: { value: string; label: string }[];
+  min?: number;
+  max?: number;
+  step?: number;
+  help?: string;
+  placeholder?: string;
+  assetTypes?: string[];
+  /** End-user editable in the composer. Default true; false = author-fixed. */
+  userEditable?: boolean;
+};
+
+/** A value that is either a literal or a {{param}} binding string. */
+export type Bindable<T = string> = T | string;
+
+export type OverlayPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'bottom-center';
+
+/** Fixed copy / logo baked into every draft (values may bind to params). */
+export type BrandingDirective = {
+  logo?: { assetRef: Bindable; position: OverlayPosition; scale?: number };
+  cta?: { text: Bindable; position: OverlayPosition };
+  texts?: { text: Bindable; position: OverlayPosition }[];
+};
+
 /** How a shot's picture is sourced. Multi-source per product decision. */
 export type VisualDirective =
   | { kind: 'ai_image'; promptFrom: 'scene'; style?: string; size?: string; quality?: 'low' | 'medium' | 'high' }
@@ -80,10 +128,19 @@ export type VideoRecipe = {
   category: string;
   tags?: string[];
 
-  /** User-facing input form (reused by the composer UI + validated at run). */
-  input: { fields: TemplateField[] };
+  /**
+   * Open dynamic params — the global variables a user fills/selects, reused
+   * across stages via {{key}} binding. Canonical source for the composer form.
+   */
+  params: ParamDef[];
 
-  /** Canvas + global directives. */
+  /** Fixed copy / logo / CTA baked into the draft (values may bind to params). */
+  branding?: BrandingDirective;
+
+  /** @deprecated legacy form; prefer `params`. */
+  input?: { fields: TemplateField[] };
+
+  /** Canvas. Width/height may be overridden by an `aspect` param at run. */
   canvas: { width: number; height: number; fps?: number };
   audio?: { voice?: VoiceDirective; bgm?: BgmDirective };
   delivery: { draft: boolean; mp4: 'off' | 'optional' | 'always' };

@@ -25,9 +25,19 @@ description: >-
 - 选**结构引擎**：`reelflow structures`（当前：`narrated-storyboard` = 脚本→每镜画面→每镜配音→时间轴）。新框架若无合适结构，先扩结构引擎(代码)，再写 recipe。
 - 查可用枚举（选真实 effect/filter/animation id，别瞎编）：`reelflow caps`。
 
-### 2. 构造(写 recipe)
+### 2a. 定义动态参数(设计前必做 — 先问清这些问题)
+任何模板都先确定一组**开放的动态参数**(recipe 的 `params[]`)= 用户可自主填写/选择的全局变量,被多个环节复用。**动手写流程前先问/定**:
+- 内容类:创作主题、目标人群、语气…
+- 风格类:**画面比例**(`type:'aspect'`，驱动 canvas)、视觉风格…
+- 配音类:**音色**(`type:'voice'`)、**语速**(`type:'slider'`)…
+- 品牌类:固定文案/CTA、Logo(走 `branding`，值可 `{{param}}` 让用户填)…
+- 这些只是示例 —— **按对标视频实际需要的可调点开放参数**，不要写死。
+- 绑定:`config.scriptPrompt`/`audio.voice`/`branding` 等用 `{{key}}` 引用参数；`aspect` 参数自动映射 canvas 宽高。
+- `userEditable:false` 的参数对用户隐藏(作者固定)。
+
+### 2b. 构造(写 recipe)
 - 在 `libs/reelflow/templates/_recipe/examples/<code>.recipe.ts` 用 `defineRecipe({...})` 写（参考同目录 `psychology-stickman.recipe.ts`）。
-- 关键字段：`code/version/name/category`、`input.fields`(表单)、`canvas`、`delivery`、`structure` + `config`。
+- 关键字段：`code/version/name/category`、**`params`(动态参数/表单)**、`branding`(固定文案/Logo)、`canvas`、`delivery`、`structure` + `config`。
 - `config.scriptPrompt` 用 `{{field}}` 占位（从 input 填充），必须要求 LLM 输出 `{"scenes":[{"narration","visualPrompt"}]}`。
 - 画面来源 `visual.kind`：`ai_image`(已通) / `ai_video` / `library_match` / `user_upload`（后三者当前回退生图）。
 - 校验：`reelflow validate <recipe.ts>` → 修到 ✓。
