@@ -15,7 +15,7 @@ const sdk = createSdk(session)   // session = { id, workspaceId, userId, frozenC
 - **image** (AI 图像) — `sdk.image.generate(prompt, { size, quality, ... })` → hosted http url
 - **tts** (文本转语音) — `sdk.tts.speak(text, { voice, speed, emotion, align })` → url + durationMs + aligned captions
 - **captions** (字幕提取/对齐) — `sdk.captions.fromVoice(voiceResult, fallbackText)`; `extract(audioUrl)` reserved (ASR)
-- **video** (AI 视频) — `sdk.video.generate(prompt)` reserved (future)
+- **video** (AI 视频) — `sdk.video.generate(prompt)` reserved (planned: Seedance 2.0 / HappyHorse; config.ai.video)
 - **draft** (剪映草稿 + 出片) — `sdk.draft.assemble({ width, height, scenes, audios, captions, captionStyle })`; `sdk.draft.renderMp4(draftUrl)`
 - **asset** — `sdk.asset.upload(buffer, opts)`; `sdk.asset.search(query)` reserved (library)
 

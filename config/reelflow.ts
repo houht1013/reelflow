@@ -48,6 +48,9 @@ export const reelflowConfig = {
       baseUrl: (process.env.REELFLOW_IMAGE_BASE_URL ?? 'https://api3.wlai.vip').replace(/\/$/, ''),
       apiKey: process.env.REELFLOW_IMAGE_API_KEY ?? '',
       model: process.env.REELFLOW_IMAGE_MODEL ?? 'gpt-image-2',
+      // Reserved image models to integrate later (set REELFLOW_IMAGE_MODEL to one
+      // of these once wired): Seedream 4.0 / 4.5 / 5.0.
+      reservedModels: ['seedream-4.0', 'seedream-4.5', 'seedream-5.0'],
       mock: process.env.REELFLOW_IMAGE_MOCK === '1',
       // Upload generated images to object storage and expose a public http URL
       // (required so downstream services like capcut-mate can fetch them).
@@ -66,6 +69,21 @@ export const reelflowConfig = {
       // case bounded (≈ timeoutMs × maxAttempts) instead of multiplying over many
       // retries against a degraded provider.
       maxAttempts: Number(process.env.REELFLOW_IMAGE_MAX_ATTEMPTS ?? 2),
+    },
+    // AI video generation — RESERVED integration point (not wired yet). Set
+    // REELFLOW_VIDEO_ENABLED=1 + provider/key once a backend is available; until
+    // then sdk.video.generate throws a clear "reserved/unconfigured" error.
+    video: {
+      enabled: process.env.REELFLOW_VIDEO_ENABLED === '1',
+      // Planned providers to integrate: Seedance 2.0, HappyHorse.
+      provider: process.env.REELFLOW_VIDEO_PROVIDER ?? '',
+      reservedProviders: ['seedance-2.0', 'happyhorse'],
+      baseUrl: (process.env.REELFLOW_VIDEO_BASE_URL ?? '').replace(/\/$/, ''),
+      apiKey: process.env.REELFLOW_VIDEO_API_KEY ?? '',
+      model: process.env.REELFLOW_VIDEO_MODEL ?? '',
+      mock: process.env.REELFLOW_VIDEO_MOCK === '1',
+      timeoutMs: Number(process.env.REELFLOW_VIDEO_TIMEOUT_MS ?? 300_000),
+      maxAttempts: Number(process.env.REELFLOW_VIDEO_MAX_ATTEMPTS ?? 2),
     },
     // Text-to-speech + caption timeline alignment via the local dubbingx-cli.
     tts: {

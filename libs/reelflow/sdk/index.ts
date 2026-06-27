@@ -7,6 +7,7 @@
 // Built on top of the existing TemplateContext so the worker, preview sandbox
 // and templates all share one implementation. `createSdk(session)` === the ctx
 // injected into run(), plus a few aliases + future namespaces.
+import { reelflowConfig } from '@config';
 import { createTemplateContext, type TemplateJob } from '../templates/_sdk/context';
 import { renderDraftMp4 } from '../capcut';
 import { ProviderCallError } from '../provider-runtime';
@@ -63,7 +64,16 @@ export function createSdk(session: SdkSession): Sdk {
     },
     video: {
       async generate() {
-        throw new ProviderCallError('AI video generation is not available yet', 'provider_unconfigured', 503);
+        // Reserved integration point — see config.reelflow.ai.video.
+        const { enabled, provider, reservedProviders } = reelflowConfig.ai.video;
+        const planned = reservedProviders.join(' / ');
+        throw new ProviderCallError(
+          enabled
+            ? `AI video provider "${provider || 'unset'}" is not wired yet (planned: ${planned})`
+            : `AI video generation is reserved/not enabled yet (planned providers: ${planned})`,
+          'provider_unconfigured',
+          503,
+        );
       },
     },
     draft: {
