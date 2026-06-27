@@ -126,7 +126,7 @@ export function DataTable<TData, TValue>({
         <ColumnToggle table={table} />
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="reelflow-panel overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
