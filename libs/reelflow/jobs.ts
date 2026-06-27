@@ -2,6 +2,7 @@ import { db } from '@libs/database';
 import { creditAccount, creditLedger, job, jobEvent, jobStage, template } from '@libs/database/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import { REELFLOW_STAGES } from './constants';
+import { consumeCreditLots } from './credit-lots';
 import { assertJobPreflight } from './preflight';
 import { getTemplate } from './templates/registry';
 import { estimateResourcePlanCredits } from './templates/_sdk/estimator';
@@ -168,6 +169,10 @@ export async function createReelflowJob(input: CreateReelflowJobInput): Promise<
       },
       createdAt: new Date(),
     });
+
+    // Freezing moved credits out of the spendable balance, so reduce lots
+    // FIFO-by-expiry now; unused frozen credits are returned to lots at settle.
+    await consumeCreditLots(tx, input.workspaceId, estimatedCredits);
 
     return {
       jobId: createdJob.id,

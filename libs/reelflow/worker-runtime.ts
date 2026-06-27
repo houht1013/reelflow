@@ -13,6 +13,7 @@ import {
   usageRecord,
   workspace,
 } from '@libs/database/schema';
+import { refundCreditLots } from './credit-lots';
 import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import { renderCloudMp4, type CloudRenderResult } from './cloud-render';
 import { buildDraftPackageMetadata, getDraftPackageStorageKey } from './draft-package';
@@ -442,6 +443,11 @@ async function completeTemplateJob(claimed: ClaimedJob, output: TemplateRunOutpu
       });
     }
 
+    // Freeze consumed lots up front; return the unused remainder to a lot.
+    if (refund > 0) {
+      await refundCreditLots(tx, { workspaceId: claimed.workspaceId, userId: claimed.createdByUserId, amount: refund, metadata: { jobId: claimed.id, kind: 'settle_refund' } });
+    }
+
     await tx
       .update(job)
       .set({
@@ -540,6 +546,10 @@ async function completeMockJob(claimed: ClaimedJob): Promise<void> {
         frozenBalance: creditAccount.frozenBalance,
         debtBalance: creditAccount.debtBalance,
       });
+
+    if (frozenCredits > 0) {
+      await refundCreditLots(tx, { workspaceId: claimed.workspaceId, userId: claimed.createdByUserId, amount: frozenCredits, metadata: { jobId: claimed.id, kind: 'mock_unfreeze' } });
+    }
 
     await tx
       .update(job)
@@ -713,6 +723,10 @@ async function completeLocalDraftJob(claimed: ClaimedJob): Promise<void> {
         frozenBalance: creditAccount.frozenBalance,
         debtBalance: creditAccount.debtBalance,
       });
+
+    if (refundCredits > 0) {
+      await refundCreditLots(tx, { workspaceId: claimed.workspaceId, userId: claimed.createdByUserId, amount: refundCredits, metadata: { jobId: claimed.id, kind: 'settle_refund' } });
+    }
 
     await tx
       .update(job)

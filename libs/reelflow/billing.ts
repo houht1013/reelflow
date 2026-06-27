@@ -4,6 +4,7 @@ import { and, asc, eq, sql } from 'drizzle-orm';
 import { ensureWorkspaceCreditAccount, getDefaultWorkspaceForUser } from './workspaces';
 import { createReelflowNotification, notifyWorkspaceCreditsGranted } from './notifications';
 import { buildSubscriptionCreditIdempotencyKey, calculateCreditGrantAllocation } from './billing-utils';
+import { createCreditLot, expireCreditLots, grantTypeToLotSource, lotExpiresAt } from './credit-lots';
 export { buildSubscriptionCreditIdempotencyKey, calculateCreditGrantAllocation } from './billing-utils';
 
 export type WorkspaceCreditGrantType = 'purchase' | 'bonus' | 'refund' | 'adjustment' | 'subscription_grant';
@@ -50,6 +51,11 @@ export async function getWorkspaceCreditSummary(userId: string): Promise<Workspa
     };
   }
 
+  await ensureWorkspaceCreditAccount(workspace.id);
+  // Sweep any expired lots out of the balance before reporting it.
+  await expireCreditLots(workspace.id).catch((error) => {
+    console.error('Failed to expire credit lots:', error);
+  });
   const account = await ensureWorkspaceCreditAccount(workspace.id);
   return {
     balance: Number(account.balance || 0),
@@ -203,6 +209,23 @@ export async function grantWorkspaceCredits(input: GrantWorkspaceCreditsInput) {
         createdAt: new Date(),
       })
       .returning();
+
+    // Track the spendable portion as a credit lot (source + expiry). The part
+    // applied to debt is not spendable, so it gets no lot.
+    if (addedToBalance > 0) {
+      const source = grantTypeToLotSource(input.type);
+      const periodEndRaw = input.metadata?.periodEnd;
+      const periodEnd = typeof periodEndRaw === 'string' ? new Date(periodEndRaw) : null;
+      await createCreditLot(tx, {
+        workspaceId: workspace.id,
+        userId: input.userId,
+        orderId: input.orderId,
+        source,
+        amount: addedToBalance,
+        expiresAt: lotExpiresAt(source, new Date(), { periodEnd }),
+        metadata: { grantType: input.type, idempotencyKey: input.idempotencyKey ?? null },
+      });
+    }
 
     return { ledger, created: true, unlockedJobs: debtUnlockResult.unlockedJobs };
   });

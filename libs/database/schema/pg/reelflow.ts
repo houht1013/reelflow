@@ -265,6 +265,31 @@ export const creditLedger = pgTable("credit_ledger", {
   index("credit_ledger_order_idx").on(table.orderId),
 ]);
 
+// Per-grant credit lots: each grant is a bucket with a source and an optional
+// expiry. Spend consumes lots FIFO by expiry; expired lots have their unspent
+// `remaining` swept out of the account balance. `creditAccount.balance` stays
+// the cached spendable total = sum of active (non-expired) lot remaining.
+export const creditLot = pgTable("credit_lot", {
+  id: text("id").primaryKey(),
+  workspaceId: text("workspace_id").notNull().references(() => workspace.id, { onDelete: "cascade" }),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  orderId: text("order_id").references(() => order.id, { onDelete: "set null" }),
+  // 'subscription' | 'purchase' | 'invite' | 'bonus' | 'adjustment' | 'trial'
+  source: text("source").notNull(),
+  originalAmount: numeric("original_amount").notNull(),
+  remaining: numeric("remaining").notNull(),
+  // null = never expires
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  // 'active' | 'consumed' | 'expired'
+  status: text("status").notNull().default("active"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  index("credit_lot_workspace_active_idx").on(table.workspaceId, table.status, table.expiresAt),
+  index("credit_lot_order_idx").on(table.orderId),
+]);
+
 export const assetUsage = pgTable("asset_usage", {
   id: text("id").primaryKey(),
   assetId: text("asset_id").notNull().references(() => asset.id, { onDelete: "cascade" }),

@@ -12,6 +12,7 @@ import { db } from '@libs/database';
 import { creditAccount, creditLedger, pricingItem, usageRecord } from '@libs/database/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import type { ResourceType } from './constants';
+import { consumeCreditLots, refundCreditLots } from './credit-lots';
 
 export type ProviderBillingMode = 'charge' | 'meter-only';
 
@@ -294,6 +295,9 @@ export async function chargeCredits(input: {
       })
       .returning({ id: creditLedger.id });
 
+    // Reduce credit lots FIFO-by-expiry to match the balance debit.
+    await consumeCreditLots(tx, input.workspaceId, input.amount);
+
     return { ledgerId: ledger.id, balanceAfter: Number(updatedAccount.balance || 0) };
   });
 }
@@ -336,6 +340,9 @@ export async function refundCredits(input: {
       metadata: input.metadata,
       createdAt: new Date(),
     });
+
+    // Return the refunded credits to a lot so they stay spendable.
+    await refundCreditLots(tx, { workspaceId: input.workspaceId, userId: input.userId, amount: input.amount, metadata: input.metadata });
   });
 }
 

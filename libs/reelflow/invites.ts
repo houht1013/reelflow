@@ -3,6 +3,7 @@ import { db } from '@libs/database';
 import { creditAccount, creditLedger, inviteCode, inviteRecord, user } from '@libs/database/schema';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { notifyInviteBonusGranted } from './notifications';
+import { createCreditLot, lotExpiresAt } from './credit-lots';
 import { ensureWorkspaceCreditAccount, getDefaultWorkspaceForUser } from './workspaces';
 
 const INVITE_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -231,6 +232,25 @@ export async function claimInviteBonus(referredUserId: string, rawCode: string):
         createdAt: now,
       },
     ]);
+
+    // Invite credits live in their own lots (30-day validity by default).
+    const inviteExpiry = lotExpiresAt('invite', now);
+    await createCreditLot(tx, {
+      workspaceId: referrerWorkspace.id,
+      userId: activeCode.userId,
+      source: 'invite',
+      amount: referrerBonusCredits,
+      expiresAt: inviteExpiry,
+      metadata: { inviteRecordId: recordId, inviteRole: 'referrer' },
+    });
+    await createCreditLot(tx, {
+      workspaceId: referredWorkspace.id,
+      userId: referredUserId,
+      source: 'invite',
+      amount: referredBonusCredits,
+      expiresAt: inviteExpiry,
+      metadata: { inviteRecordId: recordId, inviteRole: 'referred' },
+    });
 
     return {
       referrerBalanceAfter: Number(referrerBalance.balance || 0),

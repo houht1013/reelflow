@@ -99,6 +99,14 @@ export const reelflowConfig = {
     trialGrant: Number(process.env.REELFLOW_TRIAL_CREDITS ?? 100),
     inviteReferrerBonus: Number(process.env.REELFLOW_INVITE_REFERRER_CREDITS ?? 50),
     inviteReferredBonus: Number(process.env.REELFLOW_INVITE_REFERRED_CREDITS ?? 50),
+    // Credit-lot validity by source. Subscription credits expire at the
+    // subscription period end (no day count); the rest use a fixed window.
+    // 0 / null = never expires.
+    lotExpiry: {
+      purchaseDays: Number(process.env.REELFLOW_PURCHASE_CREDIT_DAYS ?? 365),
+      inviteDays: Number(process.env.REELFLOW_INVITE_CREDIT_DAYS ?? 30),
+      bonusDays: Number(process.env.REELFLOW_BONUS_CREDIT_DAYS ?? 30),
+    },
   },
   retention: {
     draftPackageDays: Number(process.env.REELFLOW_DRAFT_RETENTION_DAYS ?? 30),
