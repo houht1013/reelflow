@@ -264,6 +264,8 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
   const audioAsset = await registerGeneratedAsset({
     workspaceId: input.workspaceId,
     userId: input.userId,
+    jobId: input.jobId,
+    stageId: input.stageId,
     assetType: 'audio',
     sourceType: 'ai_generated',
     storageProvider: cfg.provider,
@@ -289,6 +291,8 @@ export async function generateReelflowVoiceTrack(input: ReelflowVoiceTrackInput)
     const created = await registerGeneratedAsset({
       workspaceId: input.workspaceId,
       userId: input.userId,
+      jobId: input.jobId,
+      stageId: input.stageId,
       assetType: 'caption',
       sourceType: 'ai_generated',
       storageProvider: cfg.provider,

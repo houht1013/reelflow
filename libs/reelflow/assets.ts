@@ -31,6 +31,9 @@ export type RegisterUploadedAssetInput = {
 export type RegisterGeneratedAssetInput = {
   workspaceId: string;
   userId: string;
+  /** Link the asset to the producing job/stage so it shows under the task. */
+  jobId?: string;
+  stageId?: string;
   assetType: string;
   sourceType: 'ai_generated' | 'generated';
   storageProvider?: string;
@@ -179,6 +182,8 @@ export async function registerGeneratedAsset(input: RegisterGeneratedAssetInput)
       id: crypto.randomUUID(),
       workspaceId: input.workspaceId,
       createdByUserId: input.userId,
+      jobId: normalizeText(input.jobId) || null,
+      stageId: normalizeText(input.stageId) || null,
       assetType: input.assetType,
       sourceType: input.sourceType,
       storageProvider: normalizeText(input.storageProvider) || null,

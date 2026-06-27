@@ -301,6 +301,8 @@ export async function assembleReelflowDraft(input: AssembleReelflowDraftInput): 
   const asset = await registerGeneratedAsset({
     workspaceId: input.workspaceId,
     userId: input.userId,
+    jobId: input.jobId,
+    stageId: input.stageId,
     assetType: 'draft_package',
     sourceType: 'generated',
     storageProvider: 'capcut-mate',
@@ -442,6 +444,8 @@ export async function assembleResolvedVideo(input: AssembleResolvedVideoInput): 
       await registerGeneratedAsset({
         workspaceId: input.workspaceId,
         userId: input.userId,
+        jobId: input.jobId,
+        stageId: input.stageId,
         assetType: 'video',
         sourceType: 'generated',
         storageProvider: 'capcut-mate',

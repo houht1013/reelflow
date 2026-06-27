@@ -290,6 +290,8 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
   const asset = await registerGeneratedAsset({
     workspaceId: input.workspaceId,
     userId: input.userId,
+    jobId: input.jobId,
+    stageId: input.stageId,
     assetType: 'image',
     sourceType: 'ai_generated',
     storageProvider: hosted ? 'object-storage' : provider,
