@@ -107,34 +107,37 @@ export class AlipayProvider implements PaymentProvider {
       `${plan.i18n['zh-CN']?.name} - ${plan.i18n['zh-CN']?.description}`;
     
     try {
-      // Use pageExecute to call alipay.trade.page.pay for PC website payment
-      // Reference: https://opendocs.alipay.com/open/59da99d0_alipay.trade.page.pay?pathHash=e26b497f&scene=22
-      // This generates a URL that redirects user to Alipay payment page
-      // After payment, user is redirected back to return_url
+      // Use pageExecute to call alipay.trade.wap.pay for mobile website payment
+      // (手机网站支付). Reference:
+      // https://opendocs.alipay.com/open/203/107090 (alipay.trade.wap.pay)
+      // This generates a URL that opens the Alipay app / H5 cashier. After
+      // payment the user is redirected back to return_url; the authoritative
+      // signal is the async notify webhook.
       const bizContent = {
         out_trade_no: params.orderId,
         total_amount: (params.amount as number).toFixed(2),
         subject: description,
-        product_code: 'FAST_INSTANT_TRADE_PAY', // Required for PC website payment
+        product_code: 'QUICK_WAP_WAY', // Required for mobile website payment
+        quit_url: `${config.app.payment.successUrl}?provider=alipay&cancelled=1`,
       };
 
       // Use pageExecute with 'GET' to generate a redirect URL
-      // The user will be redirected to Alipay's payment page
-      const paymentUrl = this.sdk.pageExecute('alipay.trade.page.pay', 'GET', {
+      // The user will be redirected to Alipay's mobile cashier
+      const paymentUrl = this.sdk.pageExecute('alipay.trade.wap.pay', 'GET', {
         bizContent,
         notifyUrl: this.notifyUrl,
         returnUrl: `${config.app.payment.successUrl}?provider=alipay`,
       });
 
-      console.log('Alipay page pay URL generated:', paymentUrl.substring(0, 200) + '...');
+      console.log('Alipay wap pay URL generated:', paymentUrl.substring(0, 200) + '...');
 
       if (paymentUrl) {
         return {
           paymentUrl: paymentUrl,
           providerOrderId: params.orderId,
-          metadata: { 
+          metadata: {
             method: 'pageExecute',
-            productCode: 'FAST_INSTANT_TRADE_PAY'
+            productCode: 'QUICK_WAP_WAY'
           }
         };
       } else {
