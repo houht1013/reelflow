@@ -383,6 +383,34 @@ export const providerHealthCheck = pgTable("provider_health_check", {
   index("provider_health_check_profile_created_idx").on(table.providerProfileId, table.createdAt),
 ]);
 
+// Model management — admin-managed AI models + access points (replaces env for
+// provider config). One row per model; multiple models can share a vendor.
+export const aiModel = pgTable("ai_model", {
+  id: text("id").primaryKey(),
+  category: text("category").notNull(), // text | image | video | audio
+  code: text("code").notNull(),         // unique key, e.g. 'seedream-5.0'
+  displayName: text("display_name").notNull(),
+  provider: text("provider").notNull(), // vendor label, e.g. 'doubao' / 'openai'
+  protocol: text("protocol").notNull(), // openai-chat | openai-image | seedream | dubbingx | capcut | ...
+  baseUrl: text("base_url"),
+  apiKey: text("api_key"),
+  modelId: text("model_id"),            // upstream model string passed to the API
+  enabled: boolean("enabled").notNull().default(true),
+  isDefault: boolean("is_default").notNull().default(false),
+  priority: integer("priority").notNull().default(100),
+  config: jsonb("config"),              // extra params: output_format, watermark, timeoutMs, …
+  pricingMode: text("pricing_mode").notNull().default("per_call"), // per_call | per_token | per_time
+  creditUnitPrice: numeric("credit_unit_price").notNull().default("0"),
+  pricingUnit: text("pricing_unit"),    // 'call' | '1k_tokens' | 'second' | …
+  minCreditCost: numeric("min_credit_cost"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex("ai_model_code_idx").on(table.code),
+  index("ai_model_category_enabled_idx").on(table.category, table.enabled),
+]);
+
 export const notification = pgTable("notification", {
   id: text("id").primaryKey(),
   workspaceId: text("workspace_id").notNull().references(() => workspace.id, { onDelete: "cascade" }),

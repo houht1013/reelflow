@@ -44,6 +44,7 @@ export const pricingItem = _impl.pricingItem;
 export const pricingChangeLog = _impl.pricingChangeLog;
 export const providerProfile = _impl.providerProfile;
 export const providerHealthCheck = _impl.providerHealthCheck;
+export const aiModel = _impl.aiModel;
 export const notification = _impl.notification;
 export const notificationDelivery = _impl.notificationDelivery;
 export const inviteCode = _impl.inviteCode;

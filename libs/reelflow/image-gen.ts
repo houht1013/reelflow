@@ -3,6 +3,7 @@
 // and reusable by tooling. Billing + usage metering go through provider-runtime.
 import { reelflowConfig } from '@config';
 import { registerGeneratedAsset } from './assets';
+import { resolveActiveModel, type ResolvedAiModel } from './models';
 import {
   ProviderCallError,
   chargeCredits,
@@ -113,9 +114,22 @@ async function callImageProvider(input: {
   quality: string;
   format: string;
   referenceImage?: string;
+  db?: ResolvedAiModel | null;
 }): Promise<{ b64: string; mock: boolean }> {
-  const { baseUrl, apiKey, mock, timeoutMs, maxAttempts, flavor: cfgFlavor, outputFormat, watermark, sequentialImageGeneration } = reelflowConfig.ai.image;
-  const flavor = cfgFlavor || (input.model.toLowerCase().includes('seedream') ? 'seedream' : 'openai');
+  const cfg = reelflowConfig.ai.image;
+  const { mock, timeoutMs, maxAttempts } = cfg;
+  // DB model overrides env when present.
+  const baseUrl = input.db?.baseUrl || cfg.baseUrl;
+  const apiKey = input.db?.apiKey || cfg.apiKey;
+  const dbConfig = (input.db?.config ?? {}) as Record<string, unknown>;
+  const outputFormat = (dbConfig.output_format as string) ?? cfg.outputFormat;
+  const watermark = (dbConfig.watermark as boolean) ?? cfg.watermark;
+  const sequentialImageGeneration = (dbConfig.sequential_image_generation as string) ?? cfg.sequentialImageGeneration;
+  const flavor =
+    cfg.flavor ||
+    (input.db?.protocol === 'seedream' || input.db?.protocol === 'openai-image'
+      ? (input.db.protocol === 'seedream' ? 'seedream' : 'openai')
+      : input.model.toLowerCase().includes('seedream') ? 'seedream' : 'openai');
 
   if (input.prompt.includes('__reelflow_mock_fail__')) {
     throw new Error('Mock image generation failed');
@@ -206,8 +220,10 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
     throw new ProviderCallError('Image prompt is required', 'invalid_input', 400);
   }
 
-  const provider = reelflowConfig.ai.image.provider;
-  const model = input.model || reelflowConfig.ai.image.model;
+  // Admin-managed model (DB) is the source of truth; env is the fallback.
+  const dbModel = await resolveActiveModel('image').catch(() => null);
+  const provider = dbModel?.provider || reelflowConfig.ai.image.provider;
+  const model = dbModel?.modelId || input.model || reelflowConfig.ai.image.model;
   const size = input.size || '1024x1024';
   const quality = input.quality || 'low';
   const format = input.format || 'png';
@@ -242,7 +258,7 @@ export async function generateReelflowImage(input: ReelflowImageInput): Promise<
   let storageKey: string | null = null;
   let hosted = false;
   try {
-    generated = await callImageProvider({ prompt, model, size, quality, format, referenceImage: input.referenceImage });
+    generated = await callImageProvider({ prompt, model, size, quality, format, referenceImage: input.referenceImage, db: dbModel });
     mimeType = mimeFromBase64(generated.b64);
     imageUrl = `data:${mimeType};base64,${generated.b64}`;
     if (shouldHost && !generated.mock) {
