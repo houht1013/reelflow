@@ -45,9 +45,11 @@ function CheckoutPage() {
   const c = t.pricing.checkout
   const v = t.pricing.v2
   const search = Route.useSearch()
-  const [method, setMethod] = useState<string>('wechat')
+  const [method, setMethod] = useState<string>('alipay')
+  const [submitting, setSubmitting] = useState(false)
 
   const order = resolveOrder(search, v, c, t.reelflow.credits.recharge)
+  const planId = resolveBackendPlanId(search)
 
   const methods = [
     { id: 'wechat', label: c.methods.wechat, desc: c.methods.wechatDesc, icon: QrCode },
@@ -56,10 +58,35 @@ function CheckoutPage() {
     { id: 'paypal', label: c.methods.paypal, desc: c.methods.paypalDesc, icon: Globe },
   ]
 
-  const handleConfirm = () => {
-    // Reserved design: payment channels are wired up later. Surface the
-    // selected method so the flow reads as intentional, then stop here.
-    toast.info(c.reservedNote)
+  const handleConfirm = async () => {
+    // Only Alipay is live (Alipay-first). Other channels stay reserved.
+    if (method !== 'alipay') {
+      toast.info(c.reservedNote)
+      return
+    }
+    // Custom credit amounts have no fixed backend plan yet — keep reserved.
+    if (!planId) {
+      toast.info(c.reservedNote)
+      return
+    }
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/payment/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId, provider: 'alipay' }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.paymentUrl) {
+        toast.error(c.payError)
+        setSubmitting(false)
+        return
+      }
+      window.location.href = data.paymentUrl
+    } catch {
+      toast.error(c.payError)
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -156,9 +183,9 @@ function CheckoutPage() {
                   <span className="reelflow-display reelflow-num text-3xl">¥{order.amount}</span>
                 </div>
 
-                <Button size="lg" className="mt-5 w-full" onClick={handleConfirm}>
+                <Button size="lg" className="mt-5 w-full" onClick={handleConfirm} disabled={submitting}>
                   <Lock className="mr-2 h-4 w-4" aria-hidden="true" />
-                  {c.confirm}
+                  {submitting ? c.processing : c.confirm}
                 </Button>
               </aside>
             </div>
@@ -167,6 +194,20 @@ function CheckoutPage() {
       </section>
     </div>
   )
+}
+
+// Maps the checkout query (pricing tier + billing, or a credit pack) to a
+// backend plan id in config.payment.plans. Custom credit amounts return null
+// (no fixed plan yet) and stay reserved.
+function resolveBackendPlanId(search: CheckoutSearch): string | null {
+  if (search.type === 'subscription' && search.plan && search.plan !== 'free') {
+    const billing = search.billing === 'yearly' ? 'yearly' : 'monthly'
+    return `reelflow_${search.plan}_${billing}`
+  }
+  if (search.type === 'credits' && search.pack) {
+    return `reelflow_credits_${search.pack}`
+  }
+  return null
 }
 
 function resolveOrder(search: CheckoutSearch, v: any, c: any, r: any): Order | null {

@@ -1175,6 +1175,8 @@ export const zhCN: Locale = {
       },
       reservedNote: "支付通道正在接入中，当前为预留设计。",
       confirm: "确认支付",
+      processing: "正在跳转支付…",
+      payError: "发起支付失败，请稍后重试。",
       emptyTitle: "未选择套餐",
       emptyHint: "请先在定价页面选择一个套餐或积分包。",
       toPricing: "前往定价"

@@ -197,6 +197,106 @@ export const paymentConfig = {
    * Subscription Plans
    */
   plans: {
+    // ---- Reelflow plans (Alipay, CNY). reelflowCredits = credits granted per
+    // month; the webhook multiplies by duration.months for yearly. ----
+    reelflow_pro_monthly: {
+      provider: 'alipay',
+      id: 'reelflow_pro_monthly',
+      amount: 39,
+      currency: 'CNY',
+      duration: { months: 1, type: 'recurring' },
+      reelflowCredits: 300,
+      i18n: {
+        'en': { name: 'Reelflow Pro (Monthly)', description: 'Pro plan, billed monthly', duration: 'month', features: ['300 credits / month'] },
+        'zh-CN': { name: 'Reelflow Pro 月度', description: 'Pro 套餐,按月计费', duration: '月', features: ['每月 300 积分'] },
+      },
+    },
+    reelflow_pro_yearly: {
+      provider: 'alipay',
+      id: 'reelflow_pro_yearly',
+      amount: 390,
+      currency: 'CNY',
+      duration: { months: 12, type: 'recurring' },
+      reelflowCredits: 300,
+      i18n: {
+        'en': { name: 'Reelflow Pro (Yearly)', description: 'Pro plan, billed yearly', duration: 'year', features: ['300 credits / month'] },
+        'zh-CN': { name: 'Reelflow Pro 年度', description: 'Pro 套餐,按年计费', duration: '年', features: ['每月 300 积分'] },
+      },
+    },
+    reelflow_max_monthly: {
+      provider: 'alipay',
+      id: 'reelflow_max_monthly',
+      amount: 129,
+      currency: 'CNY',
+      duration: { months: 1, type: 'recurring' },
+      reelflowCredits: 1500,
+      i18n: {
+        'en': { name: 'Reelflow Max (Monthly)', description: 'Max plan, billed monthly', duration: 'month', features: ['1500 credits / month'] },
+        'zh-CN': { name: 'Reelflow Max 月度', description: 'Max 套餐,按月计费', duration: '月', features: ['每月 1500 积分'] },
+      },
+    },
+    reelflow_max_yearly: {
+      provider: 'alipay',
+      id: 'reelflow_max_yearly',
+      amount: 1290,
+      currency: 'CNY',
+      duration: { months: 12, type: 'recurring' },
+      reelflowCredits: 1500,
+      i18n: {
+        'en': { name: 'Reelflow Max (Yearly)', description: 'Max plan, billed yearly', duration: 'year', features: ['1500 credits / month'] },
+        'zh-CN': { name: 'Reelflow Max 年度', description: 'Max 套餐,按年计费', duration: '年', features: ['每月 1500 积分'] },
+      },
+    },
+    reelflow_credits_c50: {
+      provider: 'alipay',
+      id: 'reelflow_credits_c50',
+      amount: 50,
+      currency: 'CNY',
+      duration: { type: 'credits' },
+      credits: 50,
+      i18n: {
+        'en': { name: '50 Credits', description: 'Top-up pack', duration: 'one-time', features: ['50 credits'] },
+        'zh-CN': { name: '50 积分包', description: '积分充值', duration: '一次性', features: ['50 积分'] },
+      },
+    },
+    reelflow_credits_c100: {
+      provider: 'alipay',
+      id: 'reelflow_credits_c100',
+      amount: 100,
+      currency: 'CNY',
+      duration: { type: 'credits' },
+      credits: 110, // 100 + 10% bonus
+      i18n: {
+        'en': { name: '110 Credits', description: 'Top-up pack (incl. 10 bonus)', duration: 'one-time', features: ['110 credits'] },
+        'zh-CN': { name: '110 积分包', description: '积分充值(含 10 赠送)', duration: '一次性', features: ['110 积分'] },
+      },
+    },
+    reelflow_credits_c500: {
+      provider: 'alipay',
+      id: 'reelflow_credits_c500',
+      amount: 500,
+      currency: 'CNY',
+      recommended: true,
+      duration: { type: 'credits' },
+      credits: 600, // 500 + 20% bonus
+      i18n: {
+        'en': { name: '600 Credits', description: 'Top-up pack (incl. 100 bonus)', duration: 'one-time', features: ['600 credits'] },
+        'zh-CN': { name: '600 积分包', description: '积分充值(含 100 赠送)', duration: '一次性', features: ['600 积分'] },
+      },
+    },
+    reelflow_credits_c1000: {
+      provider: 'alipay',
+      id: 'reelflow_credits_c1000',
+      amount: 1000,
+      currency: 'CNY',
+      duration: { type: 'credits' },
+      credits: 1300, // 1000 + 30% bonus
+      i18n: {
+        'en': { name: '1300 Credits', description: 'Top-up pack (incl. 300 bonus)', duration: 'one-time', features: ['1300 credits'] },
+        'zh-CN': { name: '1300 积分包', description: '积分充值(含 300 赠送)', duration: '一次性', features: ['1300 积分'] },
+      },
+    },
+
     monthlyWechat: {
       provider: 'wechat',
       id: 'monthlyWechat',

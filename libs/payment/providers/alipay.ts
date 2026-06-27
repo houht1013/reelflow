@@ -9,7 +9,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { utcNow } from '@libs/database/utils/utc';
 import { creditService, TransactionTypeCode } from '@libs/credits';
-import { grantWorkspaceCredits } from '@libs/reelflow/billing';
+import { grantWorkspaceCredits, grantWorkspaceSubscriptionCredits } from '@libs/reelflow/billing';
 
 // Alipay notification parameters
 interface AlipayNotification {
@@ -337,10 +337,27 @@ export class AlipayProvider implements PaymentProvider {
             })
           });
         }
-        
+
+        // Grant Reelflow workspace credits for the paid period. reelflowCredits
+        // is the per-month allowance; multiply by months (1 for monthly, 12 for
+        // yearly). Idempotent via the order id.
+        const reelflowSubCredits = (plan.reelflowCredits ?? 0) * (months >= 9999 ? 1 : months);
+        if (reelflowSubCredits > 0) {
+          await grantWorkspaceSubscriptionCredits({
+            userId: orderRecord.userId,
+            amount: reelflowSubCredits,
+            provider: 'alipay',
+            planId: orderRecord.planId,
+            orderId,
+            periodStart: now,
+            periodEnd: newPeriodEnd,
+            metadata: { tradeNo: notifyData.trade_no, months, perMonthCredits: plan.reelflowCredits ?? 0 },
+          });
+        }
+
         return { success: true, orderId };
       }
-      
+
       // For other statuses (WAIT_BUYER_PAY, TRADE_CLOSED), just acknowledge
       return { success: true };
     } catch (err) {

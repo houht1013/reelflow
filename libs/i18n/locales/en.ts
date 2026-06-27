@@ -1168,6 +1168,8 @@ export const en: Locale = {
       },
       reservedNote: "Payment channels are being connected; this is a reserved design.",
       confirm: "Confirm payment",
+      processing: "Redirecting to payment…",
+      payError: "Could not start payment. Please try again.",
       emptyTitle: "No plan selected",
       emptyHint: "Please choose a plan or credit pack on the pricing page first.",
       toPricing: "Go to pricing"
