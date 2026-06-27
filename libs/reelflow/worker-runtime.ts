@@ -20,6 +20,8 @@ import { buildDraftPackageMetadata, getDraftPackageStorageKey } from './draft-pa
 import { notifyReelflowJobCompleted, notifyReelflowJobFailed } from './notifications';
 import { canClaimWorkspaceJob, resolveWorkspaceConcurrentJobLimit, resolveWorkspaceImageConcurrency } from './worker-limits';
 import { getTemplate } from './templates/registry';
+import { loadPublishedRecipe } from './templates/_recipe/published-recipes';
+import { recipeToTemplate } from './templates/_recipe/runner';
 import { createTemplateContext } from './templates/_sdk/context';
 import type { TemplateRunOutput } from './templates/_sdk/types';
 
@@ -237,7 +239,13 @@ export async function runClaimedJob(claimed: ClaimedJob): Promise<ProcessOneJobR
     .innerJoin(template, eq(job.templateId, template.id))
     .where(eq(job.id, claimed.id))
     .limit(1);
-  const registryTemplate = jobRow ? getTemplate(jobRow.templateCode) : undefined;
+  let registryTemplate = jobRow ? getTemplate(jobRow.templateCode) : undefined;
+  // Fall back to a DB-published recipe (agent-authored) when no code template
+  // is registered for this code.
+  if (!registryTemplate && jobRow) {
+    const published = await loadPublishedRecipe(jobRow.templateCode);
+    if (published) registryTemplate = recipeToTemplate(published) as ReturnType<typeof getTemplate>;
+  }
 
   if (registryTemplate) {
     try {

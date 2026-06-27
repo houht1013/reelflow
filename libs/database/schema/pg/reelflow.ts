@@ -104,6 +104,26 @@ export const asset = pgTable("asset", {
   index("asset_type_status_idx").on(table.assetType, table.status),
 ]);
 
+// Versioned recipe snapshots for a template. Agents publish recipes here; the
+// template's builderVersion points at the current published version. Jobs lock
+// the version they ran with; rollback flips which version is published.
+export const templateVersion = pgTable("template_version", {
+  id: text("id").primaryKey(),
+  templateCode: text("template_code").notNull(),
+  version: text("version").notNull(),
+  structureId: text("structure_id").notNull(),
+  // Full VideoRecipe JSON (the portable, executable source of truth).
+  recipe: jsonb("recipe").notNull(),
+  status: text("status").notNull().default("draft"), // draft | published | archived
+  changelog: text("changelog"),
+  createdByUserId: text("created_by_user_id").references(() => user.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+}, (table) => [
+  uniqueIndex("template_version_code_version_idx").on(table.templateCode, table.version),
+  index("template_version_code_status_idx").on(table.templateCode, table.status),
+]);
+
 export const templateWorkspaceGrant = pgTable("template_workspace_grant", {
   id: text("id").primaryKey(),
   templateId: text("template_id").notNull().references(() => template.id, { onDelete: "cascade" }),

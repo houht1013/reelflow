@@ -123,6 +123,38 @@ async function cmdCaps() {
   console.log('Tip: inspect full request/response shapes via the OpenAPI at /openapi.json')
 }
 
+async function cmdPublish(args: string[]) {
+  const file = args[0]
+  if (!file) { fail('usage: template:publish <recipe.ts> [--changelog "..."]'); process.exitCode = 1; return }
+  const recipe = await importRecipe(file)
+  const engine = getStructure(recipe.structure)
+  if (!engine) { fail(`unknown structure: ${recipe.structure}`); process.exitCode = 1; return }
+  try { engine.parseConfig((recipe as { config: unknown }).config) }
+  catch (e) { fail(`config invalid: ${e instanceof Error ? e.message : e}`); process.exitCode = 1; return }
+
+  const { publishRecipe } = await import('../libs/reelflow/templates/_recipe/published-recipes')
+  const res = await publishRecipe(recipe, { changelog: flag(args, 'changelog') })
+  ok(`published ${res.code} v${res.version}`)
+}
+
+async function cmdVersions(args: string[]) {
+  const code = args[0]
+  if (!code) { fail('usage: template:versions <code>'); process.exitCode = 1; return }
+  const { listRecipeVersions } = await import('../libs/reelflow/templates/_recipe/published-recipes')
+  const rows = await listRecipeVersions(code)
+  if (!rows.length) { console.log(`no versions for ${code}`); return }
+  console.log(`versions of ${code}:`)
+  for (const r of rows) console.log(`  ${r.status === 'published' ? '●' : '○'} v${r.version} [${r.status}] ${r.structureId}${r.changelog ? ` — ${r.changelog}` : ''}`)
+}
+
+async function cmdRollback(args: string[]) {
+  const [code, version] = args
+  if (!code || !version) { fail('usage: template:rollback <code> <version>'); process.exitCode = 1; return }
+  const { rollbackRecipe } = await import('../libs/reelflow/templates/_recipe/published-recipes')
+  const res = await rollbackRecipe(code, version)
+  ok(`rolled back ${res.code} → published v${res.version}`)
+}
+
 async function main() {
   const [cmd, ...args] = process.argv.slice(2)
   switch (cmd) {
@@ -130,8 +162,11 @@ async function main() {
     case 'validate': return cmdValidate(args[0])
     case 'caps': return cmdCaps()
     case 'preview': return cmdPreview(args)
+    case 'template:publish': return cmdPublish(args)
+    case 'template:versions': return cmdVersions(args)
+    case 'template:rollback': return cmdRollback(args)
     default:
-      console.log('reelflow CLI — commands: structures | validate <recipe.ts> | caps | preview <recipe.ts> [--input f.json] [--out f.json] [--max-images N]')
+      console.log('reelflow CLI — commands:\n  structures | validate <recipe.ts> | caps\n  preview <recipe.ts> [--input f.json] [--out f.json] [--max-images N]\n  template:publish <recipe.ts> [--changelog "..."] | template:versions <code> | template:rollback <code> <version>')
       if (cmd) process.exitCode = 1
   }
 }

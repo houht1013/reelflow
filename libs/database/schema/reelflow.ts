@@ -38,6 +38,7 @@ export const jobQualityIssue = _impl.jobQualityIssue;
 export const usageRecord = _impl.usageRecord;
 export const creditLedger = _impl.creditLedger;
 export const creditLot = _impl.creditLot;
+export const templateVersion = _impl.templateVersion;
 export const assetUsage = _impl.assetUsage;
 export const pricingItem = _impl.pricingItem;
 export const pricingChangeLog = _impl.pricingChangeLog;

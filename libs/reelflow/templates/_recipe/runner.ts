@@ -3,7 +3,8 @@
 // `buildRecipeIR` is provider-driven but render-free (unit-testable with a mock
 // ctx); `runRecipe` adds the capcut render (draft + MP4) inside the
 // draft_package stage so it slots into the existing worker freeze/settle flow.
-import type { TemplateContext, TemplateRunOutput } from '../_sdk/types';
+import { z } from 'zod';
+import type { ReelflowTemplate, TemplateContext, TemplateRunOutput } from '../_sdk/types';
 import type { VideoRecipe } from './recipe';
 import type { ResolvedVideo } from './ir';
 import { getStructure, registerStructure } from './structure';
@@ -52,4 +53,25 @@ export function estimateRecipe(recipe: VideoRecipe, input: unknown) {
   const engine = getStructure(recipe.structure);
   if (!engine) throw new Error(`Unknown structure engine: ${recipe.structure}`);
   return engine.estimate(engine.parseConfig(recipe.config), engine.parseInput(input, recipe.input.fields));
+}
+
+/**
+ * Adapt a recipe into the standard ReelflowTemplate contract so a published
+ * recipe runs through the existing worker/registry path unchanged. Input is
+ * validated by the engine's parseInput; the zod schema is a passthrough.
+ */
+export function recipeToTemplate(recipe: VideoRecipe): ReelflowTemplate<Record<string, unknown>> {
+  return {
+    code: recipe.code,
+    name: recipe.name,
+    description: recipe.description,
+    category: recipe.category,
+    version: recipe.version,
+    tags: recipe.tags,
+    schema: z.record(z.string(), z.unknown()),
+    fields: recipe.input.fields,
+    stages: ['script', 'image', 'voice', 'caption', 'draft_package'],
+    estimate: (input) => estimateRecipe(recipe, input),
+    run: (ctx, input) => runRecipe(ctx, recipe, input),
+  };
 }

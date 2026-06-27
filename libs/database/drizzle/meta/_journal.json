@@ -29,6 +29,13 @@
       "when": 1782552595298,
       "tag": "0003_yummy_victor_mancha",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782565132224,
+      "tag": "0004_clammy_sabretooth",
+      "breakpoints": true
     }
   ]
 }
