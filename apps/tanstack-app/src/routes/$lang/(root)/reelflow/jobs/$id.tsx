@@ -6,10 +6,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@libs/react-shared/ui/button'
 import { Badge } from '@libs/react-shared/ui/badge'
+import { Input } from '@libs/react-shared/ui/input'
 import { Progress } from '@libs/react-shared/ui/progress'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@libs/react-shared/ui/dialog'
-import { AlertCircle, Archive, ArrowLeft, CheckCircle2, Circle, Clock3, Coins, Download, Eye, FileText, ImageIcon, Loader2, RefreshCw, Repeat2, RotateCcw, Video, XCircle } from 'lucide-react'
+import { AlertCircle, Archive, ArrowLeft, Check, CheckCircle2, Circle, Clock3, Coins, Copy, Download, ExternalLink, Eye, FileText, ImageIcon, Loader2, RefreshCw, Repeat2, RotateCcw, Video, XCircle } from 'lucide-react'
 import { StatusPill, TonePill } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/jobs/$id')({
@@ -144,9 +145,6 @@ type PreflightIssue = {
   message?: string
 }
 
-const OUTPUT_TYPE_LABEL: Record<string, string> = {
-  draft: '剪映草稿', video: '成片 MP4', image: '图片', audio: '音频', text: '文本', json: '数据',
-}
 
 function ReelflowJobDetailPage() {
   const { id } = Route.useParams()
@@ -161,6 +159,24 @@ function ReelflowJobDetailPage() {
   const [actionError, setActionError] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState<'retry' | 'rerun' | null>(null)
   const [previewAsset, setPreviewAsset] = useState<JobAsset | null>(null)
+  const [copiedDraft, setCopiedDraft] = useState(false)
+
+  const draftUrl =
+    detail?.runResult?.assets.find((a) => a.type === 'draft')?.url ||
+    detail?.assets.find((a) => a.assetType === 'draft_package')?.url ||
+    null
+
+  const copyDraftLink = async () => {
+    if (!draftUrl) return
+    try {
+      await navigator.clipboard.writeText(draftUrl)
+      setCopiedDraft(true)
+      toast.success('已复制剪映草稿链接')
+      window.setTimeout(() => setCopiedDraft(false), 2000)
+    } catch {
+      toast.error('复制失败，请手动选择链接复制')
+    }
+  }
 
   const loadDetail = useCallback(async (background = false) => {
     if (background) setRefreshing(true)
@@ -334,30 +350,52 @@ function ReelflowJobDetailPage() {
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div className="space-y-6">
               {detail.runResult && (
-                <section className="reelflow-panel reelflow-reveal p-6" data-delay="2" data-testid="reelflow-run-result">
-                  <div className="flex items-center justify-between">
-                    <h2 className="reelflow-display text-xl">运行结果</h2>
-                    <StatusPill
-                      status={detail.runResult.status === 'succeeded' ? 'completed' : 'failed'}
-                      label={detail.runResult.status === 'succeeded' ? '成功' : '失败'}
-                    />
+                <section className="reelflow-panel reelflow-reveal p-6" data-delay="1" data-testid="reelflow-run-result">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <h2 className="reelflow-display text-xl">成片产物</h2>
+                      <StatusPill
+                        status={detail.runResult.status === 'succeeded' ? 'completed' : 'failed'}
+                        label={detail.runResult.status === 'succeeded' ? '成功' : '失败'}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>耗时 <span className="reelflow-num text-foreground">{formatDuration(detail.runResult.durationMs)}</span></span>
+                      <span aria-hidden="true">·</span>
+                      <span>消耗 <span className="reelflow-num text-foreground">{detail.runResult.creditsConsumed}</span> 积分</span>
+                    </div>
                   </div>
-                  <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    <div><dt className="text-xs text-muted-foreground">任务ID</dt><dd className="reelflow-num mt-1 truncate text-sm" title={detail.runResult.jobId}>{detail.runResult.jobId.slice(0, 8)}…</dd></div>
-                    <div><dt className="text-xs text-muted-foreground">耗时</dt><dd className="reelflow-num mt-1 text-sm">{formatDuration(detail.runResult.durationMs)}</dd></div>
-                    <div><dt className="text-xs text-muted-foreground">消耗积分</dt><dd className="reelflow-num mt-1 text-sm">{detail.runResult.creditsConsumed}</dd></div>
-                    <div><dt className="text-xs text-muted-foreground">产物</dt><dd className="reelflow-num mt-1 text-sm">{detail.runResult.assets.length}</dd></div>
-                  </dl>
-                  {detail.runResult.error && <p className="mt-3 text-sm text-destructive">{detail.runResult.error.message || detail.runResult.error.code}</p>}
-                  {detail.runResult.assets.length > 0 && (
-                    <ul className="mt-4 space-y-2">
-                      {detail.runResult.assets.map((output, index) => (
-                        <li key={`${output.key}-${index}`} className="reelflow-muted-tile flex items-center justify-between gap-3 px-3 py-2">
-                          <span className="text-sm">{OUTPUT_TYPE_LABEL[output.type] || output.type}</span>
-                          {output.url && <a href={output.url} target="_blank" rel="noreferrer" className="text-sm text-primary hover:underline">打开</a>}
-                        </li>
-                      ))}
-                    </ul>
+
+                  {draftUrl ? (
+                    <div className="mt-5">
+                      <p className="mb-1.5 text-sm font-medium">剪映草稿链接</p>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <Input
+                          readOnly
+                          value={draftUrl}
+                          onFocus={(event) => event.currentTarget.select()}
+                          className="font-mono text-xs"
+                          aria-label="剪映草稿链接"
+                          data-testid="reelflow-draft-url"
+                        />
+                        <div className="flex gap-2">
+                          <Button type="button" onClick={copyDraftLink} className="shrink-0" data-testid="reelflow-copy-draft">
+                            {copiedDraft ? <Check className="mr-1.5 h-4 w-4" aria-hidden="true" /> : <Copy className="mr-1.5 h-4 w-4" aria-hidden="true" />}
+                            {copiedDraft ? '已复制' : '复制链接'}
+                          </Button>
+                          <Button type="button" variant="outline" asChild className="shrink-0">
+                            <a href={draftUrl} target="_blank" rel="noreferrer">
+                              <ExternalLink className="mr-1.5 h-4 w-4" aria-hidden="true" />打开
+                            </a>
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs leading-5 text-muted-foreground">复制链接后在剪映中导入该草稿即可继续编辑。</p>
+                    </div>
+                  ) : detail.runResult.error ? (
+                    <p className="mt-4 text-sm text-destructive">{detail.runResult.error.message || detail.runResult.error.code}</p>
+                  ) : (
+                    <p className="mt-4 text-sm text-muted-foreground">本次任务暂无草稿产物。</p>
                   )}
                 </section>
               )}
@@ -513,21 +551,7 @@ function ReelflowJobDetailPage() {
                   <InfoRow label={t.reelflow.detail.startedAt} value={formatDate(detail.job.startedAt)} />
                   <InfoRow label={t.reelflow.detail.updatedAt} value={formatDate(detail.job.updatedAt)} />
                 </div>
-                {detail.job.artifactStatus === 'downloadable' ? (
-                  <>
-                    <Button asChild className="mt-5 w-full" data-testid="reelflow-download-draft">
-                      <a href={`/api/reelflow/jobs/${detail.job.id}/download-draft`}>
-                        <Download className="mr-2 h-4 w-4" aria-hidden="true" />
-                        {t.reelflow.detail.downloadDraft}
-                      </a>
-                    </Button>
-                    <p className="mt-3 text-xs leading-5 text-muted-foreground">{t.reelflow.detail.downloadHint}</p>
-                  </>
-                ) : (
-                  <p className="mt-5 rounded-md bg-muted/60 px-3 py-2 text-sm text-muted-foreground ring-1 ring-border/25">
-                    {t.reelflow.detail.downloadUnavailable}
-                  </p>
-                )}
+                <p className="mt-5 text-xs leading-5 text-muted-foreground">剪映草稿链接见上方「成片产物」，复制后在剪映中导入。</p>
               </section>
 
               <section className="reelflow-panel p-5">
