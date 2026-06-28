@@ -5,12 +5,14 @@ import psychologyStickman from './psychology-stickman';
 import knowledgeScience from './knowledge-science';
 import opinionTalkingHead from './opinion-talking-head';
 import antiChickenSoup from './anti-chicken-soup';
+import wakeupSilhouette from './wakeup-silhouette';
 
 const ALL: ReelflowTemplate<unknown>[] = [
   psychologyStickman as ReelflowTemplate<unknown>,
   knowledgeScience as ReelflowTemplate<unknown>,
   opinionTalkingHead as ReelflowTemplate<unknown>,
   antiChickenSoup as ReelflowTemplate<unknown>,
+  wakeupSilhouette as ReelflowTemplate<unknown>,
 ];
 
 export const TEMPLATE_REGISTRY: Record<string, ReelflowTemplate<unknown>> = Object.fromEntries(
