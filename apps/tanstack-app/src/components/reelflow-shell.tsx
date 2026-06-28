@@ -367,7 +367,7 @@ export function ReelflowShell({ children }: ShellProps) {
                       </div>
                       <div className="flex items-center justify-between gap-3 px-4 py-3.5">
                         <span className="flex items-center gap-2 text-sm text-muted-foreground"><BadgeCheck className="h-4 w-4" aria-hidden="true" />{shell.settings.role}</span>
-                        <span className="reelflow-pill" data-tone={user.role === 'admin' ? 'brand' : 'neutral'}>{user.role === 'admin' ? shell.settings.roleAdmin : shell.settings.roleMember}</span>
+                        <span className="reelflow-pill" data-tone="neutral">{user.role === 'admin' ? shell.settings.roleAdmin : shell.settings.roleMember}</span>
                       </div>
                     </div>
                     <Button type="button" variant="outline" onClick={handleSignOut} className="mt-4 w-full text-destructive hover:text-destructive">
@@ -388,7 +388,7 @@ export function ReelflowShell({ children }: ShellProps) {
                         <p className="text-xs text-muted-foreground">{shell.settings.planLabel}</p>
                         <p className="mt-0.5 text-base font-semibold">{shell.settings.freePlan}</p>
                       </div>
-                      <Button asChild>
+                      <Button asChild variant="outline">
                         <a href={`/${locale}/pricing`} target="_blank" rel="noopener noreferrer">
                           {shell.settings.viewPlans}
                         </a>
