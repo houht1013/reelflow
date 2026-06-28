@@ -361,8 +361,7 @@ function ReelflowJobDetailPage() {
             <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" aria-hidden="true" />
           </div>
         ) : detail ? (
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="space-y-6">
+          <div className="mx-auto max-w-3xl space-y-5">
               {detail.runResult && (
                 <section className="reelflow-panel reelflow-reveal p-6" data-delay="1" data-testid="reelflow-run-result">
                   <div className="flex flex-wrap items-center justify-between gap-3">
@@ -464,6 +463,36 @@ function ReelflowJobDetailPage() {
                     <AlertDescription>{detail.job.lastErrorMessage}</AlertDescription>
                   </Alert>
                 )}
+
+                {/* Task actions — merged into the detail card */}
+                <div className="mt-5 border-t border-[var(--reelflow-hairline)] pt-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-muted-foreground">{t.reelflow.detail.actionsDescription}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {detail.job.status === 'failed' && (
+                        <Button type="button" variant="default" onClick={() => runJobAction('retry')} disabled={actionLoading !== null} data-testid="reelflow-job-retry">
+                          {actionLoading === 'retry' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" />}
+                          {t.reelflow.detail.retryFailed}
+                        </Button>
+                      )}
+                      {(detail.job.status === 'completed' || detail.job.status === 'failed') && (
+                        <Button type="button" variant={detail.job.status === 'failed' ? 'outline' : 'default'} onClick={() => runJobAction('rerun')} disabled={actionLoading !== null} data-testid="reelflow-job-rerun">
+                          {actionLoading === 'rerun' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <Repeat2 className="mr-2 h-4 w-4" aria-hidden="true" />}
+                          {t.reelflow.detail.rerun}
+                        </Button>
+                      )}
+                      {detail.job.status !== 'completed' && detail.job.status !== 'failed' && (
+                        <p className="rounded-md bg-muted/60 px-3 py-2 text-sm text-muted-foreground ring-1 ring-border/25">{t.reelflow.detail.actionsUnavailable}</p>
+                      )}
+                    </div>
+                  </div>
+                  {actionError && (
+                    <Alert variant="destructive" className="mt-3" data-testid="reelflow-job-action-error">
+                      <AlertTitle>{t.reelflow.detail.actionFailed}</AlertTitle>
+                      <AlertDescription>{actionError}</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
               </section>
 
               <section className="reelflow-panel reelflow-reveal p-5" data-delay="3">
@@ -568,86 +597,12 @@ function ReelflowJobDetailPage() {
                   )}
                 </div>
               </CollapsibleSection>
-            </div>
-
-            <aside className="reelflow-reveal space-y-4 lg:sticky lg:top-24 lg:self-start" data-delay="2">
-              <section className="reelflow-panel p-5">
-                <h2 className="reelflow-display text-lg">{t.reelflow.detail.actionsTitle}</h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.reelflow.detail.actionsDescription}</p>
-                {actionError && (
-                  <Alert variant="destructive" className="mt-4" data-testid="reelflow-job-action-error">
-                    <AlertTitle>{t.reelflow.detail.actionFailed}</AlertTitle>
-                    <AlertDescription>{actionError}</AlertDescription>
-                  </Alert>
-                )}
-                <div className="mt-4 space-y-2">
-                  {detail.job.status === 'failed' && (
-                    <Button
-                      type="button"
-                      className="w-full"
-                      variant="default"
-                      onClick={() => runJobAction('retry')}
-                      disabled={actionLoading !== null}
-                      data-testid="reelflow-job-retry"
-                    >
-                      {actionLoading === 'retry' ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                      ) : (
-                        <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" />
-                      )}
-                      {t.reelflow.detail.retryFailed}
-                    </Button>
-                  )}
-                  {(detail.job.status === 'completed' || detail.job.status === 'failed') && (
-                    <Button
-                      type="button"
-                      className="w-full"
-                      variant={detail.job.status === 'failed' ? 'outline' : 'default'}
-                      onClick={() => runJobAction('rerun')}
-                      disabled={actionLoading !== null}
-                      data-testid="reelflow-job-rerun"
-                    >
-                      {actionLoading === 'rerun' ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                      ) : (
-                        <Repeat2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                      )}
-                      {t.reelflow.detail.rerun}
-                    </Button>
-                  )}
-                  {detail.job.status !== 'completed' && detail.job.status !== 'failed' && (
-                    <p className="rounded-md bg-muted/60 px-3 py-2 text-sm text-muted-foreground ring-1 ring-border/25">
-                      {t.reelflow.detail.actionsUnavailable}
-                    </p>
-                  )}
-                </div>
-              </section>
 
               <Alert>
                 <Clock3 className="h-4 w-4" aria-hidden="true" />
                 <AlertTitle>{t.reelflow.detail.outputNoticeTitle}</AlertTitle>
                 <AlertDescription>{t.reelflow.detail.outputNoticeBody}</AlertDescription>
               </Alert>
-
-              <section className="reelflow-panel p-5">
-                <h2 className="reelflow-display text-lg">{t.reelflow.detail.qualityIssues}</h2>
-                <div className="mt-4 space-y-3">
-                  {detail.qualityIssues.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t.reelflow.detail.noIssues}</p>
-                  ) : (
-                    detail.qualityIssues.map((issue) => (
-                        <div key={issue.id} className="reelflow-muted-tile p-3">
-                          <div className="flex items-center justify-between gap-2">
-                          <TonePill tone={issue.severity === 'high' ? 'danger' : 'warning'} icon={AlertCircle}>{t.reelflow.detail.issue}</TonePill>
-                          <span className="text-xs text-muted-foreground">{issueStatusText(issue.status)}</span>
-                        </div>
-                        <p className="mt-3 break-words text-sm leading-6">{issue.message}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </section>
-            </aside>
           </div>
         ) : null}
       </div>
