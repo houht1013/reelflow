@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
@@ -146,10 +146,7 @@ function ReelflowHomePage() {
             const Icon = entry.icon
             const inner = (
               <>
-                <span
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-200 group-hover:scale-105"
-                  style={{ background: `color-mix(in oklch, ${entry.color} 12%, transparent)`, color: entry.color, '--tw-ring-color': `color-mix(in oklch, ${entry.color} 22%, transparent)` } as CSSProperties}
-                >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-transform duration-200 group-hover:scale-105">
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <span className="min-w-0 flex-1">
@@ -218,7 +215,7 @@ function ReelflowHomePage() {
                     params={{ lang: locale }}
                     className="reelflow-soft-tile group flex flex-col p-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
                   >
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'color-mix(in oklch, var(--reelflow-blue) 12%, transparent)', color: 'var(--reelflow-blue)' }}>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground">
                       <WandSparkles className="h-4 w-4" aria-hidden="true" />
                     </span>
                     <h3 className="mt-3 text-sm font-semibold">{tpl.title}</h3>
@@ -231,7 +228,7 @@ function ReelflowHomePage() {
 
             {tab === 'video' && (
               <div className="reelflow-muted-tile flex flex-col items-center px-6 py-14 text-center">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: 'color-mix(in oklch, var(--reelflow-green) 12%, transparent)', color: 'var(--reelflow-green)' }}>
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-card text-foreground">
                   <Video className="h-6 w-6" aria-hidden="true" />
                 </span>
                 <p className="mt-4 text-sm text-muted-foreground">{discover.videoComingSoon}</p>
