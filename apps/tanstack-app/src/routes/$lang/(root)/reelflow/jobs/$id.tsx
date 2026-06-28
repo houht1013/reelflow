@@ -436,23 +436,31 @@ function ReelflowJobDetailPage() {
               <section className="reelflow-panel reelflow-reveal p-6" data-delay="3">
                 <h2 className="reelflow-display text-lg">{t.reelflow.detail.stages}</h2>
                 <div className="mt-5 space-y-0">
-                  {detail.stages.map((stage, index) => (
-                    <div key={stage.id} className="relative flex gap-4 pb-5 last:pb-0">
-                      {index < detail.stages.length - 1 && <div className="absolute left-2.5 top-7 h-[calc(100%-1.75rem)] w-px bg-border/55" />}
-                      <div className="relative z-10 pt-0.5">{stageIcon(stage.status)}</div>
-                      <div className="reelflow-muted-tile min-w-0 flex-1 p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <h3 className="font-medium">{stageText(stage.stageCode)}</h3>
-                          <StatusPill status={stage.status} label={statusText(stage.status)} />
+                  {detail.stages.map((stage, index) => {
+                    const isDone = stage.status === 'completed' || stage.status === 'skipped'
+                    const durationMs = stage.startedAt && stage.completedAt ? new Date(stage.completedAt).getTime() - new Date(stage.startedAt).getTime() : null
+                    return (
+                      <div key={stage.id} className="relative flex gap-4 pb-5 last:pb-0">
+                        {index < detail.stages.length - 1 && <div className={`absolute left-2.5 top-7 h-[calc(100%-1.75rem)] w-px ${isDone ? 'bg-[var(--reelflow-green)]/35' : 'bg-border/55'}`} />}
+                        <div className="relative z-10 pt-0.5">{stageIcon(stage.status)}</div>
+                        <div className="reelflow-muted-tile min-w-0 flex-1 p-4">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="reelflow-num text-xs text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
+                              <h3 className="truncate font-medium">{stageText(stage.stageCode)}</h3>
+                            </div>
+                            <StatusPill status={stage.status} label={statusText(stage.status)} />
+                          </div>
+                          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                            {stage.startedAt && <span>{t.reelflow.detail.startedAt}: <span className="reelflow-num text-foreground">{formatDate(stage.startedAt)}</span></span>}
+                            {durationMs != null && <span>耗时 <span className="reelflow-num text-foreground">{formatDuration(durationMs)}</span></span>}
+                            {stage.attemptCount > 1 && <span>重试 <span className="reelflow-num text-foreground">{stage.attemptCount - 1}</span> 次</span>}
+                          </div>
+                          {stage.errorMessage && <p className="mt-3 text-sm text-destructive">{stage.errorMessage}</p>}
                         </div>
-                        <div className="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-                          <div>{t.reelflow.detail.startedAt}: {formatDate(stage.startedAt)}</div>
-                          <div>{t.reelflow.detail.updatedAt}: {formatDate(stage.updatedAt)}</div>
-                        </div>
-                        {stage.errorMessage && <p className="mt-3 text-sm text-destructive">{stage.errorMessage}</p>}
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </section>
 
