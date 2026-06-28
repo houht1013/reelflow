@@ -6,17 +6,17 @@ import type { ReelflowCaptionTimeline } from '../../tts';
 import type { ReelflowDraftScene, ReelflowDraftAudio, ReelflowDraftCaption, CapcutCaptionStyle } from '../../capcut';
 import type { ResolvedBrandingOverlay } from './ir';
 
-// Standardized input field component the frontend renders from metadata.
+// Standardized input CONTROL type the frontend renders from metadata. These are
+// generic widgets only — domain concepts like 画面比例 / 音色 are just a `select`
+// with options (do NOT add a bespoke type for them).
 export type TemplateFieldType =
   | 'text'
   | 'textarea'
   | 'number' // int/float — use `precision` (0 = integer) and min/max/step
   | 'slider'
   | 'switch' // boolean
-  | 'select'
+  | 'select' // dropdown — provide `options`
   | 'color'
-  | 'aspect' // picks a canvas ratio, e.g. '16:9' | '9:16' | '1:1'
-  | 'voice'  // picks a TTS voice id
   | 'image'  // uploads a single image -> asset (logo / reference / background)
   | 'asset'; // picks an existing asset from the library
 
@@ -36,8 +36,9 @@ export type TemplateField = {
   defaultValue?: unknown;
   /** UI grouping, e.g. '内容' / '风格' / '配音' / '品牌'. */
   group?: string;
-  /** For select/aspect/voice. */
-  options?: TemplateFieldOption[];
+  /** For type 'select' — a plain string array (value = label) or labeled entries.
+   *  画面比例 → options: ['16:9','9:16']; 音色 → options: voice ids. */
+  options?: (string | TemplateFieldOption)[];
   // number / slider
   min?: number;
   max?: number;
@@ -53,7 +54,7 @@ export type TemplateField = {
   maxSizeMb?: number;
   /** For type 'asset' — restrict pickable asset types. */
   assetTypes?: string[];
-  /** Reuse a shared param preset (aspect/voice/speed/...) for consistency. */
+  /** Reuse a shared param preset for consistency. */
   preset?: string;
 };
 

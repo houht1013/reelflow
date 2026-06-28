@@ -26,7 +26,7 @@ const fields: TemplateField[] = [
   { key: 'handle', label: '账号水印', type: 'text', group: '品牌', defaultValue: '@做个人' },
   { key: 'cta', label: '结尾CTA', type: 'text', group: '品牌', defaultValue: '关注我，别再假装睡着' },
   { key: 'logo', label: '品牌 Logo', type: 'image', group: '品牌', accept: ['image/png', 'image/jpeg', 'image/webp'], maxSizeMb: 5, help: '可选：上传品牌 Logo（后续叠加到画面）。' },
-  { key: 'aspect', label: '画面比例', type: 'aspect', group: '风格', defaultValue: '16:9', options: [
+  { key: 'aspect', label: '画面比例', type: 'select', group: '风格', defaultValue: '16:9', options: [
     { label: '横屏 16:9', value: '16:9' },
     { label: '竖屏 9:16', value: '9:16' },
   ] },

@@ -48,7 +48,7 @@ const schema = z.object({
 
 const fields: TemplateField[] = [
   { key: 'topic', label: '主题', type: 'text', required: true, placeholder: '输入主题' },
-  { key: 'aspect', label: '画面比例', type: 'aspect', defaultValue: '16:9' },
+  { key: 'aspect', label: '画面比例', type: 'select', defaultValue: '16:9', options: ['16:9', '9:16'] },
 ];
 
 export default defineTemplate({

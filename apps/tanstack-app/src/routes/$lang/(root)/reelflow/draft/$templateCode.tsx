@@ -27,13 +27,13 @@ export const Route = createFileRoute('/$lang/(root)/reelflow/draft/$templateCode
 type TemplateInputField = {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'select' | 'switch' | 'number' | 'slider' | 'color' | 'aspect' | 'voice' | 'image' | 'asset'
+  type: 'text' | 'textarea' | 'select' | 'switch' | 'number' | 'slider' | 'color' | 'image' | 'asset'
   required?: boolean
   help?: string
   placeholder?: string
   defaultValue?: unknown
   group?: string
-  options?: Array<{ label: string; value: string }>
+  options?: Array<string | { label: string; value: string }>
   assetTypes?: string[]
   min?: number
   max?: number
@@ -44,13 +44,10 @@ type TemplateInputField = {
   maxSizeMb?: number
 }
 
-const ASPECT_OPTIONS: Array<{ label: string; value: string }> = [
-  { label: '竖屏 9:16', value: '9:16' },
-  { label: '横屏 16:9', value: '16:9' },
-  { label: '方形 1:1', value: '1:1' },
-  { label: '4:5', value: '4:5' },
-  { label: '3:4', value: '3:4' },
-]
+// Options may be plain strings (value = label) or labeled entries; normalize.
+function normalizeOptions(options?: Array<string | { label: string; value: string }>) {
+  return (options ?? []).map((o) => (typeof o === 'string' ? { value: o, label: o } : o))
+}
 
 type TemplateBadge = 'new' | 'recommended' | 'hot'
 
@@ -186,8 +183,7 @@ function ReelflowComposerPage() {
       if (['asset', 'switch', 'image', 'color', 'slider', 'number'].includes(field.type)) continue
       if (next[field.key]) continue
       if (field.placeholder) next[field.key] = field.placeholder
-      else if ((field.type === 'select' || field.type === 'voice') && field.options?.length) next[field.key] = field.options[0].value
-      else if (field.type === 'aspect') next[field.key] = (field.options?.[0]?.value ?? ASPECT_OPTIONS[0].value)
+      else if (field.type === 'select' && field.options?.length) next[field.key] = normalizeOptions(field.options)[0].value
     }
     setRunError(null)
     setFieldErrorKey(null)
@@ -336,13 +332,13 @@ function ReelflowComposerPage() {
                         <ImageUploadField field={field} value={String(inputParams[field.key] || '')} invalid={hasFieldError} onValueChange={(value) => setFieldValue(field.key, value)} />
                       ) : field.type === 'textarea' ? (
                         <Textarea id={`reelflow-${field.key}`} name={field.key} autoComplete="off" value={String(inputParams[field.key] || '')} onChange={(event) => setFieldValue(field.key, event.target.value)} placeholder={field.placeholder || t.reelflow.generate.textPlaceholder} aria-invalid={hasFieldError} className="min-h-24 resize-y" />
-                      ) : field.type === 'select' || field.type === 'voice' || field.type === 'aspect' ? (
+                      ) : field.type === 'select' ? (
                         <Select name={field.key} value={String(inputParams[field.key] || '')} onValueChange={(value) => setFieldValue(field.key, value)}>
                           <SelectTrigger id={`reelflow-${field.key}`} aria-label={fieldLabel(field)} aria-invalid={hasFieldError} className="w-full">
                             <SelectValue placeholder={t.reelflow.generate.selectPlaceholder} />
                           </SelectTrigger>
                           <SelectContent>
-                            {((field.options?.length ? field.options : field.type === 'aspect' ? ASPECT_OPTIONS : [])).map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                            {normalizeOptions(field.options).map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       ) : field.type === 'switch' ? (
