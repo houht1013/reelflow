@@ -445,8 +445,8 @@ function ReelflowAssetsPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           ) : loading ? (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {[0, 1, 2, 3, 4, 5].map((item) => (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {[0, 1, 2, 3, 4, 5, 6, 7].map((item) => (
                 <div key={item} className="h-72 animate-pulse rounded-lg bg-muted/40" />
               ))}
             </div>
@@ -459,7 +459,7 @@ function ReelflowAssetsPage() {
               />
             </section>
           ) : (
-            <section className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <section className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {data?.assets.map((assetItem) => (
                 <AssetCard
                   key={assetItem.id}
