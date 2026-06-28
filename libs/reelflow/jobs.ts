@@ -4,7 +4,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { REELFLOW_STAGES } from './constants';
 import { consumeCreditLots } from './credit-lots';
 import { assertJobPreflight } from './preflight';
-import { getTemplate } from './templates/registry';
+import { resolveTemplate } from './templates/loader';
 import { estimateResourcePlanCredits } from './templates/_sdk/estimator';
 
 // Worker-owned stages always appended after a template's content stages.
@@ -21,6 +21,8 @@ export type CreateReelflowJobInput = {
   templateCode: string;
   inputParams: Record<string, unknown>;
   renderMp4Requested?: boolean;
+  /** Admin debug: allow running a non-published (draft) template. */
+  allowUnpublished?: boolean;
 };
 
 export type CreateReelflowJobResult = {
@@ -52,16 +54,21 @@ export async function createReelflowJob(input: CreateReelflowJobInput): Promise<
   const [selectedTemplate] = await db
     .select()
     .from(template)
-    .where(and(eq(template.code, input.templateCode), eq(template.status, 'published')))
+    .where(
+      input.allowUnpublished
+        ? eq(template.code, input.templateCode)
+        : and(eq(template.code, input.templateCode), eq(template.status, 'published')),
+    )
     .limit(1);
 
   if (!selectedTemplate) {
     throw new Error(`Template is not available: ${input.templateCode}`);
   }
 
-  // Estimate from the in-repo template's resource plan priced by pricing_item, so
-  // the freeze matches the metered actual. Fall back to legacy flat estimate.
-  const registryTemplate = getTemplate(input.templateCode);
+  // Estimate from the resolved template's resource plan priced by pricing_item, so
+  // the freeze matches the metered actual. resolveTemplate covers dynamic (admin)
+  // templates too. Fall back to the legacy flat estimate.
+  const registryTemplate = await resolveTemplate(input.templateCode);
   const estimatedCredits = registryTemplate
     ? (await estimateResourcePlanCredits(registryTemplate.estimate(input.inputParams as never))).credits
     : estimateJobCredits(input);

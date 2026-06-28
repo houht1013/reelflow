@@ -37,10 +37,12 @@ export const Route = createFileRoute('/api/admin/reelflow/templates/$code')({
           const content = body && typeof body.content === 'string' ? body.content : null
           if (content == null) return Response.json({ error: 'content is required' }, { status: 400 })
 
-          const { writeTemplateFile, validateTemplateFile, TemplateFileError } = await import('@libs/reelflow/templates/template-files')
+          const { writeTemplateFile, validateTemplateFile, syncTemplateRow, TemplateFileError } = await import('@libs/reelflow/templates/template-files')
           try {
             writeTemplateFile(params.code, content)
             const validation = await validateTemplateFile(params.code)
+            // Register/refresh a draft DB row (hidden) so the template can be debugged before publishing.
+            if (validation.ok) await syncTemplateRow(params.code)
             return Response.json({ saved: true, validation })
           } catch (error) {
             if (error instanceof TemplateFileError) {

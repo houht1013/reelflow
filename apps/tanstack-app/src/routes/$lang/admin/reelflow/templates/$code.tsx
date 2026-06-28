@@ -5,8 +5,9 @@ import { toast } from 'sonner'
 import { Button } from '@libs/react-shared/ui/button'
 import { Input } from '@libs/react-shared/ui/input'
 import { Label } from '@libs/react-shared/ui/label'
+import { Textarea } from '@libs/react-shared/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
-import { ArrowLeft, CheckCircle2, Loader2, Save, ShieldCheck, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Copy, ExternalLink, Loader2, Play, Save, ShieldCheck, XCircle } from 'lucide-react'
 import { PageHeader } from '@/components/reelflow-ui'
 import { useTranslation } from '@/hooks/use-translation'
 
@@ -18,7 +19,8 @@ export const Route = createFileRoute('/$lang/admin/reelflow/templates/$code')({
 // Monaco is browser-only — lazy-load so it is never evaluated during SSR.
 const Editor = lazy(() => import('@monaco-editor/react'))
 
-type Validation = { ok: boolean; errors: string[]; meta?: { code: string; name: string; version: string; fields: number; outputs: number } }
+type FieldDef = { key: string; defaultValue?: unknown; placeholder?: string; required?: boolean }
+type Validation = { ok: boolean; errors: string[]; meta?: { code: string; name: string; version: string; fields: number; outputs: number; fieldDefs?: FieldDef[] } }
 
 function TemplateEditorPage() {
   const { code } = Route.useParams()
@@ -35,7 +37,62 @@ function TemplateEditorPage() {
   const [validating, setValidating] = useState(false)
   const [validation, setValidation] = useState<Validation | null>(null)
 
+  const [inputJson, setInputJson] = useState('{}')
+  const [running, setRunning] = useState(false)
+  const [runStatus, setRunStatus] = useState<string | null>(null)
+  const [runDraftUrl, setRunDraftUrl] = useState<string | null>(null)
+  const [runJobId, setRunJobId] = useState<string | null>(null)
+  const [runError, setRunError] = useState<string | null>(null)
+
   useEffect(() => { setMounted(true) }, [])
+
+  // Prefill example params from the validated field defs.
+  useEffect(() => {
+    const defs = validation?.meta?.fieldDefs
+    if (!defs || inputJson !== '{}') return
+    const example: Record<string, unknown> = {}
+    for (const f of defs) {
+      if (f.defaultValue !== undefined) example[f.key] = f.defaultValue
+      else if (f.required) example[f.key] = f.placeholder || ''
+    }
+    setInputJson(JSON.stringify(example, null, 2))
+  }, [validation, inputJson])
+
+  const runPreview = async () => {
+    const targetCode = (isNew ? slug : code).trim()
+    if (!targetCode || !validation?.ok) { toast.error('请先保存并通过校验'); return }
+    let inputParams: unknown
+    try { inputParams = JSON.parse(inputJson || '{}') } catch { toast.error('参数不是合法 JSON'); return }
+    setRunning(true); setRunError(null); setRunDraftUrl(null); setRunStatus('queued'); setRunJobId(null)
+    try {
+      const res = await fetch(`/api/admin/reelflow/templates/${targetCode}/preview`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ inputParams }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || '试运行失败')
+      const jobId = data.jobId as string
+      setRunJobId(jobId)
+      // Poll until terminal (~10 min cap).
+      const deadline = Date.now() + 600_000
+      for (;;) {
+        await new Promise((r) => setTimeout(r, 4000))
+        const detail = await (await fetch(`/api/reelflow/jobs/${jobId}`)).json()
+        const status = detail?.job?.status as string
+        setRunStatus(status)
+        if (status === 'completed') {
+          const draft = (detail?.runResult?.assets || []).find((a: { type: string }) => a.type === 'draft')
+          setRunDraftUrl(draft?.url || null)
+          break
+        }
+        if (status === 'failed') { setRunError(detail?.job?.lastErrorMessage || '任务失败'); break }
+        if (Date.now() > deadline) { setRunError('试运行超时'); break }
+      }
+    } catch (err) {
+      setRunError(err instanceof Error ? err.message : '试运行失败')
+    } finally {
+      setRunning(false)
+    }
+  }
 
   useEffect(() => {
     let alive = true
@@ -143,6 +200,38 @@ function TemplateEditorPage() {
             )}
           </AlertDescription>
         </Alert>
+      )}
+
+      {editable && validation?.ok && (
+        <div className="reelflow-panel space-y-3 p-5">
+          <div className="flex items-center justify-between">
+            <h3 className="reelflow-display text-lg">调试 / 试运行</h3>
+            <Button size="sm" onClick={() => void runPreview()} disabled={running}>
+              {running ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Play className="mr-1 h-4 w-4" />}试运行
+            </Button>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">示例参数（JSON）</Label>
+            <Textarea value={inputJson} onChange={(e) => setInputJson(e.target.value)} className="mt-1.5 min-h-28 font-mono text-xs" />
+          </div>
+          {(runStatus || runError) && (
+            <div className="reelflow-muted-tile p-3 text-sm">
+              <div className="flex items-center gap-2">状态：<span className="reelflow-num">{runError ? '失败' : runStatus}</span>{running && <Loader2 className="h-3.5 w-3.5 animate-spin" />}</div>
+              {runError && <p className="mt-1 text-destructive">{runError}</p>}
+              {runDraftUrl && (
+                <div className="mt-2 flex items-center gap-2">
+                  <Input readOnly value={runDraftUrl} className="font-mono text-xs" onFocus={(e) => e.currentTarget.select()} />
+                  <Button size="sm" variant="outline" onClick={() => { void navigator.clipboard.writeText(runDraftUrl); toast.success('已复制') }}><Copy className="h-4 w-4" /></Button>
+                  <Button size="sm" variant="outline" asChild><a href={runDraftUrl} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a></Button>
+                </div>
+              )}
+              {runJobId && (
+                <Link to="/$lang/reelflow/jobs/$id" params={{ lang: locale, id: runJobId }} className="mt-2 inline-block text-xs text-primary hover:underline">查看任务详情 →</Link>
+              )}
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">试运行会在你的工作区真实生成（消耗积分），用于调试。调好后点「上架发布」。</p>
+        </div>
       )}
 
       <div className="reelflow-panel overflow-hidden">

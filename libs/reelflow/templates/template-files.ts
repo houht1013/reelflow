@@ -3,8 +3,12 @@
 // hot-loads them). Path-traversal safe; built-in templates are read-only.
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { eq } from 'drizzle-orm';
+import { db } from '@libs/database';
+import { template as templateTable } from '@libs/database/schema';
 import { dynamicTemplatesDir, loadTemplateFromPath } from './loader';
 import { getTemplate } from './registry';
+import { DEFAULT_TEMPLATE_OUTPUTS } from './_sdk/types';
 
 const CODE_RE = /^[a-z][a-z0-9_]{2,63}$/;
 
@@ -132,8 +136,52 @@ export function writeTemplateFile(code: string, content: string): { file: string
   return { file };
 }
 
+/** Upsert the DB template row from the saved file. Draft by default (hidden);
+ *  publish=true flips it to published/public. Keeps existing status unless publishing. */
+export async function syncTemplateRow(code: string, opts?: { publish?: boolean }): Promise<{ id: string; status: string }> {
+  const file = fileForCode(code);
+  const t = await loadTemplateFromPath(file);
+  if (!t) throw new TemplateFileError('模板无效，无法登记', 'not_found');
+
+  const definitional = {
+    name: t.name,
+    description: t.description,
+    category: t.category,
+    builderVersion: t.version,
+    inputSchema: { fields: t.fields },
+    outputSchema: { outputs: t.outputs ?? DEFAULT_TEMPLATE_OUTPUTS },
+    capabilityRequirements: t.capabilityRequirements ?? [],
+    updatedAt: new Date(),
+  };
+  const presentation = { tags: t.tags ?? [], badges: t.badges ?? [] };
+
+  const [existing] = await db.select().from(templateTable).where(eq(templateTable.code, code)).limit(1);
+  if (existing) {
+    const set: Record<string, unknown> = {
+      ...definitional,
+      metadata: { ...((existing.metadata as Record<string, unknown> | null) ?? {}), source: 'admin-editor', ...presentation },
+    };
+    if (opts?.publish) { set.status = 'published'; set.visibility = 'public'; }
+    await db.update(templateTable).set(set).where(eq(templateTable.id, existing.id));
+    return { id: existing.id, status: (opts?.publish ? 'published' : existing.status) as string };
+  }
+
+  const id = crypto.randomUUID();
+  await db.insert(templateTable).values({
+    id,
+    code,
+    ...definitional,
+    visibility: opts?.publish ? 'public' : 'private',
+    status: opts?.publish ? 'published' : 'draft',
+    recommended: false,
+    metadata: { source: 'admin-editor', ...presentation },
+    createdAt: new Date(),
+  });
+  return { id, status: opts?.publish ? 'published' : 'draft' };
+}
+
 /** Validate a saved dynamic template file: load via jiti + contract checks. */
-export async function validateTemplateFile(code: string): Promise<{ ok: boolean; errors: string[]; meta?: { code: string; name: string; version: string; fields: number; outputs: number } }> {
+export async function validateTemplateFile(code: string): Promise<{ ok: boolean; errors: string[]; meta?: { code: string; name: string; version: string; fields: number; outputs: number; fieldDefs?: Array<{ key: string; defaultValue?: unknown; placeholder?: string; required?: boolean }> } }> {
   const file = fileForCode(code);
   if (!fs.existsSync(file)) return { ok: false, errors: ['模板文件不存在'] };
   let template;
@@ -156,6 +204,13 @@ export async function validateTemplateFile(code: string): Promise<{ ok: boolean;
   return {
     ok: true,
     errors: [],
-    meta: { code: template.code, name: template.name, version: template.version, fields: template.fields.length, outputs: template.outputs?.length ?? 0 },
+    meta: {
+      code: template.code,
+      name: template.name,
+      version: template.version,
+      fields: template.fields.length,
+      outputs: template.outputs?.length ?? 0,
+      fieldDefs: template.fields.map((f) => ({ key: f.key, defaultValue: f.defaultValue, placeholder: f.placeholder, required: f.required })),
+    },
   };
 }
