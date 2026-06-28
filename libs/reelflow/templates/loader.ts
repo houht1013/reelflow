@@ -13,7 +13,20 @@ import { reelflowConfig } from '@config';
 import { getTemplate, listTemplates } from './registry';
 import type { ReelflowTemplate } from './_sdk/types';
 
-const root = process.cwd();
+// Monorepo root: the app may run with cwd=apps/tanstack-app, so walk up from cwd
+// until we find libs/reelflow. This anchors jiti aliases (@libs/@config) and the
+// dynamic templates dir to the real repo root regardless of the process cwd.
+function findRepoRoot(): string {
+  let dir = process.cwd();
+  for (let i = 0; i < 6; i += 1) {
+    if (fs.existsSync(path.join(dir, 'libs', 'reelflow'))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return process.cwd();
+}
+const root = findRepoRoot();
 
 // jiti resolves a dynamic template's imports: real packages (zod, …) from
 // node_modules, and our project aliases (@config / @libs/*) to the on-disk
@@ -71,6 +84,18 @@ async function loadFile(file: string): Promise<ReelflowTemplate<unknown> | undef
   if (!isTemplate(exported)) return undefined;
   cache.set(file, { template: exported, mtimeMs });
   return exported;
+}
+
+/** Load a template module from an absolute path (fresh import, for validation). */
+export async function loadTemplateFromPath(file: string): Promise<ReelflowTemplate<unknown> | undefined> {
+  const mod = (await jiti().import(file)) as { default?: unknown };
+  const exported = mod?.default ?? mod;
+  return isTemplate(exported) ? exported : undefined;
+}
+
+/** Absolute path of the dynamic templates directory. */
+export function dynamicTemplatesDir(): string {
+  return dynamicDirAbs();
 }
 
 /** Resolve a template by code: built-in registry first, then dynamic dir. */
