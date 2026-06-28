@@ -135,29 +135,24 @@ function ReelflowCreditsPage() {
           <SkeletonRows count={4} className="h-28" />
         ) : data && account ? (
           <>
-            {/* Balance + account metrics */}
-            <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-              <div className="reelflow-hero-panel p-6" data-testid="reelflow-credit-balance">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                      <WalletCards className="h-4 w-4" aria-hidden="true" />
-                      {t.reelflow.credits.balance}
-                    </div>
-                    <p className="reelflow-display reelflow-num mt-3 text-5xl leading-none sm:text-6xl">{formatCredits(account.balance)}</p>
+            {/* Balance + account metrics — compact band */}
+            <section className="grid gap-3 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.7fr)]">
+              <div className="reelflow-hero-panel flex flex-col justify-between gap-3 p-5" data-testid="reelflow-credit-balance">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <WalletCards className="h-4 w-4" aria-hidden="true" />
+                    {t.reelflow.credits.balance}
                   </div>
-                  <Badge variant={account.debtBalance > 0 ? 'destructive' : 'secondary'} className="w-fit">
+                  <Badge variant={account.debtBalance > 0 ? 'destructive' : 'secondary'} className="w-fit shrink-0">
                     {account.debtBalance > 0 ? t.reelflow.credits.debtAttention : t.reelflow.credits.accountHealthy}
                   </Badge>
                 </div>
-
-                <div className="mt-7 grid gap-3 sm:grid-cols-2">
-                  <CreditMetric icon={LockKeyhole} testId="reelflow-credit-frozen" title={t.reelflow.credits.frozen} value={formatCredits(account.frozenBalance)} hint={t.reelflow.credits.frozenHint} tone="amber" />
-                  <CreditMetric icon={AlertTriangle} testId="reelflow-credit-debt" title={t.reelflow.credits.debt} value={formatCredits(account.debtBalance)} hint={t.reelflow.credits.debtHint} danger={account.debtBalance > 0} />
-                </div>
+                <p className="reelflow-display reelflow-num text-4xl leading-none sm:text-5xl">{formatCredits(account.balance)}</p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <CreditMetric icon={LockKeyhole} testId="reelflow-credit-frozen" title={t.reelflow.credits.frozen} value={formatCredits(account.frozenBalance)} hint={t.reelflow.credits.frozenHint} tone="amber" />
+                <CreditMetric icon={AlertTriangle} testId="reelflow-credit-debt" title={t.reelflow.credits.debt} value={formatCredits(account.debtBalance)} hint={t.reelflow.credits.debtHint} danger={account.debtBalance > 0} />
                 <CreditMetric icon={TrendingUp} testId="reelflow-credit-total-granted" title={t.reelflow.credits.totalGranted} value={formatCredits(account.totalGranted)} tone="green" />
                 <CreditMetric icon={TrendingDown} testId="reelflow-credit-total-consumed" title={t.reelflow.credits.totalConsumed} value={formatCredits(account.totalConsumed)} tone="blue" />
               </div>
@@ -339,15 +334,12 @@ function CreditMetric({
           : 'text-primary'
 
   return (
-    <section className="reelflow-muted-tile p-5" data-testid={testId}>
-      <div className="flex items-center gap-3">
-        <div className={`flex h-9 w-9 items-center justify-center rounded-lg bg-background/70 ring-1 ring-border/30 ${colorClass}`}>
-          <Icon className="h-4 w-4" aria-hidden="true" />
-        </div>
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+    <section className="reelflow-muted-tile p-3.5" data-testid={testId} title={hint}>
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        <Icon className={`h-3.5 w-3.5 ${colorClass}`} aria-hidden="true" />
+        <p className="text-xs font-medium">{title}</p>
       </div>
-      <p className={`reelflow-display reelflow-num mt-4 text-2xl ${danger ? 'text-destructive' : ''}`}>{value}</p>
-      {hint && <p className="mt-2 text-xs leading-5 text-muted-foreground">{hint}</p>}
+      <p className={`reelflow-display reelflow-num mt-2 text-xl ${danger ? 'text-destructive' : ''}`}>{value}</p>
     </section>
   )
 }
