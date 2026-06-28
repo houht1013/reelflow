@@ -3018,7 +3018,15 @@ export const en: Locale = {
       liveHintTitle: "Tracking active tasks",
       liveHintBody: "The list updates automatically while tasks are queued or generating.",
       lastRefreshed: "Last refreshed",
-      progress: "Task progress"
+      progress: "Task progress",
+      taskId: "Task ID",
+      copyId: "Copy ID",
+      copied: "Copied",
+      endTask: "End task",
+      ending: "Ending…",
+      endConfirmTitle: "End this task?",
+      endConfirmBody: "The task will be marked canceled and the frozen estimated credits fully refunded. This cannot be undone.",
+      actionFailed: "Task action failed"
     },
     detail: {
       title: "Task detail",
@@ -3109,7 +3117,8 @@ export const en: Locale = {
       frozen: "Frozen",
       settled: "Settled",
       debt: "Debt",
-      refunded: "Refunded"
+      refunded: "Refunded",
+      unavailable: "Unavailable"
     },
     issueStatus: {
       open: "Open",

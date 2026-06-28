@@ -372,6 +372,8 @@ async function completeTemplateJob(claimed: ClaimedJob, output: TemplateRunOutpu
   let actual = 0;
 
   await db.transaction(async (tx) => {
+    const [guardRow] = await tx.select({ status: job.status }).from(job).where(eq(job.id, claimed.id)).for('update');
+    if (guardRow?.status !== 'running') return; // manually canceled mid-run — cancel already refunded; skip settlement
     const [usageTotal] = await tx
       .select({ total: sql<string>`COALESCE(SUM(CAST(${usageRecord.creditCost} AS DECIMAL)), 0)` })
       .from(usageRecord)
@@ -497,6 +499,8 @@ async function completeMockJob(claimed: ClaimedJob): Promise<void> {
   const frozenCredits = Number(claimed.frozenCredits || 0);
 
   await db.transaction(async (tx) => {
+    const [guardRow] = await tx.select({ status: job.status }).from(job).where(eq(job.id, claimed.id)).for('update');
+    if (guardRow?.status !== 'running') return; // manually canceled mid-run; skip settlement
     const stages = await tx
       .select({
         id: jobStage.id,
@@ -646,6 +650,8 @@ async function completeLocalDraftJob(claimed: ClaimedJob): Promise<void> {
   const refundCredits = Math.max(0, frozenCredits - actualCredits);
 
   await db.transaction(async (tx) => {
+    const [guardRow] = await tx.select({ status: job.status }).from(job).where(eq(job.id, claimed.id)).for('update');
+    if (guardRow?.status !== 'running') return; // manually canceled mid-run; skip settlement
     const stages = await tx
       .select({
         id: jobStage.id,
@@ -1080,6 +1086,8 @@ async function failClaimedJob(claimed: ClaimedJob, error: unknown): Promise<void
   const message = error instanceof Error ? error.message : 'Unknown worker error';
 
   await db.transaction(async (tx) => {
+    const [guardRow] = await tx.select({ status: job.status }).from(job).where(eq(job.id, claimed.id)).for('update');
+    if (guardRow?.status !== 'running') return; // manually canceled mid-run; keep canceled state
     await tx
       .update(job)
       .set({

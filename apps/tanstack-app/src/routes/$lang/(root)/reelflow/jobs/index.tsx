@@ -5,7 +5,7 @@ import { useTranslation } from '@/hooks/use-translation'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Button } from '@libs/react-shared/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
-import { Activity, AlertCircle, ArrowRight, CheckCircle2, Clock3, Coins, FileWarning, ListChecks, Loader2, PauseCircle, Plus, RefreshCw } from 'lucide-react'
+import { Activity, AlertCircle, ArrowRight, Ban, Check, CheckCircle2, Clock3, Coins, Copy, FileWarning, ListChecks, Loader2, PauseCircle, Plus, RefreshCw } from 'lucide-react'
 import { PageHeader, StatCard, StatusPill, EmptyState, SkeletonRows, categoryVisual } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/jobs/')({
@@ -77,6 +77,27 @@ function ReelflowJobsPage() {
     }, 5000)
     return () => window.clearInterval(timer)
   }, [autoRefresh, hasLiveJobs, loadJobs])
+
+  const [cancelingId, setCancelingId] = useState<string | null>(null)
+  const cancelJob = useCallback(
+    async (id: string) => {
+      setCancelingId(id)
+      setError(null)
+      try {
+        const res = await fetch(`/api/reelflow/jobs/${id}/cancel`, { method: 'POST' })
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({}))
+          throw new Error(payload?.error || t.reelflow.jobs.actionFailed)
+        }
+        await loadJobs(true)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t.reelflow.jobs.actionFailed)
+      } finally {
+        setCancelingId(null)
+      }
+    },
+    [loadJobs, t.reelflow.jobs.actionFailed],
+  )
 
   const summary = useMemo(() => {
     return jobs.reduce(
@@ -206,6 +227,8 @@ function ReelflowJobsPage() {
                   t={t}
                   statusText={statusText}
                   formatDate={formatDate}
+                  onCancel={cancelJob}
+                  canceling={cancelingId === jobItem.id}
                 />
               ))}
             </div>
@@ -222,18 +245,23 @@ function TaskRow({
   t,
   statusText,
   formatDate,
+  onCancel,
+  canceling,
 }: {
   job: ReelflowJobSummary
   locale: string
   t: any
   statusText: (status: string) => string
   formatDate: (value: string | null) => string
+  onCancel: (id: string) => void
+  canceling: boolean
 }) {
   const hasIssue = job.status === 'failed' || job.qualityStatus === 'needs_fix' || Number(job.debtCredits) > 0
   const progress = taskProgress(job.status)
   const bar = taskProgressBar(job.status)
   const visual = categoryVisual(job.category)
   const CategoryIcon = visual.icon
+  const cancelable = job.status === 'queued' || job.status === 'running' || job.status === 'pending'
 
   return (
     <article
@@ -263,10 +291,14 @@ function TaskRow({
             </span>
             <div className="min-w-0">
               <h2 className="truncate text-base font-semibold">{job.templateName}</h2>
-              <p className="mt-1 truncate text-sm text-muted-foreground">
-                {job.category ? `${job.category} · ` : ''}
-                {job.renderMp4Requested ? t.reelflow.jobs.mp4Requested : t.reelflow.jobs.draftRequested}
-              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="reelflow-num">{formatDate(job.createdAt)}</span>
+                </span>
+                <IdCopy id={job.id} t={t} />
+                <span className="truncate">{job.category ? `${job.category} · ` : ''}{job.renderMp4Requested ? t.reelflow.jobs.mp4Requested : t.reelflow.jobs.draftRequested}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -282,18 +314,54 @@ function TaskRow({
             {hasIssue ? <FileWarning className="h-4 w-4 text-destructive" aria-hidden="true" /> : <Coins className="h-4 w-4" aria-hidden="true" />}
             <span className="reelflow-num whitespace-nowrap">{job.estimatedCredits} {t.reelflow.common.credits}</span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {t.reelflow.jobs.createdAt}: {formatDate(job.createdAt)}
-          </p>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/$lang/reelflow/jobs/$id" params={{ lang: locale, id: job.id }}>
-              {t.reelflow.jobs.open}
-              <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
+          <div className="flex items-center gap-1.5">
+            {cancelable && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                disabled={canceling}
+                onClick={() => {
+                  if (window.confirm(`${t.reelflow.jobs.endConfirmTitle}\n\n${t.reelflow.jobs.endConfirmBody}`)) onCancel(job.id)
+                }}
+                data-testid={`reelflow-job-cancel-${job.id}`}
+              >
+                {canceling ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" aria-hidden="true" /> : <Ban className="mr-1.5 h-4 w-4" aria-hidden="true" />}
+                {canceling ? t.reelflow.jobs.ending : t.reelflow.jobs.endTask}
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/$lang/reelflow/jobs/$id" params={{ lang: locale, id: job.id }}>
+                {t.reelflow.jobs.open}
+                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </article>
+  )
+}
+
+function IdCopy({ id, t }: { id: string; t: any }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        void navigator.clipboard?.writeText(id).then(() => {
+          setCopied(true)
+          window.setTimeout(() => setCopied(false), 1500)
+        })
+      }}
+      title={`${t.reelflow.jobs.taskId}: ${id}`}
+      className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/50 px-1.5 py-0.5 font-mono text-[11px] leading-none text-muted-foreground transition-colors hover:text-foreground"
+      data-testid={`reelflow-job-id-${id}`}
+    >
+      <span>{id.slice(0, 8)}</span>
+      {copied ? <Check className="h-3 w-3 text-[var(--reelflow-green)]" aria-hidden="true" /> : <Copy className="h-3 w-3" aria-hidden="true" />}
+      <span className="sr-only">{copied ? t.reelflow.jobs.copied : t.reelflow.jobs.copyId}</span>
+    </button>
   )
 }
 

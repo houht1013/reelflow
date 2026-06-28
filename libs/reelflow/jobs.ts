@@ -2,7 +2,7 @@ import { db } from '@libs/database';
 import { creditAccount, creditLedger, job, jobEvent, jobStage, template } from '@libs/database/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import { REELFLOW_STAGES } from './constants';
-import { consumeCreditLots } from './credit-lots';
+import { consumeCreditLots, refundCreditLots } from './credit-lots';
 import { assertJobPreflight } from './preflight';
 import { resolveTemplate } from './templates/loader';
 import { estimateResourcePlanCredits } from './templates/_sdk/estimator';
@@ -186,6 +186,94 @@ export async function createReelflowJob(input: CreateReelflowJobInput): Promise<
       estimatedCredits,
       frozenCredits: estimatedCredits,
     };
+  });
+}
+
+/**
+ * Manually end an in-flight job (queued / pending / running). Refunds the full
+ * frozen estimate, marks the job + its non-terminal stages canceled. Safe against
+ * the runner: the worker's settlement transactions re-check status FOR UPDATE and
+ * skip a job that was flipped to 'canceled' here.
+ */
+export async function cancelReelflowJob(input: RetryReelflowJobInput): Promise<{ canceled: boolean; refund: number }> {
+  return await db.transaction(async (tx) => {
+    const [current] = await tx
+      .select({ status: job.status, frozenCredits: job.frozenCredits, createdByUserId: job.createdByUserId })
+      .from(job)
+      .where(and(eq(job.id, input.jobId), eq(job.workspaceId, input.workspaceId)))
+      .for('update');
+    if (!current) throw new Error('Job not found');
+    if (!['queued', 'pending', 'running'].includes(current.status)) {
+      return { canceled: false, refund: 0 };
+    }
+
+    const frozen = Math.round(Number(current.frozenCredits || 0) * 100) / 100;
+    if (frozen > 0) {
+      const [updatedAccount] = await tx
+        .update(creditAccount)
+        .set({
+          balance: sql`${creditAccount.balance} + ${frozen}`,
+          frozenBalance: sql`${creditAccount.frozenBalance} - ${frozen}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(creditAccount.workspaceId, input.workspaceId))
+        .returning({ balance: creditAccount.balance, frozenBalance: creditAccount.frozenBalance, debtBalance: creditAccount.debtBalance });
+
+      await tx.insert(creditLedger).values({
+        id: crypto.randomUUID(),
+        workspaceId: input.workspaceId,
+        userId: input.userId,
+        jobId: input.jobId,
+        type: 'refund',
+        amount: frozen.toString(),
+        balanceAfter: updatedAccount?.balance ?? '0',
+        frozenAfter: updatedAccount?.frozenBalance ?? '0',
+        debtAfter: updatedAccount?.debtBalance ?? '0',
+        description: `Refund frozen credits for canceled Reelflow job ${input.jobId}`,
+        metadata: { kind: 'manual_cancel', frozen },
+        createdAt: new Date(),
+      });
+
+      await refundCreditLots(tx, {
+        workspaceId: input.workspaceId,
+        userId: current.createdByUserId ?? input.userId,
+        amount: frozen,
+        metadata: { jobId: input.jobId, kind: 'manual_cancel' },
+      });
+    }
+
+    const now = new Date();
+    await tx
+      .update(job)
+      .set({
+        status: 'canceled',
+        settlementStatus: 'settled',
+        artifactStatus: 'unavailable',
+        frozenCredits: '0',
+        actualCredits: '0',
+        debtCredits: '0',
+        completedAt: now,
+        lastErrorMessage: '用户手动结束任务',
+        updatedAt: now,
+      })
+      .where(eq(job.id, input.jobId));
+
+    await tx
+      .update(jobStage)
+      .set({ status: 'canceled', updatedAt: now })
+      .where(and(eq(jobStage.jobId, input.jobId), sql`${jobStage.status} in ('pending','queued','running','not_started')`));
+
+    await tx.insert(jobEvent).values({
+      id: crypto.randomUUID(),
+      jobId: input.jobId,
+      stageId: null,
+      level: 'warn',
+      eventType: 'job_canceled',
+      message: '任务被用户手动结束',
+      createdAt: now,
+    });
+
+    return { canceled: true, refund: frozen };
   });
 }
 

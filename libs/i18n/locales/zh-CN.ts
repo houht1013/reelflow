@@ -3025,7 +3025,15 @@ export const zhCN: Locale = {
       liveHintTitle: "正在跟踪运行中的任务",
       liveHintBody: "有任务排队或生成时，列表会自动更新。",
       lastRefreshed: "最近刷新",
-      progress: "任务进度"
+      progress: "任务进度",
+      taskId: "任务ID",
+      copyId: "复制ID",
+      copied: "已复制",
+      endTask: "结束任务",
+      ending: "结束中…",
+      endConfirmTitle: "结束该任务？",
+      endConfirmBody: "任务将被标记为已取消，已冻结的预估积分将全额退回。此操作不可撤销。",
+      actionFailed: "任务操作失败"
     },
     detail: {
       title: "任务详情",
@@ -3116,7 +3124,8 @@ export const zhCN: Locale = {
       frozen: "已冻结",
       settled: "已结算",
       debt: "欠费",
-      refunded: "已退回"
+      refunded: "已退回",
+      unavailable: "不可用"
     },
     issueStatus: {
       open: "待处理",
