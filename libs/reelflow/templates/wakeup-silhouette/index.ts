@@ -158,7 +158,7 @@ export default defineTemplate({
         scenes,
         audios,
         captions,
-        captionStyle: { fontSize: 16, transformY: portrait ? 1500 : 880 },
+        captionStyle: { fontSize: 6, transformY: portrait ? 1500 : 880 },
         branding,
         displayName: input.topic,
       });
