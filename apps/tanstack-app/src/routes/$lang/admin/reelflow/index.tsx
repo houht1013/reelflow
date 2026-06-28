@@ -3,7 +3,6 @@ import { seoHead } from '@/lib/seo'
 import { useTranslation } from '@/hooks/use-translation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Badge } from '@libs/react-shared/ui/badge'
 import { Button } from '@libs/react-shared/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@libs/react-shared/ui/table'
@@ -318,11 +317,14 @@ function ReelflowAdminPage() {
     return status
   }
 
-  const statusVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    if (['published', 'completed', 'downloadable', 'accepted', 'settled', 'public'].includes(status)) return 'default'
-    if (['failed', 'canceled', 'debt', 'archived'].includes(status)) return 'destructive'
-    if (['queued', 'pending', 'frozen', 'draft'].includes(status)) return 'secondary'
-    return 'outline'
+  // Semantic tone for status pills (green success / amber pending / red failure /
+  // blue running / gray neutral) — matches the user-facing StatusPill colors.
+  const statusTone = (status: string): 'neutral' | 'info' | 'success' | 'warning' | 'danger' => {
+    if (['published', 'completed', 'downloadable', 'accepted', 'settled', 'public', 'available', 'ready', 'done', 'succeeded', 'enabled', 'active'].includes(status)) return 'success'
+    if (['failed', 'canceled', 'cancelled', 'debt', 'archived', 'disabled', 'needs_fix', 'blocked'].includes(status)) return 'danger'
+    if (['queued', 'pending', 'frozen', 'draft', 'needs_review', 'private'].includes(status)) return 'warning'
+    if (['running', 'generating', 'processing', 'in_progress'].includes(status)) return 'info'
+    return 'neutral'
   }
 
   if (loading && !overview) {
@@ -405,8 +407,8 @@ function ReelflowAdminPage() {
                         </div>
                       </TableCell>
                       <TableCell>{item.category || t.common.notAvailable}</TableCell>
-                      <TableCell><Badge variant={statusVariant(item.status)}>{statusText(item.status)}</Badge></TableCell>
-                      <TableCell><Badge variant={statusVariant(item.visibility)}>{statusText(item.visibility)}</Badge></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.status)}>{statusText(item.status)}</span></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.visibility)}>{statusText(item.visibility)}</span></TableCell>
                       <TableCell>{item.recommended ? <CheckCircle2 className="h-5 w-5 text-primary" /> : t.common.no}</TableCell>
                       <TableCell>{formatDate(item.updatedAt)}</TableCell>
                       <TableCell>
@@ -479,9 +481,9 @@ function ReelflowAdminPage() {
                         </div>
                       </TableCell>
                       <TableCell>{item.workspaceName}</TableCell>
-                      <TableCell><Badge variant={statusVariant(item.status)}>{statusText(item.status)}</Badge></TableCell>
-                      <TableCell><Badge variant={statusVariant(item.qualityStatus)}>{statusText(item.qualityStatus)}</Badge></TableCell>
-                      <TableCell><Badge variant={statusVariant(item.artifactStatus)}>{statusText(item.artifactStatus)}</Badge></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.status)}>{statusText(item.status)}</span></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.qualityStatus)}>{statusText(item.qualityStatus)}</span></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.artifactStatus)}>{statusText(item.artifactStatus)}</span></TableCell>
                       <TableCell>{item.priority}</TableCell>
                       <TableCell>{item.estimatedCredits}</TableCell>
                       <TableCell>{formatDate(item.updatedAt)}</TableCell>
@@ -530,9 +532,9 @@ function ReelflowAdminPage() {
                         <TableCell>{item.providerType}</TableCell>
                         <TableCell>{item.priority}</TableCell>
                         <TableCell>
-                          <Badge variant={item.enabled ? 'default' : 'secondary'}>
+                          <span className="reelflow-pill" data-tone={item.enabled ? 'success' : 'neutral'}>
                             {item.enabled ? t.admin.reelflow.status.enabled : t.admin.reelflow.status.disabled}
-                          </Badge>
+                          </span>
                         </TableCell>
                         <TableCell>
                           <ProviderHealthCell health={item.latestHealth} formatDate={formatDate} t={t} />
@@ -600,9 +602,9 @@ function ReelflowAdminPage() {
                         <TableCell>{item.providerCostUnitPrice} {item.providerCostCurrency}</TableCell>
                         <TableCell>{item.creditUnitPrice}</TableCell>
                         <TableCell>
-                          <Badge variant={item.enabled ? 'default' : 'secondary'}>
+                          <span className="reelflow-pill" data-tone={item.enabled ? 'success' : 'neutral'}>
                             {item.enabled ? t.admin.reelflow.status.enabled : t.admin.reelflow.status.disabled}
-                          </Badge>
+                          </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -656,7 +658,7 @@ function ReelflowAdminPage() {
                       <TableCell>{item.balance ?? '0'}</TableCell>
                       <TableCell>{item.frozen ?? '0'}</TableCell>
                       <TableCell>{item.debt ?? '0'}</TableCell>
-                      <TableCell><Badge variant={statusVariant(item.status)}>{statusText(item.status)}</Badge></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.status)}>{statusText(item.status)}</span></TableCell>
                     </TableRow>
                   ))
                 )}
@@ -684,7 +686,7 @@ function ReelflowAdminPage() {
                   overview.invites.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>{item.referrerName || item.referrerEmail || t.common.notAvailable}</TableCell>
-                      <TableCell><Badge variant={statusVariant(item.status)}>{statusText(item.status)}</Badge></TableCell>
+                      <TableCell><span className="reelflow-pill" data-tone={statusTone(item.status)}>{statusText(item.status)}</span></TableCell>
                       <TableCell>+{item.referrerBonusCredits ?? '0'}</TableCell>
                       <TableCell>{formatDate(item.createdAt)}</TableCell>
                     </TableRow>
@@ -837,17 +839,17 @@ function ProviderHealthCell({
     return <span className="text-sm text-muted-foreground">{t.admin.reelflow.status.notChecked}</span>
   }
 
-  const variant = health.status === 'unavailable'
-    ? 'destructive'
+  const tone: 'success' | 'warning' | 'danger' = health.status === 'unavailable'
+    ? 'danger'
     : health.status === 'degraded'
-      ? 'secondary'
-      : 'default'
+      ? 'warning'
+      : 'success'
 
   const label = (t.admin.reelflow.healthStatus as Record<string, string>)[health.status] || health.status
 
   return (
     <div className="min-w-44">
-      <Badge variant={variant}>{label}</Badge>
+      <span className="reelflow-pill" data-tone={tone}>{label}</span>
       <p className="mt-1 text-xs text-muted-foreground">
         {formatDate(health.createdAt)}
         {typeof health.latencyMs === 'number' ? ` · ${health.latencyMs}ms` : ''}
