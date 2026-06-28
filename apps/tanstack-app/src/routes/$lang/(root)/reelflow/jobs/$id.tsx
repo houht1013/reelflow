@@ -10,7 +10,7 @@ import { Input } from '@libs/react-shared/ui/input'
 import { Progress } from '@libs/react-shared/ui/progress'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@libs/react-shared/ui/dialog'
-import { AlertCircle, Archive, ArrowLeft, Check, CheckCircle2, Circle, Clock3, Coins, Copy, Download, ExternalLink, Eye, FileText, ImageIcon, Loader2, RefreshCw, Repeat2, RotateCcw, Video, XCircle } from 'lucide-react'
+import { AlertCircle, Archive, ArrowLeft, Check, CheckCircle2, ChevronDown, Circle, Clock3, Coins, Copy, Download, ExternalLink, Eye, FileText, ImageIcon, Loader2, RefreshCw, Repeat2, RotateCcw, Video, XCircle } from 'lucide-react'
 import { StatusPill, TonePill } from '@/components/reelflow-ui'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/jobs/$id')({
@@ -160,6 +160,7 @@ function ReelflowJobDetailPage() {
   const [actionLoading, setActionLoading] = useState<'retry' | 'rerun' | null>(null)
   const [previewAsset, setPreviewAsset] = useState<JobAsset | null>(null)
   const [copiedDraft, setCopiedDraft] = useState(false)
+  const [copiedId, setCopiedId] = useState(false)
 
   const draftUrl =
     detail?.runResult?.assets.find((a) => a.type === 'draft')?.url ||
@@ -324,16 +325,29 @@ function ReelflowJobDetailPage() {
         </div>
         <div className="reelflow-reveal" data-delay="1">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="reelflow-eyebrow">{t.reelflow.detail.taskId}</span>
+            <h1 className="reelflow-display text-[1.7rem] leading-[1.1] sm:text-[2rem]">{t.reelflow.detail.title}</h1>
             {isLiveJob && <StatusPill status="running" label={t.reelflow.detail.liveTracking} />}
           </div>
-          <h1 className="reelflow-display mt-3 text-[1.9rem] leading-[1.1] sm:text-[2.2rem]">{t.reelflow.detail.title}</h1>
-          <p className="mt-2 break-all text-sm text-muted-foreground">
-            {t.reelflow.detail.taskId}: <span className="reelflow-num">{id}</span>
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t.reelflow.detail.lastRefreshed}: {formatDate(lastRefreshedAt)}
-          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            <button
+              type="button"
+              onClick={() => {
+                void navigator.clipboard?.writeText(id).then(() => {
+                  setCopiedId(true)
+                  window.setTimeout(() => setCopiedId(false), 1500)
+                })
+              }}
+              title={`${t.reelflow.jobs.taskId}: ${id}`}
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/50 px-1.5 py-0.5 font-mono text-[11px] leading-none transition-colors hover:text-foreground"
+            >
+              <span>{id}</span>
+              {copiedId ? <Check className="h-3 w-3 text-[var(--reelflow-green)]" aria-hidden="true" /> : <Copy className="h-3 w-3" aria-hidden="true" />}
+            </button>
+            <span className="inline-flex items-center gap-1.5">
+              <RefreshCw className="h-3 w-3" aria-hidden="true" />
+              {t.reelflow.detail.lastRefreshed}: <span className="reelflow-num">{formatDate(lastRefreshedAt)}</span>
+            </span>
+          </div>
         </div>
 
       <div className="mt-7">
@@ -399,11 +413,11 @@ function ReelflowJobDetailPage() {
                   )}
                 </section>
               )}
-              <section className="reelflow-panel reelflow-reveal p-6" data-delay="2">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
+              <section className="reelflow-panel reelflow-reveal p-5" data-delay="2">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
                     <p className="text-sm text-muted-foreground">{t.reelflow.jobs.template}</p>
-                    <h2 className="reelflow-display mt-1 text-2xl">{detail.job.templateName}</h2>
+                    <h2 className="reelflow-display mt-0.5 truncate text-xl">{detail.job.templateName}</h2>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <StatusPill status={detail.job.status} label={statusText(detail.job.status)} />
@@ -411,53 +425,70 @@ function ReelflowJobDetailPage() {
                     <StatusPill status={detail.job.artifactStatus} label={statusText(detail.job.artifactStatus)} />
                   </div>
                 </div>
-                <div className="mt-6">
-                  <div className="mb-2 flex items-center justify-between text-sm">
+                <div className="mt-4">
+                  <div className="mb-1.5 flex items-center justify-between text-sm">
                     <span className="font-medium">{t.reelflow.detail.progress}</span>
                     <span className="reelflow-num reelflow-display text-base">{detail.progress}%</span>
                   </div>
                   <Progress value={detail.progress} data-testid="reelflow-job-progress" />
                 </div>
+                {/* Integrated settlement metrics — compact */}
+                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  <div className="reelflow-muted-tile p-3">
+                    <p className="text-xs text-muted-foreground">{t.reelflow.jobs.estimatedCredits}</p>
+                    <p className="reelflow-num mt-0.5 text-sm font-medium">{detail.job.estimatedCredits}</p>
+                  </div>
+                  <div className="reelflow-muted-tile p-3">
+                    <p className="text-xs text-muted-foreground">{t.reelflow.jobs.actualCredits}</p>
+                    <p className="reelflow-num mt-0.5 text-sm font-medium">{detail.job.actualCredits}</p>
+                  </div>
+                  <div className="reelflow-muted-tile p-3">
+                    <p className="text-xs text-muted-foreground">{t.reelflow.detail.startedAt}</p>
+                    <p className="reelflow-num mt-0.5 truncate text-xs text-foreground">{formatDate(detail.job.startedAt)}</p>
+                  </div>
+                  <div className="reelflow-muted-tile p-3">
+                    <p className="text-xs text-muted-foreground">{t.reelflow.detail.updatedAt}</p>
+                    <p className="reelflow-num mt-0.5 truncate text-xs text-foreground">{formatDate(detail.job.updatedAt)}</p>
+                  </div>
+                </div>
                 {isLiveJob && (
-                  <Alert className="mt-5">
+                  <Alert className="mt-4">
                     <Clock3 className="h-4 w-4" aria-hidden="true" />
                     <AlertTitle>{t.reelflow.detail.liveHintTitle}</AlertTitle>
                     <AlertDescription>{t.reelflow.detail.liveHintBody}</AlertDescription>
                   </Alert>
                 )}
                 {detail.job.lastErrorMessage && (
-                  <Alert variant="destructive" className="mt-5">
+                  <Alert variant="destructive" className="mt-4">
                     <AlertTitle>{t.reelflow.detail.error}</AlertTitle>
                     <AlertDescription>{detail.job.lastErrorMessage}</AlertDescription>
                   </Alert>
                 )}
               </section>
 
-              <section className="reelflow-panel reelflow-reveal p-6" data-delay="3">
-                <h2 className="reelflow-display text-lg">{t.reelflow.detail.stages}</h2>
-                <div className="mt-5 space-y-0">
+              <section className="reelflow-panel reelflow-reveal p-5" data-delay="3">
+                <h2 className="reelflow-display text-base">{t.reelflow.detail.stages}</h2>
+                <div className="mt-4 flex gap-1 overflow-x-auto pb-1">
                   {detail.stages.map((stage, index) => {
                     const isDone = stage.status === 'completed' || stage.status === 'skipped'
+                    const prevDone = index > 0 && (detail.stages[index - 1].status === 'completed' || detail.stages[index - 1].status === 'skipped')
                     const durationMs = stage.startedAt && stage.completedAt ? new Date(stage.completedAt).getTime() - new Date(stage.startedAt).getTime() : null
                     return (
-                      <div key={stage.id} className="relative flex gap-4 pb-5 last:pb-0">
-                        {index < detail.stages.length - 1 && <div className={`absolute left-2.5 top-7 h-[calc(100%-1.75rem)] w-px ${isDone ? 'bg-[var(--reelflow-green)]/35' : 'bg-border/55'}`} />}
-                        <div className="relative z-10 pt-0.5">{stageIcon(stage.status)}</div>
-                        <div className="reelflow-muted-tile min-w-0 flex-1 p-4">
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <span className="reelflow-num text-xs text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
-                              <h3 className="truncate font-medium">{stageText(stage.stageCode)}</h3>
-                            </div>
-                            <StatusPill status={stage.status} label={statusText(stage.status)} />
-                          </div>
-                          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                            {stage.startedAt && <span>{t.reelflow.detail.startedAt}: <span className="reelflow-num text-foreground">{formatDate(stage.startedAt)}</span></span>}
-                            {durationMs != null && <span>耗时 <span className="reelflow-num text-foreground">{formatDuration(durationMs)}</span></span>}
-                            {stage.attemptCount > 1 && <span>重试 <span className="reelflow-num text-foreground">{stage.attemptCount - 1}</span> 次</span>}
-                          </div>
-                          {stage.errorMessage && <p className="mt-3 text-sm text-destructive">{stage.errorMessage}</p>}
+                      <div
+                        key={stage.id}
+                        className="flex min-w-[6.5rem] flex-1 flex-col items-center text-center"
+                        title={stage.errorMessage || undefined}
+                        data-testid={`reelflow-stage-${stage.stageCode}`}
+                      >
+                        <div className="relative flex h-6 w-full items-center justify-center">
+                          {index > 0 && <span className={`absolute left-0 top-1/2 h-px w-[calc(50%-0.9rem)] -translate-y-1/2 ${prevDone ? 'bg-[var(--reelflow-green)]/45' : 'bg-border'}`} />}
+                          {index < detail.stages.length - 1 && <span className={`absolute right-0 top-1/2 h-px w-[calc(50%-0.9rem)] -translate-y-1/2 ${isDone ? 'bg-[var(--reelflow-green)]/45' : 'bg-border'}`} />}
+                          <span className="relative z-10">{stageIcon(stage.status)}</span>
                         </div>
+                        <p className="mt-2 w-full truncate text-xs font-medium">{stageText(stage.stageCode)}</p>
+                        <p className="reelflow-num mt-0.5 text-[11px] text-muted-foreground">
+                          {durationMs != null ? formatDuration(durationMs) : statusText(stage.status)}
+                        </p>
                       </div>
                     )
                   })}
@@ -491,12 +522,8 @@ function ReelflowJobDetailPage() {
                 </div>
               </section>
 
-              <section className="reelflow-panel reelflow-reveal p-6" data-delay="5">
-                <div className="flex items-center gap-2">
-                  <Coins className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-                  <h2 className="reelflow-display text-lg">{t.reelflow.detail.usage}</h2>
-                </div>
-                <div className="mt-4 space-y-3">
+              <CollapsibleSection icon={Coins} title={t.reelflow.detail.usage} count={detail.usageRecords.length} delay="5">
+                <div className="space-y-3">
                   {detail.usageRecords.length === 0 ? (
                     <div className="reelflow-muted-tile p-4 text-sm text-muted-foreground">{t.reelflow.detail.noUsage}</div>
                   ) : (
@@ -516,14 +543,10 @@ function ReelflowJobDetailPage() {
                     ))
                   )}
                 </div>
-              </section>
+              </CollapsibleSection>
 
-              <section className="reelflow-panel reelflow-reveal p-6" data-delay="6">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-                  <h2 className="reelflow-display text-lg">{t.reelflow.detail.events}</h2>
-                </div>
-                <div className="mt-4 space-y-3">
+              <CollapsibleSection icon={FileText} title={t.reelflow.detail.events} count={detail.events.length} delay="6">
+                <div className="space-y-3">
                   {detail.events.length === 0 ? (
                     <div className="reelflow-muted-tile p-4 text-sm text-muted-foreground">{t.reelflow.detail.noEvents}</div>
                   ) : (
@@ -544,24 +567,10 @@ function ReelflowJobDetailPage() {
                     })
                   )}
                 </div>
-              </section>
+              </CollapsibleSection>
             </div>
 
             <aside className="reelflow-reveal space-y-4 lg:sticky lg:top-24 lg:self-start" data-delay="2">
-              <section className="reelflow-panel p-5">
-                <h2 className="reelflow-display text-lg">{t.reelflow.jobs.settlement}</h2>
-                <div className="mt-4 space-y-3 text-sm">
-                  <InfoRow label={t.reelflow.jobs.estimatedCredits} value={`${detail.job.estimatedCredits} ${t.reelflow.common.credits}`} />
-                  <InfoRow label={t.reelflow.jobs.actualCredits} value={`${detail.job.actualCredits} ${t.reelflow.common.credits}`} />
-                  <InfoRow label={t.reelflow.jobs.quality} value={statusText(detail.job.qualityStatus)} />
-                  <InfoRow label={t.reelflow.jobs.settlement} value={statusText(detail.job.settlementStatus)} />
-                  <InfoRow label={t.reelflow.jobs.artifact} value={statusText(detail.job.artifactStatus)} />
-                  <InfoRow label={t.reelflow.detail.startedAt} value={formatDate(detail.job.startedAt)} />
-                  <InfoRow label={t.reelflow.detail.updatedAt} value={formatDate(detail.job.updatedAt)} />
-                </div>
-                <p className="mt-5 text-xs leading-5 text-muted-foreground">剪映草稿链接见上方「成片产物」，复制后在剪映中导入。</p>
-              </section>
-
               <section className="reelflow-panel p-5">
                 <h2 className="reelflow-display text-lg">{t.reelflow.detail.actionsTitle}</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.reelflow.detail.actionsDescription}</p>
@@ -903,6 +912,37 @@ function InfoRow({ label, value }: { label: string; value: string }) {
       <span className="text-muted-foreground">{label}</span>
       <span className="text-right font-medium">{value}</span>
     </div>
+  )
+}
+
+function CollapsibleSection({
+  icon: Icon,
+  title,
+  count,
+  defaultOpen = false,
+  delay,
+  children,
+}: {
+  icon?: typeof Coins
+  title: string
+  count?: number
+  defaultOpen?: boolean
+  delay?: string
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <section className="reelflow-panel reelflow-reveal overflow-hidden" data-delay={delay}>
+      <button type="button" onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between gap-2 p-5 text-left" aria-expanded={open}>
+        <span className="flex items-center gap-2">
+          {Icon && <Icon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />}
+          <span className="reelflow-display text-base">{title}</span>
+          {typeof count === 'number' && <span className="reelflow-num rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{count}</span>}
+        </span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+      {open && <div className="px-5 pb-5">{children}</div>}
+    </section>
   )
 }
 
