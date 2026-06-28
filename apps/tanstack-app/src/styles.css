@@ -1190,10 +1190,10 @@ html:has(.reelflow-landing) {
 .reelflow-shell-accent {
   background-image: linear-gradient(
     90deg,
-    var(--reelflow-coral, #ff6045),
-    var(--reelflow-amber, #ffb84d),
-    var(--reelflow-violet, #8b7bff),
-    var(--reelflow-coral, #ff6045)
+    #ff4d4f,
+    #3b82f6,
+    #a855f7,
+    #ff4d4f
   );
   background-size: 220% 100%;
   -webkit-background-clip: text;
@@ -1204,7 +1204,7 @@ html:has(.reelflow-landing) {
 }
 
 .reelflow-shell-accent-icon {
-  color: var(--reelflow-amber, #ffb84d);
+  color: #7c5cff;
 }
 
 @keyframes reelflow-shell-shimmer {

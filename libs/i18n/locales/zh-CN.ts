@@ -2308,7 +2308,7 @@ export const zhCN: Locale = {
         subscription: "订阅",
         subscribeCta: "开通订阅",
         invites: "邀请",
-        invitesHint: "邀请好友得赠送积分",
+        invitesHint: "邀请好友赠送积分",
         notifications: "通知",
         mine: "我的",
         settings: "个人设置",
