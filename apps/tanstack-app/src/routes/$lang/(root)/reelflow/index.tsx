@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
@@ -37,7 +37,16 @@ type HomeTemplate = {
   name: string
   category: string | null
   estimatedCredits?: number
-  metadata?: { badges?: TemplateBadge[]; coverImageUrl?: string | null } | null
+  metadata?: { badges?: TemplateBadge[]; coverImageUrl?: string | null; tags?: string[] } | null
+}
+
+// Bordered tag chip (multi-tag) — replaces plain-text category/tag display.
+function TagChip({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[11px] leading-none text-muted-foreground">
+      {children}
+    </span>
+  )
 }
 
 type PromptTemplate = { title: string; prompt: string; ratio: string }
@@ -214,6 +223,7 @@ function ReelflowHomePage() {
                     </span>
                     <h3 className="mt-3 text-sm font-semibold">{tpl.title}</h3>
                     <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-muted-foreground">{tpl.prompt}</p>
+                    {tpl.ratio ? <div className="mt-2.5 flex flex-wrap gap-1.5"><TagChip>{tpl.ratio}</TagChip></div> : null}
                   </Link>
                 ))}
               </div>
@@ -272,11 +282,12 @@ function DiscoverTemplateCard({
       </div>
       <div className="flex flex-1 flex-col p-3.5">
         <h3 className="text-sm font-semibold">{template.name}</h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {template.category}
-          {credits ? <span className="mx-1.5 text-border">·</span> : null}
-          {credits}
-        </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {[...new Set([template.category, ...(template.metadata?.tags ?? [])].filter((tag): tag is string => Boolean(tag)))]
+            .slice(0, 4)
+            .map((tag) => <TagChip key={tag}>{tag}</TagChip>)}
+        </div>
+        {credits ? <p className="mt-2 text-xs text-muted-foreground">{credits}</p> : null}
       </div>
     </Link>
   )
