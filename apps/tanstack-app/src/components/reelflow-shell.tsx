@@ -309,7 +309,7 @@ export function ReelflowShell({ children }: ShellProps) {
 
       {user && (
         <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <DialogContent className="max-w-4xl gap-0 overflow-hidden bg-card p-0 sm:max-w-5xl">
+          <DialogContent className="reelflow-surface max-w-4xl gap-0 overflow-hidden bg-card p-0 sm:max-w-5xl">
             <div className="flex min-h-[520px] flex-col sm:flex-row">
               <div className="shrink-0 border-b border-border bg-card p-4 sm:w-60 sm:border-b-0 sm:border-r">
                 <DialogTitle className="px-2 pb-3 text-base">{shell.settings.title}</DialogTitle>

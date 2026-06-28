@@ -20,20 +20,19 @@ hardcode colors in components**; change a token and the whole app re-skins.
 | `--muted` / `--secondary` | `#f7f7f7` (oklch 0.973 0 0) | secondary surfaces, tiles, hover fills |
 | `--foreground` | near-black (oklch 0.205 0 0) | primary text |
 | `--muted-foreground` | mid-gray (oklch 0.52 0 0) | secondary text, captions |
-| `--primary` | **暖桃 warm peach** `oklch(0.63 0.155 40)` | primary buttons, active states, links |
+| `--primary` | near-black (oklch 0.205 0 0) | primary buttons, active states |
 | `--primary-foreground` | white | text on primary |
 | `--border` | `#e6e6e6` (oklch 0.91 0 0) | hairlines, dividers, card borders |
-| `--ring` | 暖桃 (matches primary) | focus ring |
+| `--ring` | near-black | focus ring |
 
-The base stays neutral; the **brand is 暖桃 (warm peach)** — `--primary` / `--ring` /
-`--reelflow-coral` all resolve to `oklch(0.63 0.155 40)` (light) / `oklch(0.72 0.145 44)`
-(dark). It carries primary buttons, active nav/filter states, links, and the focus ring.
-Dark mode: near-black canvas, white text, peach primary (dark text on the peach),
-neutral borders.
+Dark mode mirrors this neutrally: near-black canvas, white text, **near-white primary**
+(white buttons on dark), neutral borders. No hue. (A warm-peach brand accent was
+trialed and reverted — the system stays black/gray/white, simple and neutral.)
 
 ### Accents — meaning only
-Beyond the peach brand, decorative `--reelflow-blue` / `--reelflow-violet` stay
-**grayscale**. The only other hues are functional and **muted**:
+Brand + decorative accents are **neutralized to grayscale** (`--reelflow-coral` = black
+brand, `--reelflow-blue` / `--reelflow-violet` = gray). The only hues that survive are
+functional and **muted**:
 - `--reelflow-green` — success / completed (oklch 0.6 0.08 150)
 - `--reelflow-amber` — credits / warning (oklch 0.72 0.09 70)
 - `--destructive` — error / failed

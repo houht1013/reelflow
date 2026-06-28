@@ -85,7 +85,8 @@
    Graphite + coral + amber, cool-white workbench, light-first.
    ===================================================================== */
 
-.reelflow-app {
+.reelflow-app,
+.reelflow-surface {
   --font-display: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
     'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
   --font-cjk: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
@@ -98,8 +99,8 @@
   --card-foreground: oklch(0.205 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.205 0 0);
-  --primary: oklch(0.63 0.155 40);      /* 暖桃 warm-peach brand */
-  --primary-foreground: oklch(0.99 0.005 60);
+  --primary: oklch(0.205 0 0);          /* black primary */
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.973 0 0);        /* #f7f7f7 */
   --secondary-foreground: oklch(0.25 0 0);
   --muted: oklch(0.973 0 0);            /* #f7f7f7 */
@@ -108,20 +109,20 @@
   --accent-foreground: oklch(0.205 0 0);
   --border: oklch(0.91 0 0);            /* ~#e6e6e6 hairline */
   --input: oklch(0.89 0 0);
-  --ring: oklch(0.63 0.155 40);
+  --ring: oklch(0.205 0 0);
 
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.25 0 0);
-  --sidebar-primary: oklch(0.63 0.155 40);
-  --sidebar-primary-foreground: oklch(0.99 0.005 60);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.955 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.91 0 0);
 
-  /* Brand = 暖桃 (warm peach); decorative blue/violet stay grayscale; success/
-     amber keep a restrained hue for functional status (credits / state). */
-  --reelflow-coral: oklch(0.63 0.155 40);
-  --reelflow-coral-soft: oklch(0.72 0.13 45);
+  /* Brand + decorative accents neutralized to grayscale; only success/amber keep
+     a restrained hue for functional status (credits / state). */
+  --reelflow-coral: oklch(0.205 0 0);
+  --reelflow-coral-soft: oklch(0.42 0 0);
   --reelflow-amber: oklch(0.72 0.09 70);
   --reelflow-green: oklch(0.6 0.08 150);
   --reelflow-blue: oklch(0.45 0 0);
@@ -142,15 +143,16 @@
   --reelflow-grain: 0;
 }
 
-.dark .reelflow-app {
+.dark .reelflow-app,
+.dark .reelflow-surface {
   --background: oklch(0.18 0 0);        /* near-black neutral */
   --foreground: oklch(0.96 0 0);
   --card: oklch(0.214 0 0);
   --card-foreground: oklch(0.96 0 0);
   --popover: oklch(0.214 0 0);
   --popover-foreground: oklch(0.96 0 0);
-  --primary: oklch(0.72 0.145 44);      /* 暖桃 warm-peach on dark */
-  --primary-foreground: oklch(0.2 0.02 40);
+  --primary: oklch(0.95 0 0);           /* near-white primary on dark */
+  --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.26 0 0);
   --secondary-foreground: oklch(0.94 0 0);
   --muted: oklch(0.26 0 0);
@@ -163,14 +165,14 @@
 
   --sidebar: oklch(0.155 0 0);
   --sidebar-foreground: oklch(0.92 0 0);
-  --sidebar-primary: oklch(0.72 0.145 44);
-  --sidebar-primary-foreground: oklch(0.2 0.02 40);
+  --sidebar-primary: oklch(0.95 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
   --sidebar-accent: oklch(0.27 0 0);
   --sidebar-accent-foreground: oklch(0.96 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
 
-  --reelflow-coral: oklch(0.74 0.135 46);
-  --reelflow-coral-soft: oklch(0.68 0.12 46);
+  --reelflow-coral: oklch(0.95 0 0);
+  --reelflow-coral-soft: oklch(0.7 0 0);
   --reelflow-amber: oklch(0.8 0.09 72);
   --reelflow-green: oklch(0.72 0.08 150);
   --reelflow-blue: oklch(0.7 0 0);
