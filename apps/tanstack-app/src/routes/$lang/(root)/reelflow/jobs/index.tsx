@@ -283,10 +283,7 @@ function TaskRow({
       <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.4fr)_auto] lg:items-center">
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-3">
-            <span
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]"
-              style={{ background: `color-mix(in oklch, ${visual.color} 12%, transparent)`, color: visual.color }}
-            >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground">
               <CategoryIcon className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">

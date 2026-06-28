@@ -177,7 +177,7 @@ export function EmptyState({
 }) {
   return (
     <div className="reelflow-panel reelflow-reveal flex flex-col items-center px-6 py-14 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card text-foreground">
         <Icon className="h-7 w-7" aria-hidden="true" />
       </span>
       <h2 className="reelflow-display mt-5 text-xl">{title}</h2>

@@ -289,8 +289,8 @@ function ReelflowComposerPage() {
             {/* Template context bar */}
             <div className="reelflow-reveal mt-6 flex items-center gap-3 rounded-2xl p-3 shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]" data-delay="2">
               <span
-                className="flex shrink-0 items-center justify-center rounded-xl"
-                style={{ height: '3.25rem', width: '3.25rem', background: `color-mix(in oklch, ${visual.color} 12%, transparent)`, color: visual.color }}
+                className="flex shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground"
+                style={{ height: '3.25rem', width: '3.25rem' }}
               >
                 <CtxIcon className="h-6 w-6" aria-hidden="true" />
               </span>

@@ -215,7 +215,7 @@ function InviteMetric({
   return (
     <section className="reelflow-panel p-5" data-testid={testId}>
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground">{icon}</div>
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
       </div>
       <p className="mt-4 text-2xl font-semibold">{value}</p>

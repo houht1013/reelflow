@@ -170,7 +170,7 @@ function ReelflowVoiceToolPage() {
       <div className="container mx-auto grid gap-6 px-4 pb-8 sm:px-6 lg:grid-cols-[minmax(0,500px)_minmax(0,1fr)] lg:px-8">
         <section className="reelflow-panel space-y-5 p-5">
           <div className="flex items-center gap-3 border-b border-border/45 pb-4">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground">
               <Mic2 className="h-5 w-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
@@ -278,7 +278,7 @@ function ReelflowVoiceToolPage() {
               </div>
             ) : result ? (
               <div className="w-full max-w-md text-center">
-                <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
+                <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-card text-foreground">
                   <Mic2 className="h-8 w-8" aria-hidden="true" />
                 </span>
                 <p className="mt-4 text-sm font-medium text-foreground">{t.reelflow.voiceTool.previewTitle}</p>
