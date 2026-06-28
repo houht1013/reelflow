@@ -3,7 +3,7 @@ import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, ArrowRight, Coins, Crown, History, LockKeyhole, RefreshCw, ShieldCheck, TrendingDown, TrendingUp, WalletCards } from 'lucide-react'
+import { AlertTriangle, ArrowRight, ChevronLeft, ChevronRight, Coins, Crown, History, LockKeyhole, RefreshCw, ShieldCheck, TrendingDown, TrendingUp, WalletCards } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Badge } from '@libs/react-shared/ui/badge'
 import { Button } from '@libs/react-shared/ui/button'
@@ -64,6 +64,8 @@ function ReelflowCreditsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [customCredits, setCustomCredits] = useState(CUSTOM_DEFAULT)
+  const [ledgerPage, setLedgerPage] = useState(0)
+  const LEDGER_PAGE_SIZE = 10
 
   const loadCredits = async () => {
     setLoading(true)
@@ -73,6 +75,7 @@ function ReelflowCreditsPage() {
       const payload = await response.json()
       if (!response.ok) throw new Error(payload?.error || t.reelflow.credits.loadError)
       setData(payload)
+      setLedgerPage(0)
     } catch (err) {
       setError(err instanceof Error ? err.message : t.reelflow.credits.loadError)
     } finally {
@@ -101,6 +104,10 @@ function ReelflowCreditsPage() {
   }, [customCredits])
 
   const account = data?.account
+  const ledger = data?.ledger ?? []
+  const ledgerPageCount = Math.max(1, Math.ceil(ledger.length / LEDGER_PAGE_SIZE))
+  const safePage = Math.min(ledgerPage, ledgerPageCount - 1)
+  const pagedLedger = ledger.slice(safePage * LEDGER_PAGE_SIZE, safePage * LEDGER_PAGE_SIZE + LEDGER_PAGE_SIZE)
   const ledgerTypeText = (type: string) => (t.reelflow.credits.ledgerTypes as Record<string, string>)[type] || type
   const packs = r.packs as CreditPack[]
 
@@ -260,43 +267,58 @@ function ReelflowCreditsPage() {
                 <h2 className="reelflow-display text-lg">{t.reelflow.credits.ledgerTitle}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{t.reelflow.credits.ledgerDescription}</p>
               </div>
-              {data.ledger.length === 0 ? (
+              {ledger.length === 0 ? (
                 <div className="p-8 text-center text-sm text-muted-foreground">{t.reelflow.credits.emptyLedger}</div>
               ) : (
-                <div className="overflow-x-auto" data-testid="reelflow-credit-ledger">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t.reelflow.credits.table.time}</TableHead>
-                        <TableHead>{t.reelflow.credits.table.type}</TableHead>
-                        <TableHead>{t.reelflow.credits.table.description}</TableHead>
-                        <TableHead>{t.reelflow.credits.table.amount}</TableHead>
-                        <TableHead>{t.reelflow.credits.table.balanceAfter}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.ledger.map((item) => (
-                        <TableRow key={item.id} data-testid={`reelflow-credit-ledger-${item.type}`}>
-                          <TableCell className="whitespace-nowrap">{formatDate(item.createdAt)}</TableCell>
-                          <TableCell>
-                            <Badge variant={item.amount >= 0 ? 'default' : 'secondary'}>{ledgerTypeText(item.type)}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="min-w-56">
-                              <p>{item.description || ledgerTypeText(item.type)}</p>
-                              {(item.orderId || item.jobId) && <p className="mt-1 text-xs text-muted-foreground">{item.orderId || item.jobId}</p>}
-                            </div>
-                          </TableCell>
-                          <TableCell className={item.amount >= 0 ? 'text-primary' : 'text-destructive'}>
-                            {item.amount >= 0 ? '+' : ''}
-                            {formatCredits(item.amount)}
-                          </TableCell>
-                          <TableCell>{formatCredits(item.balanceAfter)}</TableCell>
+                <>
+                  <div className="h-[30rem] overflow-y-auto overflow-x-auto" data-testid="reelflow-credit-ledger">
+                    <Table>
+                      <TableHeader className="sticky top-0 z-10 bg-card">
+                        <TableRow>
+                          <TableHead>{t.reelflow.credits.table.time}</TableHead>
+                          <TableHead>{t.reelflow.credits.table.type}</TableHead>
+                          <TableHead>{t.reelflow.credits.table.description}</TableHead>
+                          <TableHead>{t.reelflow.credits.table.amount}</TableHead>
+                          <TableHead>{t.reelflow.credits.table.balanceAfter}</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {pagedLedger.map((item) => (
+                          <TableRow key={item.id} data-testid={`reelflow-credit-ledger-${item.type}`}>
+                            <TableCell className="whitespace-nowrap">{formatDate(item.createdAt)}</TableCell>
+                            <TableCell>
+                              <Badge variant={item.amount >= 0 ? 'default' : 'secondary'}>{ledgerTypeText(item.type)}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="min-w-56">
+                                <p>{item.description || ledgerTypeText(item.type)}</p>
+                                {(item.orderId || item.jobId) && <p className="mt-1 text-xs text-muted-foreground">{item.orderId || item.jobId}</p>}
+                              </div>
+                            </TableCell>
+                            <TableCell className={item.amount >= 0 ? 'text-primary' : 'text-destructive'}>
+                              {item.amount >= 0 ? '+' : ''}
+                              {formatCredits(item.amount)}
+                            </TableCell>
+                            <TableCell>{formatCredits(item.balanceAfter)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 px-5 py-3 text-sm text-muted-foreground shadow-[inset_0_1px_0_var(--reelflow-hairline)]">
+                    <span className="reelflow-num">共 {ledger.length} 条 · 第 {safePage + 1}/{ledgerPageCount} 页</span>
+                    <div className="flex items-center gap-2">
+                      <Button type="button" variant="outline" size="sm" disabled={safePage <= 0} onClick={() => setLedgerPage((p) => Math.max(0, p - 1))}>
+                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                        上一页
+                      </Button>
+                      <Button type="button" variant="outline" size="sm" disabled={safePage >= ledgerPageCount - 1} onClick={() => setLedgerPage((p) => Math.min(ledgerPageCount - 1, p + 1))}>
+                        下一页
+                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      </Button>
+                    </div>
+                  </div>
+                </>
               )}
             </section>
           </>

@@ -36,7 +36,7 @@ export const Route = createFileRoute('/api/reelflow/credits')({
             .from(creditLedger)
             .where(eq(creditLedger.workspaceId, workspace.id))
             .orderBy(desc(creditLedger.createdAt))
-            .limit(30)
+            .limit(200)
 
           const plans = (Object.values(config.payment.plans) as Array<{
             id: string
