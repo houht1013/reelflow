@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
 import {
+  ChevronRight,
   ImageIcon,
   Layers3,
   ListChecks,
@@ -107,8 +108,8 @@ function ReelflowHomePage() {
             const inner = (
               <>
                 <span
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                  style={{ background: `color-mix(in oklch, ${entry.color} 12%, transparent)`, color: entry.color }}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-200 group-hover:scale-105"
+                  style={{ background: `color-mix(in oklch, ${entry.color} 12%, transparent)`, color: entry.color, '--tw-ring-color': `color-mix(in oklch, ${entry.color} 22%, transparent)` } as CSSProperties}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
@@ -127,6 +128,7 @@ function ReelflowHomePage() {
             return (
               <Link key={entry.key} to={entry.to} params={{ lang: locale }} className="reelflow-soft-tile group flex items-center gap-3 p-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none">
                 {inner}
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/45 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-foreground" aria-hidden="true" />
               </Link>
             )
           })}
