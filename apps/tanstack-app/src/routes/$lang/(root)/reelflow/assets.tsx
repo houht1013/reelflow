@@ -624,10 +624,10 @@ function AssetCard({
   const canDelete = asset.sourceType === 'uploaded' || asset.sourceType === 'ai_generated'
 
   return (
-    <article className="reelflow-soft-tile flex h-full min-h-[380px] flex-col overflow-hidden" data-testid={`reelflow-asset-card-${asset.assetType}`}>
+    <article className="reelflow-soft-tile group flex h-full min-h-[380px] flex-col overflow-hidden" data-testid={`reelflow-asset-card-${asset.assetType}`}>
       <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-muted/35">
         {isImage ? (
-          <img src={ossThumb(asset.url, 640)} alt={displayName} width={1024} height={576} loading="lazy" className="h-full w-full object-cover" />
+          <img src={ossThumb(asset.url, 640)} alt={displayName} width={1024} height={576} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
         ) : isAudio ? (
           <div className="flex flex-col items-center gap-3 px-4 text-muted-foreground">
             <FileText className="h-10 w-10" aria-hidden="true" />
