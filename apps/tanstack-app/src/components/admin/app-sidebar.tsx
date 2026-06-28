@@ -7,6 +7,7 @@ import {
   FileText,
   Home,
   LayoutDashboard,
+  LayoutTemplate,
   LogOut,
   ShoppingCart,
   User,
@@ -42,6 +43,7 @@ export function AppSidebar() {
       label: '内容',
       items: [
         { title: t.navigation.admin.reelflow, url: '/admin/reelflow', icon: Clapperboard },
+        { title: '模板管理', url: '/admin/reelflow/templates', icon: LayoutTemplate },
         { title: '模型管理', url: '/admin/reelflow/models', icon: Boxes },
         { title: t.navigation.admin.blog, url: '/admin/blog', icon: FileText },
       ],
