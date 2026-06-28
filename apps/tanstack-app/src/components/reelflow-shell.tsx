@@ -14,9 +14,11 @@ import {
   Home,
   ImageIcon,
   Layers3,
+  BadgeCheck,
   LayoutDashboard,
   ListChecks,
   LogOut,
+  Mail,
   Mic2,
   PanelLeftClose,
   PanelLeftOpen,
@@ -307,9 +309,9 @@ export function ReelflowShell({ children }: ShellProps) {
 
       {user && (
         <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <DialogContent className="max-w-4xl gap-0 overflow-hidden p-0 sm:max-w-5xl">
-            <div className="flex min-h-[560px] flex-col sm:flex-row">
-              <div className="shrink-0 border-b border-border/60 bg-muted/30 p-4 sm:w-60 sm:border-b-0 sm:border-r">
+          <DialogContent className="max-w-3xl gap-0 overflow-hidden bg-card p-0">
+            <div className="flex min-h-[460px] flex-col sm:flex-row">
+              <div className="shrink-0 border-b border-border bg-card p-4 sm:w-52 sm:border-b-0 sm:border-r">
                 <DialogTitle className="px-2 pb-3 text-base">{shell.settings.title}</DialogTitle>
                 <nav className="flex gap-1 sm:flex-col">
                   {(
@@ -329,8 +331,8 @@ export function ReelflowShell({ children }: ShellProps) {
                         className={[
                           'flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:flex-none',
                           active
-                            ? 'bg-background text-foreground shadow-xs'
-                            : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
+                            ? 'bg-secondary text-foreground'
+                            : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground',
                         ].join(' ')}
                       >
                         <TabIcon className="h-4 w-4" aria-hidden="true" />
@@ -341,10 +343,14 @@ export function ReelflowShell({ children }: ShellProps) {
                 </nav>
               </div>
 
-              <div className="flex-1 p-6">
+              <div className="flex-1 bg-card p-6">
                 {settingsTab === 'profile' && (
-                  <div className="space-y-3">
-                    <div className="reelflow-muted-tile flex items-center gap-4 p-4">
+                  <div>
+                    <div className="mb-4">
+                      <h3 className="reelflow-display text-base">{shell.settings.tabs.profile}</h3>
+                      <p className="mt-0.5 text-sm text-muted-foreground">{shell.settings.profileDesc}</p>
+                    </div>
+                    <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
                       <Avatar className="h-14 w-14 border border-border">
                         <AvatarImage src={user.image || ''} alt={user.name || user.email || 'User'} />
                         <AvatarFallback className="text-base">{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
@@ -354,51 +360,70 @@ export function ReelflowShell({ children }: ShellProps) {
                         <p className="truncate text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleSignOut}
-                      className="reelflow-muted-tile flex w-full items-center justify-center gap-2 p-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
-                    >
-                      <LogOut className="h-4 w-4" aria-hidden="true" />
-                      {shell.signOut}
-                    </button>
-                  </div>
-                )}
-
-                {settingsTab === 'subscription' && (
-                  <div className="reelflow-muted-tile flex items-center justify-between gap-4 p-4">
-                    <div>
-                      <p className="text-xs text-muted-foreground">{shell.settings.planLabel}</p>
-                      <p className="mt-0.5 text-base font-semibold">{shell.settings.freePlan}</p>
+                    <div className="mt-3 divide-y divide-border rounded-xl border border-border bg-card">
+                      <div className="flex items-center justify-between gap-3 px-4 py-3.5">
+                        <span className="flex items-center gap-2 text-sm text-muted-foreground"><Mail className="h-4 w-4" aria-hidden="true" />{shell.settings.email}</span>
+                        <span className="truncate text-sm font-medium">{user.email}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 px-4 py-3.5">
+                        <span className="flex items-center gap-2 text-sm text-muted-foreground"><BadgeCheck className="h-4 w-4" aria-hidden="true" />{shell.settings.role}</span>
+                        <span className="reelflow-pill" data-tone={user.role === 'admin' ? 'brand' : 'neutral'}>{user.role === 'admin' ? shell.settings.roleAdmin : shell.settings.roleMember}</span>
+                      </div>
                     </div>
-                    <Button asChild>
-                      <a href={`/${locale}/pricing`} target="_blank" rel="noopener noreferrer">
-                        {shell.settings.viewPlans}
-                      </a>
+                    <Button type="button" variant="outline" onClick={handleSignOut} className="mt-4 w-full text-destructive hover:text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+                      {shell.signOut}
                     </Button>
                   </div>
                 )}
 
-                {settingsTab === 'general' && (
-                  <div className="space-y-3">
-                    <div className="reelflow-muted-tile flex items-center justify-between p-4">
-                      <span className="text-sm font-medium">{shell.theme}</span>
-                      <ThemeToggle />
+                {settingsTab === 'subscription' && (
+                  <div>
+                    <div className="mb-4">
+                      <h3 className="reelflow-display text-base">{shell.settings.tabs.subscription}</h3>
+                      <p className="mt-0.5 text-sm text-muted-foreground">{shell.settings.subscriptionDesc}</p>
                     </div>
-                    {user.role === 'admin' && (
-                      <Link
-                        to="/$lang/admin/reelflow"
-                        params={{ lang: locale }}
-                        onClick={() => setSettingsOpen(false)}
-                        className="reelflow-muted-tile flex items-center justify-between p-4 text-sm font-medium transition-colors hover:bg-muted"
-                      >
-                        <span className="flex items-center gap-2">
-                          <LayoutDashboard className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                          {shell.nav.admin}
-                        </span>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      </Link>
-                    )}
+                    <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">{shell.settings.planLabel}</p>
+                        <p className="mt-0.5 text-base font-semibold">{shell.settings.freePlan}</p>
+                      </div>
+                      <Button asChild>
+                        <a href={`/${locale}/pricing`} target="_blank" rel="noopener noreferrer">
+                          {shell.settings.viewPlans}
+                        </a>
+                      </Button>
+                    </div>
+                    <p className="mt-3 text-xs leading-5 text-muted-foreground">{shell.settings.upgradeHint}</p>
+                  </div>
+                )}
+
+                {settingsTab === 'general' && (
+                  <div>
+                    <div className="mb-4">
+                      <h3 className="reelflow-display text-base">{shell.settings.tabs.general}</h3>
+                      <p className="mt-0.5 text-sm text-muted-foreground">{shell.settings.generalDesc}</p>
+                    </div>
+                    <div className="divide-y divide-border rounded-xl border border-border bg-card">
+                      <div className="flex items-center justify-between px-4 py-3.5">
+                        <span className="flex items-center gap-2 text-sm font-medium"><Settings className="h-4 w-4 text-muted-foreground" aria-hidden="true" />{shell.theme}</span>
+                        <ThemeToggle />
+                      </div>
+                      {user.role === 'admin' && (
+                        <Link
+                          to="/$lang/admin/reelflow"
+                          params={{ lang: locale }}
+                          onClick={() => setSettingsOpen(false)}
+                          className="flex items-center justify-between px-4 py-3.5 text-sm font-medium transition-colors hover:bg-secondary/50"
+                        >
+                          <span className="flex items-center gap-2">
+                            <LayoutDashboard className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                            {shell.nav.admin}
+                          </span>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
