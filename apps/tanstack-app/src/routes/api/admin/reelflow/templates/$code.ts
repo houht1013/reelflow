@@ -11,9 +11,11 @@ export const Route = createFileRoute('/api/admin/reelflow/templates/$code')({
           const authResult = await requireAdminAPI(request)
           if (authResult instanceof Response) return authResult
 
-          const { readTemplateFile, TemplateFileError } = await import('@libs/reelflow/templates/template-files')
+          const { readTemplateFile, templateStatus, TemplateFileError } = await import('@libs/reelflow/templates/template-files')
           try {
-            return Response.json(readTemplateFile(params.code))
+            const file = readTemplateFile(params.code)
+            const status = params.code === 'new' ? null : await templateStatus(params.code)
+            return Response.json({ ...file, status })
           } catch (error) {
             if (error instanceof TemplateFileError) {
               return Response.json({ error: error.message, code: error.code }, { status: error.code === 'not_found' ? 404 : 400 })

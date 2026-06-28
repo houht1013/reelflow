@@ -180,6 +180,24 @@ export async function syncTemplateRow(code: string, opts?: { publish?: boolean }
   return { id, status: opts?.publish ? 'published' : 'draft' };
 }
 
+/** Publish (visible to users) or unpublish (back to hidden draft) a template. */
+export async function setTemplatePublished(code: string, published: boolean): Promise<{ status: string }> {
+  if (published) {
+    const res = await syncTemplateRow(code, { publish: true });
+    return { status: res.status };
+  }
+  const [existing] = await db.select().from(templateTable).where(eq(templateTable.code, code)).limit(1);
+  if (!existing) throw new TemplateFileError('模板未登记，无法下架', 'not_found');
+  await db.update(templateTable).set({ status: 'draft', visibility: 'private', updatedAt: new Date() }).where(eq(templateTable.id, existing.id));
+  return { status: 'draft' };
+}
+
+/** Current DB status for a code (null if not registered). */
+export async function templateStatus(code: string): Promise<string | null> {
+  const [row] = await db.select({ status: templateTable.status }).from(templateTable).where(eq(templateTable.code, code)).limit(1);
+  return row?.status ?? null;
+}
+
 /** Validate a saved dynamic template file: load via jiti + contract checks. */
 export async function validateTemplateFile(code: string): Promise<{ ok: boolean; errors: string[]; meta?: { code: string; name: string; version: string; fields: number; outputs: number; fieldDefs?: Array<{ key: string; defaultValue?: unknown; placeholder?: string; required?: boolean }> } }> {
   const file = fileForCode(code);

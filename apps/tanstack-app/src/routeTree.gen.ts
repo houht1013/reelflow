@@ -123,6 +123,7 @@ import { Route as LangrootReelflowJobsIdRouteImport } from './routes/$lang/(root
 import { Route as LangrootReelflowDraftTemplateCodeRouteImport } from './routes/$lang/(root)/reelflow/draft/$templateCode'
 import { Route as ApiAdminReelflowTemplatesIdGrantsRouteImport } from './routes/api/admin/reelflow/templates/$id/grants'
 import { Route as ApiAdminReelflowTemplatesCodeValidateRouteImport } from './routes/api/admin/reelflow/templates/$code/validate'
+import { Route as ApiAdminReelflowTemplatesCodePublishRouteImport } from './routes/api/admin/reelflow/templates/$code/publish'
 import { Route as ApiAdminReelflowTemplatesCodePreviewRouteImport } from './routes/api/admin/reelflow/templates/$code/preview'
 import { Route as ApiAdminReelflowProvidersIdHealthRouteImport } from './routes/api/admin/reelflow/providers/$id/health'
 
@@ -719,6 +720,12 @@ const ApiAdminReelflowTemplatesCodeValidateRoute =
     path: '/validate',
     getParentRoute: () => ApiAdminReelflowTemplatesCodeRoute,
   } as any)
+const ApiAdminReelflowTemplatesCodePublishRoute =
+  ApiAdminReelflowTemplatesCodePublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminReelflowTemplatesCodeRoute,
+  } as any)
 const ApiAdminReelflowTemplatesCodePreviewRoute =
   ApiAdminReelflowTemplatesCodePreviewRouteImport.update({
     id: '/preview',
@@ -845,6 +852,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/users/update/': typeof ApiAdminUsersUpdateIndexRoute
   '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
   '/api/admin/reelflow/templates/$code/preview': typeof ApiAdminReelflowTemplatesCodePreviewRoute
+  '/api/admin/reelflow/templates/$code/publish': typeof ApiAdminReelflowTemplatesCodePublishRoute
   '/api/admin/reelflow/templates/$code/validate': typeof ApiAdminReelflowTemplatesCodeValidateRoute
   '/api/admin/reelflow/templates/$id/grants': typeof ApiAdminReelflowTemplatesIdGrantsRoute
 }
@@ -959,6 +967,7 @@ export interface FileRoutesByTo {
   '/api/admin/users/update': typeof ApiAdminUsersUpdateIndexRoute
   '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
   '/api/admin/reelflow/templates/$code/preview': typeof ApiAdminReelflowTemplatesCodePreviewRoute
+  '/api/admin/reelflow/templates/$code/publish': typeof ApiAdminReelflowTemplatesCodePublishRoute
   '/api/admin/reelflow/templates/$code/validate': typeof ApiAdminReelflowTemplatesCodeValidateRoute
   '/api/admin/reelflow/templates/$id/grants': typeof ApiAdminReelflowTemplatesIdGrantsRoute
 }
@@ -1078,6 +1087,7 @@ export interface FileRoutesById {
   '/api/admin/users/update/': typeof ApiAdminUsersUpdateIndexRoute
   '/api/admin/reelflow/providers/$id/health': typeof ApiAdminReelflowProvidersIdHealthRoute
   '/api/admin/reelflow/templates/$code/preview': typeof ApiAdminReelflowTemplatesCodePreviewRoute
+  '/api/admin/reelflow/templates/$code/publish': typeof ApiAdminReelflowTemplatesCodePublishRoute
   '/api/admin/reelflow/templates/$code/validate': typeof ApiAdminReelflowTemplatesCodeValidateRoute
   '/api/admin/reelflow/templates/$id/grants': typeof ApiAdminReelflowTemplatesIdGrantsRoute
 }
@@ -1196,6 +1206,7 @@ export interface FileRouteTypes {
     | '/api/admin/users/update/'
     | '/api/admin/reelflow/providers/$id/health'
     | '/api/admin/reelflow/templates/$code/preview'
+    | '/api/admin/reelflow/templates/$code/publish'
     | '/api/admin/reelflow/templates/$code/validate'
     | '/api/admin/reelflow/templates/$id/grants'
   fileRoutesByTo: FileRoutesByTo
@@ -1310,6 +1321,7 @@ export interface FileRouteTypes {
     | '/api/admin/users/update'
     | '/api/admin/reelflow/providers/$id/health'
     | '/api/admin/reelflow/templates/$code/preview'
+    | '/api/admin/reelflow/templates/$code/publish'
     | '/api/admin/reelflow/templates/$code/validate'
     | '/api/admin/reelflow/templates/$id/grants'
   id:
@@ -1428,6 +1440,7 @@ export interface FileRouteTypes {
     | '/api/admin/users/update/'
     | '/api/admin/reelflow/providers/$id/health'
     | '/api/admin/reelflow/templates/$code/preview'
+    | '/api/admin/reelflow/templates/$code/publish'
     | '/api/admin/reelflow/templates/$code/validate'
     | '/api/admin/reelflow/templates/$id/grants'
   fileRoutesById: FileRoutesById
@@ -2292,6 +2305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminReelflowTemplatesCodeValidateRouteImport
       parentRoute: typeof ApiAdminReelflowTemplatesCodeRoute
     }
+    '/api/admin/reelflow/templates/$code/publish': {
+      id: '/api/admin/reelflow/templates/$code/publish'
+      path: '/publish'
+      fullPath: '/api/admin/reelflow/templates/$code/publish'
+      preLoaderRoute: typeof ApiAdminReelflowTemplatesCodePublishRouteImport
+      parentRoute: typeof ApiAdminReelflowTemplatesCodeRoute
+    }
     '/api/admin/reelflow/templates/$code/preview': {
       id: '/api/admin/reelflow/templates/$code/preview'
       path: '/preview'
@@ -2482,6 +2502,7 @@ const ApiAdminReelflowModelsRouteWithChildren =
 
 interface ApiAdminReelflowTemplatesCodeRouteChildren {
   ApiAdminReelflowTemplatesCodePreviewRoute: typeof ApiAdminReelflowTemplatesCodePreviewRoute
+  ApiAdminReelflowTemplatesCodePublishRoute: typeof ApiAdminReelflowTemplatesCodePublishRoute
   ApiAdminReelflowTemplatesCodeValidateRoute: typeof ApiAdminReelflowTemplatesCodeValidateRoute
 }
 
@@ -2489,6 +2510,8 @@ const ApiAdminReelflowTemplatesCodeRouteChildren: ApiAdminReelflowTemplatesCodeR
   {
     ApiAdminReelflowTemplatesCodePreviewRoute:
       ApiAdminReelflowTemplatesCodePreviewRoute,
+    ApiAdminReelflowTemplatesCodePublishRoute:
+      ApiAdminReelflowTemplatesCodePublishRoute,
     ApiAdminReelflowTemplatesCodeValidateRoute:
       ApiAdminReelflowTemplatesCodeValidateRoute,
   }

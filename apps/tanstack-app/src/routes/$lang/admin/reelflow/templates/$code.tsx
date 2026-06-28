@@ -7,7 +7,7 @@ import { Input } from '@libs/react-shared/ui/input'
 import { Label } from '@libs/react-shared/ui/label'
 import { Textarea } from '@libs/react-shared/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
-import { ArrowLeft, CheckCircle2, Copy, ExternalLink, Loader2, Play, Save, ShieldCheck, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Copy, ExternalLink, Loader2, Play, Rocket, Save, ShieldCheck, Undo2, XCircle } from 'lucide-react'
 import { PageHeader } from '@/components/reelflow-ui'
 import { useTranslation } from '@/hooks/use-translation'
 
@@ -36,6 +36,8 @@ function TemplateEditorPage() {
   const [saving, setSaving] = useState(false)
   const [validating, setValidating] = useState(false)
   const [validation, setValidation] = useState<Validation | null>(null)
+  const [published, setPublished] = useState(false)
+  const [publishing, setPublishing] = useState(false)
 
   const [inputJson, setInputJson] = useState('{}')
   const [running, setRunning] = useState(false)
@@ -105,6 +107,7 @@ function TemplateEditorPage() {
         if (!alive) return
         setContent(data.content || '')
         setEditable(Boolean(data.editable))
+        setPublished(data.status === 'published')
         if (isNew) {
           const m = /code:\s*['"]([a-z0-9_]+)['"]/.exec(data.content || '')
           if (m) setSlug(m[1])
@@ -143,6 +146,25 @@ function TemplateEditorPage() {
     }
   }
 
+  const togglePublish = async () => {
+    const targetCode = (isNew ? slug : code).trim()
+    if (!targetCode) { toast.error('请先保存'); return }
+    setPublishing(true)
+    try {
+      const res = await fetch(`/api/admin/reelflow/templates/${targetCode}/publish`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ publish: !published }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || '操作失败')
+      setPublished(data.status === 'published')
+      toast.success(data.status === 'published' ? '已上架，用户端可见' : '已下架')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : '操作失败')
+    } finally {
+      setPublishing(false)
+    }
+  }
+
   const validate = async () => {
     const targetCode = (isNew ? slug : code).trim()
     if (!targetCode) { toast.error('请先保存'); return }
@@ -175,6 +197,15 @@ function TemplateEditorPage() {
               <Button size="sm" onClick={() => void save()} disabled={saving}>
                 {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}保存
               </Button>
+              {published ? (
+                <Button variant="outline" size="sm" onClick={() => void togglePublish()} disabled={publishing}>
+                  {publishing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Undo2 className="mr-1 h-4 w-4" />}下架
+                </Button>
+              ) : (
+                <Button size="sm" onClick={() => void togglePublish()} disabled={publishing || !validation?.ok} title={validation?.ok ? '' : '请先保存并通过校验'}>
+                  {publishing ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Rocket className="mr-1 h-4 w-4" />}上架发布
+                </Button>
+              )}
             </div>
           ) : undefined
         }
