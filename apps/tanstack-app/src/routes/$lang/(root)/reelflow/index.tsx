@@ -50,6 +50,34 @@ type EntryTo =
 
 type DiscoverTab = 'templates' | 'image' | 'video'
 
+// Typewriter entrance — reveals the text character by character with a caret.
+// Honors prefers-reduced-motion (shows full text instantly). SSR/first paint
+// render empty (matches), then types on mount.
+function Typewriter({ text, speed = 70 }: { text: string; speed?: number }) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setCount(text.length)
+      return
+    }
+    setCount(0)
+    const id = window.setInterval(() => {
+      setCount((prev) => {
+        if (prev >= text.length) { window.clearInterval(id); return prev }
+        return prev + 1
+      })
+    }, speed)
+    return () => window.clearInterval(id)
+  }, [text, speed])
+  const done = count >= text.length
+  return (
+    <span aria-label={text}>
+      <span aria-hidden="true">{text.slice(0, count)}</span>
+      {!done && <span className="ml-0.5 inline-block animate-pulse text-primary" aria-hidden="true">▌</span>}
+    </span>
+  )
+}
+
 function ReelflowHomePage() {
   const { t, locale } = useTranslation()
   const { data: session } = authClientReact.useSession()
@@ -97,7 +125,9 @@ function ReelflowHomePage() {
           <p className="text-lg font-medium sm:text-xl">
             <span aria-hidden="true">👋</span> {home.greeting}{userName ? ` ${userName}` : ''}
           </p>
-          <h1 className="reelflow-display mt-3 text-[1.7rem] leading-[1.15] sm:text-[2rem]">{home.greetingQuestion}</h1>
+          <h1 className="reelflow-display mt-3 text-[1.7rem] leading-[1.15] sm:text-[2rem]">
+            <Typewriter text={home.greetingQuestion} />
+          </h1>
         </div>
 
         {/* Entry cards */}
