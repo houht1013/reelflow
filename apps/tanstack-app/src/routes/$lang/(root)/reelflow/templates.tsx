@@ -219,7 +219,7 @@ function ReelflowTemplatesPage() {
                     {tags.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         {tags.slice(0, 4).map((tag) => (
-                          <span key={tag} className="rounded-md bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{tag}</span>
+                          <span key={tag} className="inline-flex items-center rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[11px] leading-none text-muted-foreground">{tag}</span>
                         ))}
                       </div>
                     )}
