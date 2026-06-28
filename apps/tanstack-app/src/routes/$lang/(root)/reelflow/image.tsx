@@ -1,16 +1,15 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { AlertCircle, ArrowRight, Archive, ImageIcon, ImageUp, Loader2, Ratio, Sparkles, Wand2, X } from 'lucide-react'
+import { AlertCircle, ArrowRight, ImageIcon, ImageUp, Loader2, Ratio, Sparkles, Wand2, X } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@libs/react-shared/ui/alert'
 import { Button } from '@libs/react-shared/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@libs/react-shared/ui/select'
 import { Textarea } from '@libs/react-shared/ui/textarea'
 import { cn } from '@libs/ui/utils/cn'
-import { PageHeader } from '@/components/reelflow-ui'
 import { ossThumb } from '@/lib/image-url'
 
 export const Route = createFileRoute('/$lang/(root)/reelflow/image')({
@@ -65,6 +64,8 @@ function ReelflowImageToolPage() {
   const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<'works' | 'templates'>('templates')
   const [works, setWorks] = useState<WorkAsset[]>([])
+  const [visibleWorks, setVisibleWorks] = useState(16)
+  const sentinelRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -74,7 +75,7 @@ function ReelflowImageToolPage() {
 
   const loadWorks = async () => {
     try {
-      const response = await fetch('/api/reelflow/assets?source=personal&assetType=image&limit=24')
+      const response = await fetch('/api/reelflow/assets?source=personal&assetType=image&limit=100')
       const data = await response.json()
       if (response.ok) setWorks(((data.assets || []) as WorkAsset[]).filter((a) => a.url))
     } catch {
@@ -85,6 +86,21 @@ function ReelflowImageToolPage() {
   useEffect(() => {
     void loadWorks()
   }, [])
+
+  // Waterfall: reveal more works as the sentinel scrolls into view.
+  useEffect(() => {
+    if (tab !== 'works' || visibleWorks >= works.length) return
+    const el = sentinelRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setVisibleWorks((v) => Math.min(v + 12, works.length))
+      },
+      { rootMargin: '300px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [tab, works.length, visibleWorks])
 
   const pickReference = (file: File | undefined) => {
     if (!file) return
@@ -164,19 +180,10 @@ function ReelflowImageToolPage() {
 
   return (
     <main className="min-h-screen" data-testid="reelflow-image-tool-page">
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-        <PageHeader
-          title={t.reelflow.imageTool.title}
-          actions={
-            <Button variant="outline" asChild>
-              <Link to="/$lang/reelflow/assets" params={{ lang: locale }} search={{ source: 'personal', assetType: 'image', query: '' }}>
-                <Archive className="mr-2 h-4 w-4" aria-hidden="true" />
-                {t.reelflow.imageTool.openAssets}
-              </Link>
-            </Button>
-          }
-        />
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <h1 className="reelflow-display reelflow-reveal text-center text-[1.9rem] leading-[1.1] sm:text-[2.2rem]">{t.reelflow.imageTool.title}</h1>
 
+        <div className="mx-auto max-w-3xl">
         {/* Composer */}
         <div ref={composerRef} className="reelflow-panel mt-6 rounded-2xl p-4">
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => pickReference(e.target.files?.[0])} data-testid="reelflow-image-reference-input" />
@@ -266,6 +273,7 @@ function ReelflowImageToolPage() {
             )}
           </div>
         )}
+        </div>
 
         {/* Tabs: my works / prompt templates */}
         <div className="mt-8">
@@ -278,23 +286,26 @@ function ReelflowImageToolPage() {
             works.length === 0 ? (
               <p className="py-10 text-center text-sm text-muted-foreground">{t.reelflow.imageTool.myWorksEmpty}</p>
             ) : (
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {works.map((work) => (
-                  <div key={work.id} className="group relative overflow-hidden rounded-xl shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
-                    <img src={ossThumb(work.url, 480)} alt="" loading="lazy" className="aspect-square w-full object-cover" />
-                    {work.metadata?.prompt && (
-                      <button type="button" onClick={() => applyTemplate({ prompt: work.metadata!.prompt! })} className="absolute inset-0 flex items-center justify-center bg-foreground/55 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-xs font-medium text-foreground"><Wand2 className="h-3.5 w-3.5" aria-hidden="true" />{t.reelflow.imageTool.makeSame}</span>
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="mt-4 columns-2 gap-3 sm:columns-3 lg:columns-4 xl:columns-5">
+                  {works.slice(0, visibleWorks).map((work) => (
+                    <div key={work.id} className="group relative mb-3 break-inside-avoid overflow-hidden rounded-xl shadow-[inset_0_0_0_1px_var(--reelflow-hairline)]">
+                      <img src={ossThumb(work.url, 480)} alt="" loading="lazy" className="w-full object-cover" />
+                      {work.metadata?.prompt && (
+                        <button type="button" onClick={() => applyTemplate({ prompt: work.metadata!.prompt! })} className="absolute inset-0 flex items-center justify-center bg-foreground/55 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-xs font-medium text-foreground"><Wand2 className="h-3.5 w-3.5" aria-hidden="true" />{t.reelflow.imageTool.makeSame}</span>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {visibleWorks < works.length && <div ref={sentinelRef} className="h-10" aria-hidden="true" />}
+              </>
             )
           ) : (
             <>
               <p className="mt-3 text-xs text-muted-foreground">{t.reelflow.imageTool.promptTemplatesHint}</p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {templates.map((tpl) => (
                   <div key={tpl.title} className="reelflow-soft-tile flex flex-col p-4" data-testid={`reelflow-prompt-template-${tpl.ratio}`}>
                     <div className="flex items-center justify-between gap-2">
