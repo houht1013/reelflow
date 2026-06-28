@@ -111,6 +111,7 @@ import { Route as LangrootReelflowDraftIndexRouteImport } from './routes/$lang/(
 import { Route as ApiReelflowJobsIdRetryRouteImport } from './routes/api/reelflow/jobs/$id/retry'
 import { Route as ApiReelflowJobsIdRerunRouteImport } from './routes/api/reelflow/jobs/$id/rerun'
 import { Route as ApiReelflowJobsIdDownloadDraftRouteImport } from './routes/api/reelflow/jobs/$id/download-draft'
+import { Route as ApiReelflowJobsIdCancelRouteImport } from './routes/api/reelflow/jobs/$id/cancel'
 import { Route as ApiAdminReelflowTemplatesIdRouteImport } from './routes/api/admin/reelflow/templates/$id'
 import { Route as ApiAdminReelflowTemplatesCodeRouteImport } from './routes/api/admin/reelflow/templates/$code'
 import { Route as ApiAdminReelflowProvidersIdRouteImport } from './routes/api/admin/reelflow/providers/$id'
@@ -651,6 +652,11 @@ const ApiReelflowJobsIdDownloadDraftRoute =
     path: '/download-draft',
     getParentRoute: () => ApiReelflowJobsIdRoute,
   } as any)
+const ApiReelflowJobsIdCancelRoute = ApiReelflowJobsIdCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
+  getParentRoute: () => ApiReelflowJobsIdRoute,
+} as any)
 const ApiAdminReelflowTemplatesIdRoute =
   ApiAdminReelflowTemplatesIdRouteImport.update({
     id: '/$id',
@@ -839,6 +845,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
   '/api/admin/reelflow/templates/$code': typeof ApiAdminReelflowTemplatesCodeRouteWithChildren
   '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRouteWithChildren
+  '/api/reelflow/jobs/$id/cancel': typeof ApiReelflowJobsIdCancelRoute
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
@@ -954,6 +961,7 @@ export interface FileRoutesByTo {
   '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
   '/api/admin/reelflow/templates/$code': typeof ApiAdminReelflowTemplatesCodeRouteWithChildren
   '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRouteWithChildren
+  '/api/reelflow/jobs/$id/cancel': typeof ApiReelflowJobsIdCancelRoute
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
@@ -1074,6 +1082,7 @@ export interface FileRoutesById {
   '/api/admin/reelflow/providers/$id': typeof ApiAdminReelflowProvidersIdRouteWithChildren
   '/api/admin/reelflow/templates/$code': typeof ApiAdminReelflowTemplatesCodeRouteWithChildren
   '/api/admin/reelflow/templates/$id': typeof ApiAdminReelflowTemplatesIdRouteWithChildren
+  '/api/reelflow/jobs/$id/cancel': typeof ApiReelflowJobsIdCancelRoute
   '/api/reelflow/jobs/$id/download-draft': typeof ApiReelflowJobsIdDownloadDraftRoute
   '/api/reelflow/jobs/$id/rerun': typeof ApiReelflowJobsIdRerunRoute
   '/api/reelflow/jobs/$id/retry': typeof ApiReelflowJobsIdRetryRoute
@@ -1193,6 +1202,7 @@ export interface FileRouteTypes {
     | '/api/admin/reelflow/providers/$id'
     | '/api/admin/reelflow/templates/$code'
     | '/api/admin/reelflow/templates/$id'
+    | '/api/reelflow/jobs/$id/cancel'
     | '/api/reelflow/jobs/$id/download-draft'
     | '/api/reelflow/jobs/$id/rerun'
     | '/api/reelflow/jobs/$id/retry'
@@ -1308,6 +1318,7 @@ export interface FileRouteTypes {
     | '/api/admin/reelflow/providers/$id'
     | '/api/admin/reelflow/templates/$code'
     | '/api/admin/reelflow/templates/$id'
+    | '/api/reelflow/jobs/$id/cancel'
     | '/api/reelflow/jobs/$id/download-draft'
     | '/api/reelflow/jobs/$id/rerun'
     | '/api/reelflow/jobs/$id/retry'
@@ -1427,6 +1438,7 @@ export interface FileRouteTypes {
     | '/api/admin/reelflow/providers/$id'
     | '/api/admin/reelflow/templates/$code'
     | '/api/admin/reelflow/templates/$id'
+    | '/api/reelflow/jobs/$id/cancel'
     | '/api/reelflow/jobs/$id/download-draft'
     | '/api/reelflow/jobs/$id/rerun'
     | '/api/reelflow/jobs/$id/retry'
@@ -2221,6 +2233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiReelflowJobsIdDownloadDraftRouteImport
       parentRoute: typeof ApiReelflowJobsIdRoute
     }
+    '/api/reelflow/jobs/$id/cancel': {
+      id: '/api/reelflow/jobs/$id/cancel'
+      path: '/cancel'
+      fullPath: '/api/reelflow/jobs/$id/cancel'
+      preLoaderRoute: typeof ApiReelflowJobsIdCancelRouteImport
+      parentRoute: typeof ApiReelflowJobsIdRoute
+    }
     '/api/admin/reelflow/templates/$id': {
       id: '/api/admin/reelflow/templates/$id'
       path: '/$id'
@@ -2555,12 +2574,14 @@ const ApiAdminReelflowTemplatesRouteWithChildren =
   )
 
 interface ApiReelflowJobsIdRouteChildren {
+  ApiReelflowJobsIdCancelRoute: typeof ApiReelflowJobsIdCancelRoute
   ApiReelflowJobsIdDownloadDraftRoute: typeof ApiReelflowJobsIdDownloadDraftRoute
   ApiReelflowJobsIdRerunRoute: typeof ApiReelflowJobsIdRerunRoute
   ApiReelflowJobsIdRetryRoute: typeof ApiReelflowJobsIdRetryRoute
 }
 
 const ApiReelflowJobsIdRouteChildren: ApiReelflowJobsIdRouteChildren = {
+  ApiReelflowJobsIdCancelRoute: ApiReelflowJobsIdCancelRoute,
   ApiReelflowJobsIdDownloadDraftRoute: ApiReelflowJobsIdDownloadDraftRoute,
   ApiReelflowJobsIdRerunRoute: ApiReelflowJobsIdRerunRoute,
   ApiReelflowJobsIdRetryRoute: ApiReelflowJobsIdRetryRoute,
