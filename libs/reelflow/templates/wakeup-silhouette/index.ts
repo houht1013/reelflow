@@ -46,7 +46,7 @@ const fields: TemplateField[] = [
   { key: 'speed', label: '语速', type: 'slider', group: '配音', min: 0.5, max: 2, step: 0.1, precision: 1, unit: '×', defaultValue: 1.1 },
 ];
 
-const SEGMENTS = 8;
+const SEGMENTS = 6;
 const STYLE =
   'flat paper-cut illustration, a single solid black silhouette character, pure white background, bold clean lines, minimal, centered single subject, high contrast, no text';
 
