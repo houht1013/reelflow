@@ -1122,6 +1122,29 @@ html:has(.reelflow-landing) {
   background: color-mix(in oklch, var(--reelflow-coral) 12%, transparent);
   border-color: color-mix(in oklch, var(--reelflow-coral) 28%, transparent);
 }
+/* Dedicated identity colors for template badges — these labels keep their own
+   palette on purpose (not the neutral theme), for recognizability. */
+.reelflow-pill[data-tone='hot'] {
+  --c: oklch(0.62 0.2 25);
+  color: var(--c);
+  background: color-mix(in oklch, var(--c) 12%, transparent);
+  border-color: color-mix(in oklch, var(--c) 28%, transparent);
+}
+.reelflow-pill[data-tone='recommended'] {
+  --c: oklch(0.7 0.15 64);
+  color: var(--c);
+  background: color-mix(in oklch, var(--c) 13%, transparent);
+  border-color: color-mix(in oklch, var(--c) 30%, transparent);
+}
+.reelflow-pill[data-tone='new'] {
+  --c: oklch(0.58 0.14 244);
+  color: var(--c);
+  background: color-mix(in oklch, var(--c) 12%, transparent);
+  border-color: color-mix(in oklch, var(--c) 28%, transparent);
+}
+.dark .reelflow-pill[data-tone='hot'] { --c: oklch(0.72 0.17 28); }
+.dark .reelflow-pill[data-tone='recommended'] { --c: oklch(0.8 0.13 68); }
+.dark .reelflow-pill[data-tone='new'] { --c: oklch(0.7 0.13 244); }
 .reelflow-pill[data-pulse='true']::before {
   content: '';
   width: 0.45rem;

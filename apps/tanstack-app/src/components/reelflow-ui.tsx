@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-type Tone = 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'brand'
+type Tone = 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'brand' | 'hot' | 'recommended' | 'new'
 
 /**
  * Maps a template category to a consistent accent colour + icon, used for cover

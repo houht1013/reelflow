@@ -38,6 +38,12 @@ functional and **muted**:
 
 Rule: if a color isn't conveying state, it should be neutral.
 
+**Identity exception** — the logo (BrandMark) and template **badges** keep their own
+dedicated colors on purpose (they are identity / recognizability markers, not chrome):
+`hot` = red, `recommended` = gold/amber, `new` = blue (see `.reelflow-pill[data-tone=
+'hot'|'recommended'|'new']`). These are the only decorative colors allowed; everything
+else stays neutral.
+
 ---
 
 ## 2. Typography

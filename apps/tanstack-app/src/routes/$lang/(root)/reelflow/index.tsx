@@ -284,7 +284,7 @@ function DiscoverTemplateCard({
 
 function DiscoverBadge({ badge, label }: { badge: TemplateBadge; label: string }) {
   const Icon = badge === 'hot' ? Flame : badge === 'recommended' ? Star : Sparkles
-  const tone = badge === 'hot' ? 'warning' : badge === 'recommended' ? 'brand' : 'info'
+  const tone = badge === 'hot' ? 'hot' : badge === 'recommended' ? 'recommended' : 'new'
   return (
     <span className="reelflow-pill backdrop-blur" data-tone={tone}>
       <Icon aria-hidden="true" />

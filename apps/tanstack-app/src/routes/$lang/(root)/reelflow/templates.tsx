@@ -256,10 +256,10 @@ function TagChip({ active, onClick, children }: { active: boolean; onClick: () =
 function BadgePill({ badge, label }: { badge: TemplateBadge; label: string }) {
   const icon = badge === 'hot' ? Flame : badge === 'recommended' ? Star : Sparkles
   const Icon = icon
-  const tone = badge === 'hot' ? 'warning' : badge === 'recommended' ? 'brand' : 'info'
+  const tone = badge === 'hot' ? 'hot' : badge === 'recommended' ? 'recommended' : 'new'
   return (
     <span className="[&_.reelflow-pill]:backdrop-blur">
-      <TonePill tone={tone as 'warning' | 'brand' | 'info'} icon={Icon}>{label}</TonePill>
+      <TonePill tone={tone as 'hot' | 'recommended' | 'new'} icon={Icon}>{label}</TonePill>
     </span>
   )
 }
