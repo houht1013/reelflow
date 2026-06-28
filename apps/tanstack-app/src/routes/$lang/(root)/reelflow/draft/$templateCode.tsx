@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { seoHead } from '@/lib/seo'
 import { requireAuth } from '@/lib/auth-guard'
 import { useTranslation } from '@/hooks/use-translation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@libs/react-shared/ui/button'
 import { Input } from '@libs/react-shared/ui/input'
@@ -317,11 +317,16 @@ function ReelflowComposerPage() {
               </div>
 
               <div className="mt-4 grid gap-5 sm:grid-cols-2">
-                {fields.map((field) => {
+                {fields.map((field, index) => {
                   const hasFieldError = fieldErrorKey === field.key
                   const errorId = `reelflow-${field.key}-error`
+                  const showGroupHeader = Boolean(field.group) && field.group !== fields[index - 1]?.group
                   return (
-                    <div key={field.key} data-field-key={field.key} className={field.type === 'textarea' || field.type === 'asset' || field.type === 'image' ? 'space-y-2 sm:col-span-2' : 'space-y-2'}>
+                    <Fragment key={field.key}>
+                    {showGroupHeader && (
+                      <h3 className="reelflow-eyebrow mt-2 first:mt-0 sm:col-span-2">{field.group}</h3>
+                    )}
+                    <div data-field-key={field.key} className={field.type === 'textarea' || field.type === 'asset' || field.type === 'image' ? 'space-y-2 sm:col-span-2' : 'space-y-2'}>
                       <div className="flex items-center gap-1.5">
                         <Label htmlFor={`reelflow-${field.key}`}>{fieldLabel(field)}</Label>
                         {field.required && <span className="text-destructive" aria-hidden="true">*</span>}
@@ -365,6 +370,7 @@ function ReelflowComposerPage() {
                       {field.help && !hasFieldError && <p className="text-xs leading-5 text-muted-foreground">{field.help}</p>}
                       {hasFieldError && <p id={errorId} className="text-xs font-medium text-destructive" aria-live="polite">{fieldRequiredMessage(field)}</p>}
                     </div>
+                    </Fragment>
                   )
                 })}
               </div>
