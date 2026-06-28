@@ -20,18 +20,20 @@ hardcode colors in components**; change a token and the whole app re-skins.
 | `--muted` / `--secondary` | `#f7f7f7` (oklch 0.973 0 0) | secondary surfaces, tiles, hover fills |
 | `--foreground` | near-black (oklch 0.205 0 0) | primary text |
 | `--muted-foreground` | mid-gray (oklch 0.52 0 0) | secondary text, captions |
-| `--primary` | near-black | primary buttons, active states |
+| `--primary` | **暖桃 warm peach** `oklch(0.63 0.155 40)` | primary buttons, active states, links |
 | `--primary-foreground` | white | text on primary |
 | `--border` | `#e6e6e6` (oklch 0.91 0 0) | hairlines, dividers, card borders |
-| `--ring` | near-black | focus ring |
+| `--ring` | 暖桃 (matches primary) | focus ring |
 
-Dark mode mirrors this neutrally: near-black canvas, white text, **near-white primary**
-(white buttons on dark), neutral borders. No hue.
+The base stays neutral; the **brand is 暖桃 (warm peach)** — `--primary` / `--ring` /
+`--reelflow-coral` all resolve to `oklch(0.63 0.155 40)` (light) / `oklch(0.72 0.145 44)`
+(dark). It carries primary buttons, active nav/filter states, links, and the focus ring.
+Dark mode: near-black canvas, white text, peach primary (dark text on the peach),
+neutral borders.
 
 ### Accents — meaning only
-Decorative accents are **neutralized to grayscale** (`--reelflow-coral` = black brand,
-`--reelflow-blue` / `--reelflow-violet` = gray). The only hues that survive are
-functional and **muted**:
+Beyond the peach brand, decorative `--reelflow-blue` / `--reelflow-violet` stay
+**grayscale**. The only other hues are functional and **muted**:
 - `--reelflow-green` — success / completed (oklch 0.6 0.08 150)
 - `--reelflow-amber` — credits / warning (oklch 0.72 0.09 70)
 - `--destructive` — error / failed
@@ -59,10 +61,10 @@ else stays neutral.
 - Whitespace is a feature — prefer air over density.
 
 ## 4. Components
-- **`.reelflow-panel`** — primary surface: white, hairline border + soft shadow, 12px radius. Use for main content cards.
-- **`.reelflow-soft-tile`** — interactive card: white, border, hover = lift (`translateY(-2px)`) + stronger hairline + lift shadow. Use for clickable entries/templates.
+- **`.reelflow-panel`** — primary surface: white, hairline border + **soft shadow** (柔和投影, `--reelflow-panel-shadow`), 12px radius. Use for main content cards.
+- **`.reelflow-soft-tile`** — interactive card: white, border + soft shadow, hover = lift (`translateY(-2px)`) + stronger hairline + lift shadow. Use for clickable entries/templates.
 - **`.reelflow-muted-tile`** — secondary block: `#f7f7f7` fill, hairline. Use for inset rows / read-only info.
-- **`.reelflow-pill`** + `data-tone` (`neutral|info|success|warning|danger|brand`) — status chips; always text + shape, color never alone.
+- **`.reelflow-pill`** + `data-tone` (`neutral|info|success|warning|danger|brand` + badge tones) — **status colors = 方案 A 柔和描边**: tint background (`--bg-*` / role @ ~12%) + colored text (`--text-*`) + soft 0.5px colored border. Quiet, fits the minimal base; always text + shape, color never alone. States: 成功=green · 进行中=info(gray-blue) · 排队/警告=amber · 失败=danger · 中性=gray.
 - **Buttons** (shadcn): default = black (`--primary`); `outline` = hairline on white; `ghost` = transparent → muted hover. Destructive = `--destructive`.
 - **Icon chips**: small rounded square, `--muted`/neutral background + foreground icon; subtle inset ring; scale slightly on hover within an interactive card.
 

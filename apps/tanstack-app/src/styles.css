@@ -98,8 +98,8 @@
   --card-foreground: oklch(0.205 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.205 0 0);
-  --primary: oklch(0.205 0 0);          /* black primary */
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.63 0.155 40);      /* 暖桃 warm-peach brand */
+  --primary-foreground: oklch(0.99 0.005 60);
   --secondary: oklch(0.973 0 0);        /* #f7f7f7 */
   --secondary-foreground: oklch(0.25 0 0);
   --muted: oklch(0.973 0 0);            /* #f7f7f7 */
@@ -108,20 +108,20 @@
   --accent-foreground: oklch(0.205 0 0);
   --border: oklch(0.91 0 0);            /* ~#e6e6e6 hairline */
   --input: oklch(0.89 0 0);
-  --ring: oklch(0.205 0 0);
+  --ring: oklch(0.63 0.155 40);
 
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.25 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.63 0.155 40);
+  --sidebar-primary-foreground: oklch(0.99 0.005 60);
   --sidebar-accent: oklch(0.955 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.91 0 0);
 
-  /* Brand + decorative accents are neutralized to grayscale; only success/amber
-     keep a restrained hue for functional status (credits / state). */
-  --reelflow-coral: oklch(0.205 0 0);
-  --reelflow-coral-soft: oklch(0.42 0 0);
+  /* Brand = 暖桃 (warm peach); decorative blue/violet stay grayscale; success/
+     amber keep a restrained hue for functional status (credits / state). */
+  --reelflow-coral: oklch(0.63 0.155 40);
+  --reelflow-coral-soft: oklch(0.72 0.13 45);
   --reelflow-amber: oklch(0.72 0.09 70);
   --reelflow-green: oklch(0.6 0.08 150);
   --reelflow-blue: oklch(0.45 0 0);
@@ -131,12 +131,13 @@
   --reelflow-hairline-strong: oklch(0 0 0 / 13%);
   --reelflow-ink: oklch(0.205 0 0);
 
-  --reelflow-panel-shadow: 0 1px 2px oklch(0 0 0 / 4%),
-    0 12px 30px -22px oklch(0 0 0 / 14%);
-  --reelflow-tile-shadow: 0 1px 2px oklch(0 0 0 / 3%),
-    0 8px 22px -20px oklch(0 0 0 / 10%);
-  --reelflow-lift-shadow: 0 2px 6px oklch(0 0 0 / 6%),
-    0 18px 40px -24px oklch(0 0 0 / 16%);
+  /* 柔和投影 — soft, present card shadows */
+  --reelflow-panel-shadow: 0 1px 2px oklch(0 0 0 / 5%),
+    0 10px 28px -14px oklch(0 0 0 / 16%);
+  --reelflow-tile-shadow: 0 1px 2px oklch(0 0 0 / 4%),
+    0 8px 20px -14px oklch(0 0 0 / 12%);
+  --reelflow-lift-shadow: 0 4px 10px oklch(0 0 0 / 8%),
+    0 20px 40px -18px oklch(0 0 0 / 18%);
 
   --reelflow-grain: 0;
 }
@@ -148,8 +149,8 @@
   --card-foreground: oklch(0.96 0 0);
   --popover: oklch(0.214 0 0);
   --popover-foreground: oklch(0.96 0 0);
-  --primary: oklch(0.95 0 0);           /* near-white primary on dark */
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.72 0.145 44);      /* 暖桃 warm-peach on dark */
+  --primary-foreground: oklch(0.2 0.02 40);
   --secondary: oklch(0.26 0 0);
   --secondary-foreground: oklch(0.94 0 0);
   --muted: oklch(0.26 0 0);
@@ -158,18 +159,18 @@
   --accent-foreground: oklch(0.96 0 0);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.95 0 0);
+  --ring: oklch(0.72 0.145 44);
 
   --sidebar: oklch(0.155 0 0);
   --sidebar-foreground: oklch(0.92 0 0);
-  --sidebar-primary: oklch(0.95 0 0);
-  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-primary: oklch(0.72 0.145 44);
+  --sidebar-primary-foreground: oklch(0.2 0.02 40);
   --sidebar-accent: oklch(0.27 0 0);
   --sidebar-accent-foreground: oklch(0.96 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
 
-  --reelflow-coral: oklch(0.95 0 0);
-  --reelflow-coral-soft: oklch(0.7 0 0);
+  --reelflow-coral: oklch(0.74 0.135 46);
+  --reelflow-coral-soft: oklch(0.68 0.12 46);
   --reelflow-amber: oklch(0.8 0.09 72);
   --reelflow-green: oklch(0.72 0.08 150);
   --reelflow-blue: oklch(0.7 0 0);
