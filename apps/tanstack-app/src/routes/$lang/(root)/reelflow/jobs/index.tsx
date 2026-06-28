@@ -319,7 +319,7 @@ function taskProgress(status: string) {
 function taskProgressBar(status: string) {
   if (status === 'completed') return 'var(--reelflow-green)'
   if (status === 'failed' || status === 'canceled') return 'var(--destructive)'
-  if (status === 'running') return 'linear-gradient(90deg, var(--reelflow-coral), var(--reelflow-amber))'
+  if (status === 'running') return 'linear-gradient(90deg, var(--foreground), color-mix(in oklch, var(--foreground) 45%, transparent))'
   if (status === 'queued') return 'var(--reelflow-amber)'
   return 'color-mix(in oklch, var(--foreground) 20%, transparent)'
 }
