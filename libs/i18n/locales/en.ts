@@ -2865,7 +2865,13 @@ export const en: Locale = {
       noEmailDelivery: "No email delivery",
       filters: {
         all: "All",
-        unread: "Unread"
+        unread: "Unread",
+        read: "Read"
+      },
+      panel: "Notifications",
+      categories: {
+        platform: "Platform",
+        task: "Task"
       },
       types: {
         job_completed: "Task completed",

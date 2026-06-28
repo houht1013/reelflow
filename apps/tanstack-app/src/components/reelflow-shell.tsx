@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { BrandMark } from '@/components/brand-mark'
+import { ReelflowNotificationsBell } from '@/components/reelflow-notifications-bell'
 import { useTranslation } from '@/hooks/use-translation'
 import { toast } from 'sonner'
 
@@ -245,7 +246,6 @@ export function ReelflowShell({ children }: ShellProps) {
             <ShellLink icon={Coins} label={shell.nav.credits} to="/$lang/reelflow/credits" lang={locale} active={pathname.includes('/reelflow/credits')} collapsed={sidebarCollapsed} />
             <ShellLink icon={CreditCard} label={shell.nav.subscription} to="/$lang/pricing" lang={locale} active={false} collapsed={sidebarCollapsed} newTab />
             <ShellLink icon={Gift} label={shell.nav.invites} subtext={shell.nav.invitesHint} to="/$lang/reelflow/invites" lang={locale} active={pathname.includes('/reelflow/invites')} collapsed={sidebarCollapsed} accent />
-            <ShellLink icon={Bell} label={shell.nav.notifications} to="/$lang/reelflow/notifications" lang={locale} active={pathname.includes('/reelflow/notifications')} collapsed={sidebarCollapsed} />
           </NavGroup>
         </nav>
 
@@ -300,6 +300,7 @@ export function ReelflowShell({ children }: ShellProps) {
                 <Coins className="h-4 w-4" style={{ color: 'var(--reelflow-amber)' }} aria-hidden="true" />
                 <span className="reelflow-num">{creditLabel}</span>
               </Link>
+              {user && <ReelflowNotificationsBell locale={locale} t={t} />}
             </div>
           </div>
         </header>

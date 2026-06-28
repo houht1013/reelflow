@@ -2872,7 +2872,13 @@ export const zhCN: Locale = {
       noEmailDelivery: "无邮件投递",
       filters: {
         all: "全部",
-        unread: "未读"
+        unread: "未读",
+        read: "已读"
+      },
+      panel: "通知",
+      categories: {
+        platform: "平台通知",
+        task: "任务通知"
       },
       types: {
         job_completed: "任务完成",
